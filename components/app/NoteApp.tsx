@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useCallback } from 'react'
+import CanvasView from './CanvasView'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -10,6 +11,8 @@ type Note = {
   content: string
   folder: string
   updatedAt: string
+  type?: 'note' | 'document'
+  pdfUrl?: string
 }
 
 type Folder = {
@@ -147,8 +150,20 @@ Do not confuse editing with writing. They are different cognitive modes. Write f
   },
 }
 
+const INITIAL_NOTES_EXTRA: Record<string, Note> = {
+  'd1': {
+    id: 'd1',
+    title: 'Test Document',
+    content: '',
+    folder: 'f1',
+    updatedAt: 'Today',
+    type: 'document',
+    pdfUrl: '/test-document.pdf',
+  },
+}
+
 const INITIAL_FOLDERS: Folder[] = [
-  { id: 'f1', name: 'Personal', noteIds: ['n1', 'n3'], expanded: true },
+  { id: 'f1', name: 'Personal', noteIds: ['n1', 'n3', 'd1'], expanded: true },
   { id: 'f2', name: 'Work', noteIds: ['n2'], expanded: true },
   { id: 'f3', name: 'Writing', noteIds: ['n4'], expanded: false },
 ]
@@ -215,6 +230,14 @@ const PlusIcon = () => (
 const CloseIcon = () => (
   <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
     <path d="M2 2l6 6M8 2l-6 6" />
+  </svg>
+)
+
+const DocIcon = () => (
+  <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round">
+    <rect x="2" y="1" width="10" height="13" rx="1.5" />
+    <path d="M5 5h6M5 8h6M5 11h3" />
+    <path d="M10 1v4h4" strokeLinejoin="round" />
   </svg>
 )
 
@@ -351,7 +374,7 @@ const noteStyles = `
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 export default function NoteApp() {
-  const [notes] = useState<Record<string, Note>>(INITIAL_NOTES)
+  const [notes] = useState<Record<string, Note>>({ ...INITIAL_NOTES, ...INITIAL_NOTES_EXTRA })
   const [folders, setFolders] = useState<Folder[]>(INITIAL_FOLDERS)
   const [openTabs, setOpenTabs] = useState<string[]>(['n1', 'n2'])
   const [activeTab, setActiveTab] = useState<string>('n1')
@@ -542,7 +565,7 @@ export default function NoteApp() {
                     }`}
                     onClick={() => setActiveTab(tabId)}
                   >
-                    <NoteIcon />
+                    {note.type === 'document' ? <DocIcon /> : <NoteIcon />}
                     <span>{note.title}</span>
                     <button
                       className="tab-close flex items-center justify-center w-4 h-4 rounded-[3px] border-none bg-transparent text-[var(--text-muted)] cursor-pointer opacity-0 transition-opacity duration-100 ml-0.5 hover:bg-black/[0.08] hover:text-[var(--text-primary)]"
@@ -557,8 +580,10 @@ export default function NoteApp() {
             </div>
           )}
 
-          {/* Editor */}
-          {activeNote ? (
+          {/* Editor / Canvas */}
+          {activeNote?.type === 'document' ? (
+            <CanvasView pdfUrl={activeNote.pdfUrl!} />
+          ) : activeNote ? (
             <div className="editor-area flex-1 overflow-y-auto flex justify-center px-6 pt-12 pb-20">
               <div
                 className="editor-paper w-full max-w-[720px] bg-[var(--paper-elevated)] rounded-sm px-[72px] py-14 border border-black/[0.06] relative min-h-[70vh] shadow-[0_1px_2px_rgba(0,0,0,0.05),0_4px_16px_rgba(0,0,0,0.06),0_12px_40px_rgba(0,0,0,0.04),inset_0_1px_0_rgba(255,255,255,0.8)]"
