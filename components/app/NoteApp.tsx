@@ -472,15 +472,15 @@ export default function NoteApp() {
             </div>
 
             {searchQuery && filteredNotes.length > 0 && (
-              <div className="absolute top-[calc(100%+4px)] left-1.5 right-1.5 bg-[#2d2822] border border-white/10 rounded-lg overflow-hidden z-[100] shadow-[0_8px_24px_rgba(0,0,0,0.4)]">
+              <div className="absolute top-[calc(100%+4px)] left-1.5 right-1.5 bg-[var(--paper-elevated)] border border-[var(--sidebar-border)] rounded-lg overflow-hidden z-[100] shadow-[0_4px_16px_rgba(0,0,0,0.1)]">
                 {filteredNotes.map(note => (
                   <div
                     key={note.id}
-                    className="px-2.5 py-2 cursor-pointer border-b border-white/5 last:border-b-0 transition-colors duration-100 hover:bg-[var(--sidebar-active)]"
+                    className="px-2.5 py-2 cursor-pointer border-b border-[var(--sidebar-border)] last:border-b-0 transition-colors duration-100 hover:bg-[var(--sidebar-hover)]"
                     onMouseDown={() => openNote(note.id)}
                   >
-                    <div className="text-[12.5px] font-medium text-[var(--sidebar-text-active)]">{note.title}</div>
-                    <div className="text-[11.5px] mt-0.5 truncate text-[var(--sidebar-text-muted)]">
+                    <div className="text-[12.5px] font-medium text-[var(--text-primary)]">{note.title}</div>
+                    <div className="text-[11.5px] mt-0.5 truncate text-[var(--text-muted)]">
                       {note.content.slice(0, 80).replace(/[#*`]/g, '')}
                     </div>
                   </div>

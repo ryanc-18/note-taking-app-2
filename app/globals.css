@@ -7,13 +7,13 @@
   --paper-elevated: #fffdf8;
 
   /* Sidebar */
-  --sidebar-bg: #211d19;
-  --sidebar-hover: #2d2822;
-  --sidebar-active: #3a342d;
-  --sidebar-border: rgba(255,255,255,0.06);
-  --sidebar-text: #c4b8a8;
-  --sidebar-text-muted: #7a6e63;
-  --sidebar-text-active: #f0e8da;
+  --sidebar-bg: #eeebe4;
+  --sidebar-hover: #e5e1d8;
+  --sidebar-active: #dbd6cc;
+  --sidebar-border: rgba(0,0,0,0.07);
+  --sidebar-text: #57534e;
+  --sidebar-text-muted: #a8a29e;
+  --sidebar-text-active: #1c1917;
 
   /* Content */
   --text-primary: #1c1917;
@@ -24,7 +24,7 @@
   --border-strong: rgba(0,0,0,0.12);
 
   /* Tabs */
-  --tab-bg: #ede8df;
+  --tab-bg: #e8e4dc;
   --tab-active-bg: #faf7f2;
 
   /* Fonts */
