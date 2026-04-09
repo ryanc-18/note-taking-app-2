@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useRef, useEffect } from 'react'
 import CanvasView from './CanvasView'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -374,11 +374,13 @@ const noteStyles = `
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 export default function NoteApp() {
-  const [notes] = useState<Record<string, Note>>({ ...INITIAL_NOTES, ...INITIAL_NOTES_EXTRA })
+  const [notes, setNotes] = useState<Record<string, Note>>({ ...INITIAL_NOTES, ...INITIAL_NOTES_EXTRA })
   const [folders, setFolders] = useState<Folder[]>(INITIAL_FOLDERS)
   const [openTabs, setOpenTabs] = useState<string[]>(['n1', 'n2'])
   const [activeTab, setActiveTab] = useState<string>('n1')
   const [searchQuery, setSearchQuery] = useState('')
+  const [addMenuOpen, setAddMenuOpen] = useState(false)
+  const addMenuRef = useRef<HTMLDivElement>(null)
 
   const activeNote = notes[activeTab]
 
@@ -402,6 +404,43 @@ export default function NoteApp() {
   const toggleFolder = useCallback((folderId: string) => {
     setFolders(prev => prev.map(f => f.id === folderId ? { ...f, expanded: !f.expanded } : f))
   }, [])
+
+  const addNote = useCallback(() => {
+    const id = `n${Date.now()}`
+    const newNote: Note = {
+      id,
+      title: 'Untitled',
+      content: '# Untitled\n\nStart writing...',
+      folder: folders[0]?.id ?? 'f1',
+      updatedAt: 'Just now',
+      type: 'note',
+    }
+    setNotes(prev => ({ ...prev, [id]: newNote }))
+    setFolders(prev => prev.map(f =>
+      f.id === newNote.folder ? { ...f, expanded: true, noteIds: [...f.noteIds, id] } : f
+    ))
+    setOpenTabs(prev => [...prev, id])
+    setActiveTab(id)
+    setAddMenuOpen(false)
+  }, [folders])
+
+  const addFolder = useCallback(() => {
+    const id = `f${Date.now()}`
+    setFolders(prev => [...prev, { id, name: 'New Folder', noteIds: [], expanded: true }])
+    setAddMenuOpen(false)
+  }, [])
+
+  // Close add menu when clicking outside
+  useEffect(() => {
+    if (!addMenuOpen) return
+    function handleClick(e: MouseEvent) {
+      if (addMenuRef.current && !addMenuRef.current.contains(e.target as Node)) {
+        setAddMenuOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClick)
+    return () => document.removeEventListener('mousedown', handleClick)
+  }, [addMenuOpen])
 
   const allNotes = Object.values(notes)
   const filteredNotes = searchQuery
@@ -493,12 +532,34 @@ export default function NoteApp() {
           <div className="sidebar-tree flex-1 overflow-y-auto p-1.5">
             <div className="flex items-center justify-between px-2 pt-2 pb-1 text-[10.5px] font-medium uppercase tracking-[0.08em] text-[var(--sidebar-text-muted)]">
               <span>Notes</span>
-              <button
-                className="flex items-center justify-center w-[18px] h-[18px] rounded-[4px] border-none bg-transparent text-[var(--sidebar-text-muted)] cursor-pointer transition-colors duration-100 hover:bg-white/[0.08] hover:text-[var(--sidebar-text)]"
-                title="New note"
-              >
-                <PlusIcon />
-              </button>
+              <div className="relative" ref={addMenuRef}>
+                <button
+                  className="flex items-center justify-center w-[18px] h-[18px] rounded-[4px] border-none bg-transparent text-[var(--sidebar-text-muted)] cursor-pointer transition-colors duration-100 hover:bg-[var(--sidebar-active)] hover:text-[var(--sidebar-text-active)]"
+                  title="Add"
+                  onClick={() => setAddMenuOpen(prev => !prev)}
+                >
+                  <PlusIcon />
+                </button>
+
+                {addMenuOpen && (
+                  <div className="absolute top-[calc(100%+4px)] right-0 w-40 bg-[var(--paper-elevated)] border border-[var(--sidebar-border)] rounded-lg overflow-hidden z-[100] shadow-[0_4px_16px_rgba(0,0,0,0.1)] normal-case tracking-normal">
+                    <button
+                      className="flex items-center gap-2 w-full px-3 py-2 text-[12.5px] text-[var(--text-primary)] bg-transparent border-none cursor-pointer text-left transition-colors duration-100 hover:bg-[var(--sidebar-hover)]"
+                      onClick={addNote}
+                    >
+                      <NoteIcon />
+                      <span>New File</span>
+                    </button>
+                    <button
+                      className="flex items-center gap-2 w-full px-3 py-2 text-[12.5px] text-[var(--text-primary)] bg-transparent border-none cursor-pointer text-left transition-colors duration-100 hover:bg-[var(--sidebar-hover)]"
+                      onClick={addFolder}
+                    >
+                      <FolderIcon />
+                      <span>New Folder</span>
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
 
             {folders.map(folder => {
