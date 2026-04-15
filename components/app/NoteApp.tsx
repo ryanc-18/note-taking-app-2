@@ -24,132 +24,6 @@ type Folder = {
 
 // ─── Sample Data ──────────────────────────────────────────────────────────────
 
-const INITIAL_NOTES: Record<string, Note> = {
-  'n1': {
-    id: 'n1',
-    title: 'Getting Started',
-    content: `# Getting Started
-
-Welcome to your note-taking workspace. This is where your thoughts, ideas, and work come together.
-
-## What you can do
-
-- Write notes using **markdown** syntax
-- Organise notes into folders
-- Open multiple notes in tabs
-- Search across everything
-
-## Keyboard shortcuts
-
-| Action | Shortcut |
-|---|---|
-| New note | ⌘ N |
-| Search | ⌘ K |
-| Close tab | ⌘ W |
-
-Start writing, and your ideas will find their place.`,
-    folder: 'f1',
-    updatedAt: 'Today at 9:41 AM',
-  },
-  'n2': {
-    id: 'n2',
-    title: 'Meeting Notes — Q2 Planning',
-    content: `# Meeting Notes — Q2 Planning
-
-**Date:** April 2, 2026
-**Attendees:** Ryan, Sarah, Marcus
-
----
-
-## Agenda
-
-1. Review Q1 outcomes
-2. Set Q2 priorities
-3. Resource allocation
-4. Timeline review
-
-## Discussion
-
-Q1 was strong on the product side. The design system work shipped and the team is moving faster because of it.
-
-For Q2, the focus shifts to growth. Ryan proposed a three-pronged approach: content marketing, partnerships, and a referral programme.
-
-## Action items
-
-- [ ] Ryan — draft partnership outreach templates by April 10
-- [ ] Sarah — audit current content pipeline
-- [ ] Marcus — run numbers on referral economics
-
-## Next meeting
-
-April 16, 2026 — same time.`,
-    folder: 'f2',
-    updatedAt: 'Yesterday at 3:12 PM',
-  },
-  'n3': {
-    id: 'n3',
-    title: 'Product Ideas',
-    content: `# Product Ideas
-
-A running list of ideas worth exploring.
-
----
-
-## High priority
-
-**Collaborative editing**
-Real-time multiplayer within a workspace. The architecture is the hard part — need to think through operational transforms or CRDTs.
-
-**AI summaries**
-Auto-summarise long notes into a short digest at the top. Could use Claude for this.
-
-## Interesting but later
-
-- Offline mode with sync on reconnect
-- Version history with diff view
-- Custom templates per folder
-- Embedded spreadsheets (lightweight)
-
-## Probably not
-
-- Kanban view — too much scope, Notion already owns this
-- Native mobile app — web is good enough for now`,
-    folder: 'f1',
-    updatedAt: 'Apr 1 at 11:05 AM',
-  },
-  'n4': {
-    id: 'n4',
-    title: 'Writing is Telepathy',
-    content: `# Writing is Telepathy
-
-Ideas can travel through time and space without being uttered out loud. This is the quiet miracle of writing.
-
-When you put words on a page, you are transmitting your mind — your specific configuration of neurons, your exact emotional weather at that moment — across any distance, across any span of time.
-
-A reader in another century picks up your words and something happens. Something crosses over.
-
----
-
-## On the practice
-
-Write every day, even badly. The muscle needs to move. Bad writing is not the enemy; silence is.
-
-The first draft is just you telling yourself the story.
-
-> "The first draft of anything is shit." — Hemingway
-
-Do not confuse editing with writing. They are different cognitive modes. Write first, edit later, with fresh eyes.
-
-## What makes a sentence good?
-
-- It says exactly what it means, no more
-- It sounds like a human being wrote it
-- It earns every word it uses`,
-    folder: 'f3',
-    updatedAt: 'Mar 30 at 8:22 PM',
-  },
-}
-
 const INITIAL_NOTES_EXTRA: Record<string, Note> = {
   'd1': {
     id: 'd1',
@@ -162,11 +36,6 @@ const INITIAL_NOTES_EXTRA: Record<string, Note> = {
   },
 }
 
-const INITIAL_FOLDERS: Folder[] = [
-  { id: 'f1', name: 'Personal', noteIds: ['n1', 'n3', 'd1'], expanded: true },
-  { id: 'f2', name: 'Work', noteIds: ['n2'], expanded: true },
-  { id: 'f3', name: 'Writing', noteIds: ['n4'], expanded: false },
-]
 
 // ─── Simple Markdown Renderer ─────────────────────────────────────────────────
 
@@ -374,13 +243,55 @@ const noteStyles = `
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 export default function NoteApp() {
-  const [notes, setNotes] = useState<Record<string, Note>>({ ...INITIAL_NOTES, ...INITIAL_NOTES_EXTRA })
-  const [folders, setFolders] = useState<Folder[]>(INITIAL_FOLDERS)
-  const [openTabs, setOpenTabs] = useState<string[]>(['n1', 'n2'])
-  const [activeTab, setActiveTab] = useState<string>('n1')
+  const [notes, setNotes] = useState<Record<string, Note>>(INITIAL_NOTES_EXTRA)
+  const [folders, setFolders] = useState<Folder[]>([])
+  const [openTabs, setOpenTabs] = useState<string[]>([])
+  const [activeTab, setActiveTab] = useState<string>('')
   const [searchQuery, setSearchQuery] = useState('')
   const [addMenuOpen, setAddMenuOpen] = useState(false)
+  const [renamingId, setRenamingId] = useState<string | null>(null)
+  const [renameValue, setRenameValue] = useState('')
   const addMenuRef = useRef<HTMLDivElement>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const renameInputRef = useRef<HTMLInputElement>(null)
+
+  // ── Load folders + notes from the database on mount ──────────────────────
+  useEffect(() => {
+    async function loadData() {
+      const res = await fetch('/api/folders')
+      if (!res.ok) return
+      const dbFolders = await res.json()
+
+      const notesMap: Record<string, Note> = { ...INITIAL_NOTES_EXTRA }
+      const folderList: Folder[] = []
+
+      for (const folder of dbFolders) {
+        const noteIds: string[] = []
+        for (const note of folder.notes) {
+          notesMap[note.id] = {
+            id: note.id,
+            title: note.title,
+            content: note.content,
+            folder: note.folderId,
+            updatedAt: new Date(note.updatedAt).toLocaleDateString(),
+            type: note.pdfUrl ? 'document' : 'note',
+            pdfUrl: note.pdfUrl ?? undefined,
+          }
+          noteIds.push(note.id)
+        }
+        folderList.push({ id: folder.id, name: folder.name, noteIds, expanded: true })
+      }
+
+      setNotes(notesMap)
+      // Inject the test document into the first folder so it appears in the sidebar
+      if (folderList.length > 0) {
+        folderList[0].noteIds.push('d1')
+      }
+      setFolders(folderList)
+    }
+
+    loadData()
+  }, [])
 
   const activeNote = notes[activeTab]
 
@@ -406,27 +317,109 @@ export default function NoteApp() {
   }, [])
 
   const addNote = useCallback(() => {
-    const id = `n${Date.now()}`
-    const newNote: Note = {
-      id,
-      title: 'Untitled',
-      content: '# Untitled\n\nStart writing...',
-      folder: folders[0]?.id ?? 'f1',
-      updatedAt: 'Just now',
-      type: 'note',
-    }
-    setNotes(prev => ({ ...prev, [id]: newNote }))
-    setFolders(prev => prev.map(f =>
-      f.id === newNote.folder ? { ...f, expanded: true, noteIds: [...f.noteIds, id] } : f
-    ))
-    setOpenTabs(prev => [...prev, id])
-    setActiveTab(id)
+    // Open the OS file picker — the rest is handled by onFileSelected
     setAddMenuOpen(false)
+    fileInputRef.current?.click()
+  }, [])
+
+  const onFileSelected = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    const folderId = folders[0]?.id ?? ''
+
+    // Show a placeholder immediately so the user gets instant feedback
+    const tempId = `uploading-${Date.now()}`
+    const tempDoc: Note = {
+      id: tempId,
+      title: file.name.replace(/\.pdf$/i, ''),
+      content: '',
+      folder: folderId,
+      updatedAt: 'Uploading…',
+      type: 'document',
+      pdfUrl: URL.createObjectURL(file),
+    }
+    setNotes(prev => ({ ...prev, [tempId]: tempDoc }))
+    setFolders(prev => prev.map(f =>
+      f.id === folderId ? { ...f, expanded: true, noteIds: [...f.noteIds, tempId] } : f
+    ))
+    setOpenTabs(prev => [...prev, tempId])
+    setActiveTab(tempId)
+
+    // Upload to Vercel Blob via our API route
+    const form = new FormData()
+    form.append('file', file)
+    form.append('folderId', folderId)
+
+    const res = await fetch('/api/upload', { method: 'POST', body: form })
+
+    if (res.ok) {
+      const saved = await res.json()
+      // Replace the temp entry with the persisted one
+      const savedDoc: Note = {
+        id: saved.id,
+        title: saved.title,
+        content: saved.content,
+        folder: saved.folderId,
+        updatedAt: 'Just now',
+        type: 'document',
+        pdfUrl: saved.pdfUrl,
+      }
+      setNotes(prev => {
+        const { [tempId]: _removed, ...rest } = prev
+        return { ...rest, [saved.id]: savedDoc }
+      })
+      setFolders(prev => prev.map(f =>
+        f.id === folderId
+          ? { ...f, noteIds: f.noteIds.map(id => id === tempId ? saved.id : id) }
+          : f
+      ))
+      setOpenTabs(prev => prev.map(id => id === tempId ? saved.id : id))
+      setActiveTab(saved.id)
+    }
+
+    e.target.value = ''
   }, [folders])
 
-  const addFolder = useCallback(() => {
-    const id = `f${Date.now()}`
-    setFolders(prev => [...prev, { id, name: 'New Folder', noteIds: [], expanded: true }])
+  const startRename = useCallback((id: string, currentName: string) => {
+    setRenamingId(id)
+    setRenameValue(currentName)
+    setTimeout(() => renameInputRef.current?.select(), 0)
+  }, [])
+
+  const commitRename = useCallback(async (id: string, type: 'folder' | 'note') => {
+    const trimmed = renameValue.trim()
+    if (!trimmed) { setRenamingId(null); return }
+
+    if (type === 'folder') {
+      await fetch(`/api/folders/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: trimmed }),
+      })
+      setFolders(prev => prev.map(f => f.id === id ? { ...f, name: trimmed } : f))
+    } else {
+      await fetch(`/api/notes/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title: trimmed }),
+      })
+      setNotes(prev => ({ ...prev, [id]: { ...prev[id], title: trimmed } }))
+    }
+
+    setRenamingId(null)
+  }, [renameValue])
+
+  const addFolder = useCallback(async () => {
+    const res = await fetch('/api/folders', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: 'New Folder' }),
+    })
+    if (!res.ok) return
+    const folder = await res.json()
+
+    setFolders(prev => [...prev, { id: folder.id, name: folder.name, noteIds: [], expanded: true }])
     setAddMenuOpen(false)
   }, [])
 
@@ -569,10 +562,27 @@ export default function NoteApp() {
                   <div
                     className="flex items-center gap-1.5 px-2 py-[5px] rounded-md text-[12.5px] font-medium text-[var(--sidebar-text)] cursor-pointer select-none transition-colors duration-100 hover:bg-[var(--sidebar-hover)] hover:text-[var(--sidebar-text-active)]"
                     onClick={() => toggleFolder(folder.id)}
+                    onDoubleClick={(e) => { e.stopPropagation(); startRename(folder.id, folder.name) }}
                   >
                     <span className="flex text-[var(--sidebar-text-muted)] -mr-0.5"><ChevronIcon down={folder.expanded} /></span>
                     <FolderIcon open={folder.expanded} />
-                    <span className="flex-1">{folder.name}</span>
+                    {renamingId === folder.id ? (
+                      <input
+                        ref={renameInputRef}
+                        className="flex-1 bg-[var(--paper-elevated)] border border-[var(--accent)] rounded px-1 py-0 text-[12.5px] text-[var(--text-primary)] outline-none"
+                        value={renameValue}
+                        onChange={e => setRenameValue(e.target.value)}
+                        onBlur={() => commitRename(folder.id, 'folder')}
+                        onKeyDown={e => {
+                          if (e.key === 'Enter') commitRename(folder.id, 'folder')
+                          if (e.key === 'Escape') setRenamingId(null)
+                        }}
+                        onClick={e => e.stopPropagation()}
+                        autoFocus
+                      />
+                    ) : (
+                      <span className="flex-1">{folder.name}</span>
+                    )}
                     <span className="text-[11px] text-[var(--sidebar-text-muted)]">{folderNotes.length}</span>
                   </div>
 
@@ -585,9 +595,26 @@ export default function NoteApp() {
                           : 'bg-transparent text-[var(--sidebar-text-muted)] hover:bg-[var(--sidebar-hover)] hover:text-[var(--sidebar-text)]'
                       }`}
                       onClick={() => openNote(note.id)}
+                      onDoubleClick={(e) => { e.stopPropagation(); startRename(note.id, note.title) }}
                     >
                       <span className="shrink-0 flex"><NoteIcon /></span>
-                      <span className="truncate">{note.title}</span>
+                      {renamingId === note.id ? (
+                        <input
+                          ref={renameInputRef}
+                          className="flex-1 bg-[var(--paper-elevated)] border border-[var(--accent)] rounded px-1 py-0 text-[12.5px] text-[var(--text-primary)] outline-none"
+                          value={renameValue}
+                          onChange={e => setRenameValue(e.target.value)}
+                          onBlur={() => commitRename(note.id, 'note')}
+                          onKeyDown={e => {
+                            if (e.key === 'Enter') commitRename(note.id, 'note')
+                            if (e.key === 'Escape') setRenamingId(null)
+                          }}
+                          onClick={e => e.stopPropagation()}
+                          autoFocus
+                        />
+                      ) : (
+                        <span className="truncate">{note.title}</span>
+                      )}
                     </button>
                   ))}
                 </div>
@@ -604,6 +631,16 @@ export default function NoteApp() {
               <span>Ryan Chin</span>
             </button>
           </div>
+
+          {/* Hidden file input — triggered by clicking "New File" */}
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".pdf"
+            className="hidden"
+            onChange={onFileSelected}
+            suppressHydrationWarning
+          />
         </aside>
 
         {/* ── Main area ───────────────────────────────────────────────────── */}
