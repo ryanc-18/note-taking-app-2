@@ -12,3 +12,11 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
 
   return NextResponse.json(note)
 }
+
+export async function DELETE(_request: Request, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params
+
+  await prisma.note.delete({ where: { id } })
+
+  return new NextResponse(null, { status: 204 })
+}

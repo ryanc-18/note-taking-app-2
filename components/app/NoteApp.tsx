@@ -2,25 +2,8 @@
 
 import { useState, useCallback, useRef, useEffect } from 'react'
 import CanvasView from './CanvasView'
-
-// ─── Types ────────────────────────────────────────────────────────────────────
-
-type Note = {
-  id: string
-  title: string
-  content: string
-  folder: string
-  updatedAt: string
-  type?: 'note' | 'document'
-  pdfUrl?: string
-}
-
-type Folder = {
-  id: string
-  name: string
-  noteIds: string[]
-  expanded: boolean
-}
+import { getFolders, createFolder, renameFolder, deleteFolder, createNote, renameNote, deleteNote, uploadPdf } from '@/lib/api'
+import type { Note, Folder } from '@/types'
 
 // ─── Sample Data ──────────────────────────────────────────────────────────────
 
@@ -240,6 +223,29 @@ const noteStyles = `
   .md-content tr:first-child td { background: rgba(0,0,0,0.02); font-weight: 500; }
 `
 
+// ─── Context Menu Item ────────────────────────────────────────────────────────
+
+function ContextMenuItem({ label, onClick, disabled, danger }: {
+  label: string
+  onClick: () => void
+  disabled?: boolean
+  danger?: boolean
+}) {
+  return (
+    <button
+      disabled={disabled}
+      className={`flex items-center w-full px-3 py-[7px] text-[12.5px] text-left bg-transparent border-none cursor-pointer transition-colors duration-100 disabled:opacity-35 disabled:cursor-default disabled:hover:bg-transparent ${
+        danger
+          ? 'text-red-500 hover:bg-red-50'
+          : 'text-[var(--text-primary)] hover:bg-[var(--sidebar-hover)]'
+      }`}
+      onClick={onClick}
+    >
+      {label}
+    </button>
+  )
+}
+
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 export default function NoteApp() {
@@ -251,6 +257,8 @@ export default function NoteApp() {
   const [addMenuOpen, setAddMenuOpen] = useState(false)
   const [renamingId, setRenamingId] = useState<string | null>(null)
   const [renameValue, setRenameValue] = useState('')
+  const [contextMenu, setContextMenu] = useState<{ x: number; y: number; id: string; type: 'folder' | 'note' } | null>(null)
+  const [clipboard, setClipboard] = useState<{ note: Note; action: 'copy' | 'cut' } | null>(null)
   const addMenuRef = useRef<HTMLDivElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const renameInputRef = useRef<HTMLInputElement>(null)
@@ -258,9 +266,7 @@ export default function NoteApp() {
   // ── Load folders + notes from the database on mount ──────────────────────
   useEffect(() => {
     async function loadData() {
-      const res = await fetch('/api/folders')
-      if (!res.ok) return
-      const dbFolders = await res.json()
+      const dbFolders = await getFolders()
 
       const notesMap: Record<string, Note> = { ...INITIAL_NOTES_EXTRA }
       const folderList: Folder[] = []
@@ -347,14 +353,8 @@ export default function NoteApp() {
     setActiveTab(tempId)
 
     // Upload to Vercel Blob via our API route
-    const form = new FormData()
-    form.append('file', file)
-    form.append('folderId', folderId)
-
-    const res = await fetch('/api/upload', { method: 'POST', body: form })
-
-    if (res.ok) {
-      const saved = await res.json()
+    try {
+      const saved = await uploadPdf(file, folderId)
       // Replace the temp entry with the persisted one
       const savedDoc: Note = {
         id: saved.id,
@@ -376,6 +376,11 @@ export default function NoteApp() {
       ))
       setOpenTabs(prev => prev.map(id => id === tempId ? saved.id : id))
       setActiveTab(saved.id)
+    } catch {
+      // Upload failed — remove the temp entry
+      setNotes(prev => Object.fromEntries(Object.entries(prev).filter(([k]) => k !== tempId)))
+      setFolders(prev => prev.map(f => ({ ...f, noteIds: f.noteIds.filter(n => n !== tempId) })))
+      setOpenTabs(prev => prev.filter(t => t !== tempId))
     }
 
     e.target.value = ''
@@ -392,36 +397,74 @@ export default function NoteApp() {
     if (!trimmed) { setRenamingId(null); return }
 
     if (type === 'folder') {
-      await fetch(`/api/folders/${id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: trimmed }),
-      })
+      await renameFolder(id, trimmed)
       setFolders(prev => prev.map(f => f.id === id ? { ...f, name: trimmed } : f))
     } else {
-      await fetch(`/api/notes/${id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title: trimmed }),
-      })
+      await renameNote(id, trimmed)
       setNotes(prev => ({ ...prev, [id]: { ...prev[id], title: trimmed } }))
     }
 
     setRenamingId(null)
   }, [renameValue])
 
-  const addFolder = useCallback(async () => {
-    const res = await fetch('/api/folders', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name: 'New Folder' }),
-    })
-    if (!res.ok) return
-    const folder = await res.json()
+  const openContextMenu = useCallback((e: React.MouseEvent, id: string, type: 'folder' | 'note') => {
+    e.preventDefault()
+    e.stopPropagation()
+    setContextMenu({ x: e.clientX, y: e.clientY, id, type })
+  }, [])
 
+  const closeContextMenu = useCallback(() => setContextMenu(null), [])
+
+  const deleteItem = useCallback(async (id: string, type: 'folder' | 'note') => {
+    closeContextMenu()
+    if (type === 'folder') {
+      await deleteFolder(id)
+      const folder = folders.find(f => f.id === id)
+      if (folder) {
+        setNotes(prev => {
+          const next = { ...prev }
+          folder.noteIds.forEach(nid => { const { [nid]: _, ...rest } = next; Object.assign(next, rest) })
+          return Object.fromEntries(Object.entries(next).filter(([k]) => !folder.noteIds.includes(k)))
+        })
+        setOpenTabs(prev => prev.filter(t => !folder.noteIds.includes(t)))
+        setFolders(prev => prev.filter(f => f.id !== id))
+      }
+    } else {
+      await deleteNote(id)
+      setNotes(prev => Object.fromEntries(Object.entries(prev).filter(([k]) => k !== id)))
+      setFolders(prev => prev.map(f => ({ ...f, noteIds: f.noteIds.filter(n => n !== id) })))
+      setOpenTabs(prev => prev.filter(t => t !== id))
+      if (activeTab === id) setActiveTab('')
+    }
+  }, [folders, activeTab, closeContextMenu])
+
+  const duplicateNote = useCallback(async (id: string) => {
+    const note = notes[id]
+    if (!note) return
+
+    // Ensure we use a folderId that actually exists in the DB
+    const validFolderIds = new Set(folders.map(f => f.id))
+    const folderId = validFolderIds.has(note.folder) ? note.folder : folders[0]?.id
+    if (!folderId) return
+
+    const saved = await createNote(`${note.title} (copy)`, note.content, folderId, note.pdfUrl)
+    const newNote: Note = {
+      id: saved.id, title: saved.title, content: saved.content,
+      folder: saved.folderId, updatedAt: 'Just now',
+      type: note.pdfUrl ? 'document' : 'note',
+      pdfUrl: note.pdfUrl,
+    }
+    setNotes(prev => ({ ...prev, [saved.id]: newNote }))
+    setFolders(prev => prev.map(f => f.id === folderId ? { ...f, noteIds: [...f.noteIds, saved.id] } : f))
+    closeContextMenu()
+  }, [notes, folders, closeContextMenu])
+
+  const addFolder = useCallback(async () => {
+    const folder = await createFolder('New Folder')
     setFolders(prev => [...prev, { id: folder.id, name: folder.name, noteIds: [], expanded: true }])
     setAddMenuOpen(false)
   }, [])
+
 
   // Close add menu when clicking outside
   useEffect(() => {
@@ -449,6 +492,57 @@ export default function NoteApp() {
 
       {/* Grain texture overlay — SVG data URI, must stay in CSS */}
       <div className="grain-overlay fixed inset-0 pointer-events-none z-[9999] opacity-40" aria-hidden="true" />
+
+      {/* Context menu backdrop + menu */}
+      {contextMenu && (
+        <>
+          <div className="fixed inset-0 z-[9998]" onClick={closeContextMenu} />
+          <div
+            className="fixed z-[9999] w-44 bg-[var(--paper-elevated)] border border-[var(--border-strong)] rounded-lg overflow-hidden shadow-[0_4px_24px_rgba(0,0,0,0.12),0_1px_4px_rgba(0,0,0,0.08)]"
+            style={{ top: contextMenu.y, left: contextMenu.x }}
+          >
+            <ContextMenuItem label="Rename" onClick={() => {
+              const currentName = contextMenu.type === 'folder'
+                ? (folders.find(f => f.id === contextMenu.id)?.name ?? '')
+                : (notes[contextMenu.id]?.title ?? '')
+              closeContextMenu()
+              startRename(contextMenu.id, currentName)
+            }} />
+            <div className="h-px bg-[var(--border-strong)] mx-1 my-0.5" />
+            <ContextMenuItem label="Copy" disabled={contextMenu.type === 'folder'} onClick={() => {
+              setClipboard({ note: notes[contextMenu.id], action: 'copy' })
+              closeContextMenu()
+            }} />
+            <ContextMenuItem label="Cut" disabled={contextMenu.type === 'folder'} onClick={() => {
+              setClipboard({ note: notes[contextMenu.id], action: 'cut' })
+              closeContextMenu()
+            }} />
+            <ContextMenuItem label="Paste" disabled={!clipboard} onClick={async () => {
+              if (!clipboard) return
+              const folderId = contextMenu.type === 'folder' ? contextMenu.id : notes[contextMenu.id]?.folder
+              if (!folderId) return
+              closeContextMenu()
+              const saved = await createNote(clipboard.note.title, clipboard.note.content, folderId)
+              const newNote: Note = { id: saved.id, title: saved.title, content: saved.content, folder: saved.folderId, updatedAt: 'Just now', type: 'note' }
+              setNotes(prev => ({ ...prev, [saved.id]: newNote }))
+              setFolders(prev => prev.map(f => f.id === folderId ? { ...f, noteIds: [...f.noteIds, saved.id] } : f))
+              if (clipboard.action === 'cut') {
+                const cutId = clipboard.note.id
+                await deleteNote(cutId)
+                setNotes(prev => Object.fromEntries(Object.entries(prev).filter(([k]) => k !== cutId)))
+                setFolders(prev => prev.map(f => ({ ...f, noteIds: f.noteIds.filter(n => n !== cutId) })))
+                setOpenTabs(prev => prev.filter(t => t !== cutId))
+                setClipboard(null)
+              }
+            }} />
+            <ContextMenuItem label="Duplicate" disabled={contextMenu.type === 'folder'} onClick={() => {
+              duplicateNote(contextMenu.id)
+            }} />
+            <div className="h-px bg-[var(--border-strong)] mx-1 my-0.5" />
+            <ContextMenuItem label="Delete" danger onClick={() => deleteItem(contextMenu.id, contextMenu.type)} />
+          </div>
+        </>
+      )}
 
       {/* App shell */}
       <div
@@ -563,6 +657,7 @@ export default function NoteApp() {
                     className="flex items-center gap-1.5 px-2 py-[5px] rounded-md text-[12.5px] font-medium text-[var(--sidebar-text)] cursor-pointer select-none transition-colors duration-100 hover:bg-[var(--sidebar-hover)] hover:text-[var(--sidebar-text-active)]"
                     onClick={() => toggleFolder(folder.id)}
                     onDoubleClick={(e) => { e.stopPropagation(); startRename(folder.id, folder.name) }}
+                    onContextMenu={(e) => openContextMenu(e, folder.id, 'folder')}
                   >
                     <span className="flex text-[var(--sidebar-text-muted)] -mr-0.5"><ChevronIcon down={folder.expanded} /></span>
                     <FolderIcon open={folder.expanded} />
@@ -596,6 +691,7 @@ export default function NoteApp() {
                       }`}
                       onClick={() => openNote(note.id)}
                       onDoubleClick={(e) => { e.stopPropagation(); startRename(note.id, note.title) }}
+                      onContextMenu={(e) => openContextMenu(e, note.id, 'note')}
                     >
                       <span className="shrink-0 flex"><NoteIcon /></span>
                       {renamingId === note.id ? (

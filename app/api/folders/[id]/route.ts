@@ -12,3 +12,12 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
 
   return NextResponse.json(folder)
 }
+
+export async function DELETE(_request: Request, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params
+
+  await prisma.note.deleteMany({ where: { folderId: id } })
+  await prisma.folder.delete({ where: { id } })
+
+  return new NextResponse(null, { status: 204 })
+}

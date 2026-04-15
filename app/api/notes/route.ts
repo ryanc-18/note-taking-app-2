@@ -4,7 +4,7 @@ import { prisma } from '@/lib/prisma'
 const DEV_USER_EMAIL = 'dev@local.com'
 
 export async function POST(request: Request) {
-  const { title, content, folderId } = await request.json()
+  const { title, content, folderId, pdfUrl } = await request.json()
 
   const user = await prisma.user.findUnique({ where: { email: DEV_USER_EMAIL } })
   if (!user) {
@@ -15,6 +15,7 @@ export async function POST(request: Request) {
     data: {
       title,
       content: content ?? '',
+      pdfUrl: pdfUrl ?? null,
       userId: user.id,
       folderId,
     },
