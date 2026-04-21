@@ -21,8 +21,11 @@ type Props = {
   onToggleFolder: (id: string) => void
   onAddNote: () => void
   onAddFolder: () => void
+  selectedFolderId: string | null
+  onSelectFolder: (id: string) => void
   onContextMenu: (e: React.MouseEvent, id: string, type: 'folder' | 'note') => void
   onStartRename: (id: string, currentName: string) => void
+  onMoveNote: (noteId: string, targetFolderId: string) => void
   fileInputRef: React.RefObject<HTMLInputElement | null>
   onFileSelected: (e: React.ChangeEvent<HTMLInputElement>) => void
 }
@@ -32,12 +35,14 @@ export default function Sidebar({
   renamingId, renameValue, onRenameValueChange, onCommitRename, onCancelRename,
   searchQuery, onSearchChange, filteredNotes,
   onOpenNote, onToggleFolder, onAddNote, onAddFolder,
-  onContextMenu, onStartRename,
+  selectedFolderId, onSelectFolder,
+  onContextMenu, onStartRename, onMoveNote,
   fileInputRef, onFileSelected,
 }: Props) {
   const addMenuRef = useRef<HTMLDivElement>(null)
   const renameInputRef = useRef<HTMLInputElement>(null)
   const [addMenuOpen, setAddMenuOpen] = useState(false)
+  const [dragOverFolderId, setDragOverFolderId] = useState<string | null>(null)
 
   useEffect(() => {
     if (renamingId) setTimeout(() => renameInputRef.current?.select(), 0)
@@ -154,10 +159,22 @@ export default function Sidebar({
           return (
             <div key={folder.id}>
               <div
-                className="flex items-center gap-1.5 px-2 py-[5px] rounded-md text-[12.5px] font-medium text-[var(--sidebar-text)] cursor-pointer select-none transition-colors duration-100 hover:bg-[var(--sidebar-hover)] hover:text-[var(--sidebar-text-active)]"
-                onClick={() => onToggleFolder(folder.id)}
+                className={`flex items-center gap-1.5 px-2 py-[5px] rounded-md text-[12.5px] font-medium cursor-pointer select-none transition-colors duration-100 hover:bg-[var(--sidebar-hover)] hover:text-[var(--sidebar-text-active)] ${
+                  dragOverFolderId === folder.id ? 'bg-[var(--sidebar-active)] ring-1 ring-[var(--accent)]' :
+                  selectedFolderId === folder.id ? 'bg-[var(--sidebar-active)] text-[var(--sidebar-text-active)]' :
+                  'text-[var(--sidebar-text)]'
+                }`}
+                onClick={() => { onToggleFolder(folder.id); onSelectFolder(folder.id) }}
                 onDoubleClick={(e) => { e.stopPropagation(); onStartRename(folder.id, folder.name) }}
                 onContextMenu={(e) => onContextMenu(e, folder.id, 'folder')}
+                onDragOver={(e) => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; setDragOverFolderId(folder.id) }}
+                onDragLeave={() => setDragOverFolderId(null)}
+                onDrop={(e) => {
+                  e.preventDefault()
+                  const noteId = e.dataTransfer.getData('noteId')
+                  if (noteId) onMoveNote(noteId, folder.id)
+                  setDragOverFolderId(null)
+                }}
               >
                 <span className="flex text-[var(--sidebar-text-muted)] -mr-0.5"><ChevronIcon down={folder.expanded} /></span>
                 <FolderIcon open={folder.expanded} />
@@ -192,6 +209,11 @@ export default function Sidebar({
                   onClick={() => onOpenNote(note.id)}
                   onDoubleClick={(e) => { e.stopPropagation(); onStartRename(note.id, note.title) }}
                   onContextMenu={(e) => onContextMenu(e, note.id, 'note')}
+                  draggable
+                  onDragStart={(e) => {
+                    e.dataTransfer.setData('noteId', note.id)
+                    e.dataTransfer.effectAllowed = 'move'
+                  }}
                 >
                   <span className="shrink-0 flex"><NoteIcon /></span>
                   {renamingId === note.id ? (

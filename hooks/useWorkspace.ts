@@ -8,24 +8,12 @@ import {
   createNote,
   renameNote,
   deleteNote,
+  moveNote,
   uploadPdf,
 } from '@/lib/api'
 
-// Hardcoded test document — will be removed once we have proper seeding
-const INITIAL_NOTES: Record<string, Note> = {
-  d1: {
-    id: 'd1',
-    title: 'Test Document',
-    content: '',
-    folder: 'f1',
-    updatedAt: 'Today',
-    type: 'document',
-    pdfUrl: '/test-document.pdf',
-  },
-}
-
 export function useWorkspace() {
-  const [notes, setNotes] = useState<Record<string, Note>>(INITIAL_NOTES)
+  const [notes, setNotes] = useState<Record<string, Note>>({})
   const [folders, setFolders] = useState<Folder[]>([])
   const [openTabs, setOpenTabs] = useState<string[]>([])
   const [activeTab, setActiveTab] = useState<string>('')
@@ -37,7 +25,7 @@ export function useWorkspace() {
   useEffect(() => {
     async function loadData() {
       const dbFolders = await getFolders()
-      const notesMap: Record<string, Note> = { ...INITIAL_NOTES }
+      const notesMap: Record<string, Note> = {}
       const folderList: Folder[] = []
 
       for (const folder of dbFolders) {
@@ -57,7 +45,6 @@ export function useWorkspace() {
         folderList.push({ id: folder.id, name: folder.name, noteIds, expanded: true })
       }
 
-      if (folderList.length > 0) folderList[0].noteIds.push('d1')
       setNotes(notesMap)
       setFolders(folderList)
     }
@@ -85,8 +72,7 @@ export function useWorkspace() {
   // ── Notes ──────────────────────────────────────────────────────────────────
 
   // Called by the component when the user picks a file from the OS picker
-  const onFileSelected = useCallback(async (file: File) => {
-    const folderId = folders[0]?.id ?? ''
+  const onFileSelected = useCallback(async (file: File, folderId: string) => {
     if (!folderId) return
 
     // Show a temp entry immediately so the UI doesn't feel frozen
@@ -176,6 +162,17 @@ export function useWorkspace() {
     }
   }, [])
 
+  const moveNoteToFolder = useCallback(async (noteId: string, targetFolderId: string) => {
+    await moveNote(noteId, targetFolderId)
+
+    setNotes(prev => ({ ...prev, [noteId]: { ...prev[noteId], folder: targetFolderId } }))
+    setFolders(prev => prev.map(f => {
+      if (f.noteIds.includes(noteId)) return { ...f, noteIds: f.noteIds.filter(id => id !== noteId) }
+      if (f.id === targetFolderId) return { ...f, noteIds: [...f.noteIds, noteId] }
+      return f
+    }))
+  }, [])
+
   const removeNote = useCallback(async (id: string) => {
     await deleteNote(id)
     setNotes(prev => Object.fromEntries(Object.entries(prev).filter(([k]) => k !== id)))
@@ -221,6 +218,7 @@ export function useWorkspace() {
     duplicateNote,
     pasteNote,
     removeNote,
+    moveNoteToFolder,
     // Folder operations
     toggleFolder,
     addFolder,

@@ -131,11 +131,12 @@ export default function NoteApp() {
   const {
     notes, folders, openTabs, activeTab, activeNote,
     openNote, closeTab,
-    onFileSelected, commitRename, duplicateNote, pasteNote, removeNote,
+    onFileSelected, commitRename, duplicateNote, pasteNote, removeNote, moveNoteToFolder,
     toggleFolder, addFolder, removeFolder,
   } = useWorkspace()
 
   const [searchQuery, setSearchQuery] = useState('')
+  const [selectedFolderId, setSelectedFolderId] = useState<string | null>(null)
   const [renamingId, setRenamingId] = useState<string | null>(null)
   const [renameValue, setRenameValue] = useState('')
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number; id: string; type: 'folder' | 'note' } | null>(null)
@@ -145,9 +146,10 @@ export default function NoteApp() {
   const handleFileSelected = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
-    await onFileSelected(file)
+    const folderId = selectedFolderId ?? folders[0]?.id ?? ''
+    await onFileSelected(file, folderId)
     e.target.value = ''
-  }, [onFileSelected])
+  }, [onFileSelected, selectedFolderId, folders])
 
   const startRename = useCallback((id: string, currentName: string) => {
     setRenamingId(id)
@@ -221,8 +223,11 @@ export default function NoteApp() {
           onToggleFolder={toggleFolder}
           onAddNote={() => fileInputRef.current?.click()}
           onAddFolder={addFolder}
+          selectedFolderId={selectedFolderId}
+          onSelectFolder={setSelectedFolderId}
           onContextMenu={openContextMenu}
           onStartRename={startRename}
+          onMoveNote={moveNoteToFolder}
           fileInputRef={fileInputRef}
           onFileSelected={handleFileSelected}
         />

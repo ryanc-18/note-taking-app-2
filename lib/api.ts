@@ -49,6 +49,16 @@ export async function createNote(title: string, content: string, folderId: strin
   return res.json()
 }
 
+export async function moveNote(id: string, folderId: string) {
+  const res = await fetch(`/api/notes/${id}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ folderId }),
+  })
+  if (!res.ok) throw new Error('Failed to move note')
+  return res.json()
+}
+
 export async function renameNote(id: string, title: string) {
   const res = await fetch(`/api/notes/${id}`, {
     method: 'PATCH',
