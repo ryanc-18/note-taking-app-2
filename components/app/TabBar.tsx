@@ -1,5 +1,5 @@
 import type { Note } from '@/types'
-import { DocIcon, NoteIcon, CloseIcon } from './icons'
+import { DocIcon, NoteIcon, CloseIcon } from '@/components/ui/icons'
 
 type Props = {
   openTabs: string[]

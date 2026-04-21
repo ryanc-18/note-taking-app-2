@@ -3,7 +3,7 @@ import type { Note, Folder } from '@/types'
 import {
   SearchIcon, FolderIcon, NoteIcon, ChevronIcon,
   PlusIcon, HomeIcon, SettingsIcon,
-} from './icons'
+} from '@/components/ui/icons'
 
 type Props = {
   notes: Record<string, Note>
