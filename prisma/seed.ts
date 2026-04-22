@@ -18,7 +18,7 @@ async function main() {
   console.log('Dev user created:', user)
 
   // Create some starter folders
-  const personalFolder = await prisma.folder.upsert({
+  await prisma.folder.upsert({
     where: { id: 'f-personal' },
     update: {},
     create: {
@@ -35,19 +35,6 @@ async function main() {
       id: 'f-work',
       name: 'Work',
       userId: user.id,
-    },
-  })
-
-  // Create a starter note
-  await prisma.note.upsert({
-    where: { id: 'n-getting-started' },
-    update: {},
-    create: {
-      id: 'n-getting-started',
-      title: 'Getting Started',
-      content: '# Getting Started\n\nWelcome to your workspace.',
-      userId: user.id,
-      folderId: personalFolder.id,
     },
   })
 

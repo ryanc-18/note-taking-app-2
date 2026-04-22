@@ -2,6 +2,8 @@
 
 import { useEffect, useRef, useState, useCallback } from 'react'
 import type { PDFDocumentProxy } from 'pdfjs-dist'
+import { MinimalDotMarker } from '@/components/ui/annotationMarker'
+import type { Annotation } from '@/types'
 
 const BASE_RENDER_SCALE = 2
 const PAGE_GAP = 16
@@ -18,6 +20,10 @@ export default function CanvasView({ pdfUrl }: { pdfUrl: string }) {
   const [minZoom, setMinZoom] = useState(0.5)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [annotations, setAnnotations] = useState<Annotation[]>([])
+  const annotationsRef = useRef<Annotation[]>([])
+  const [activeAnnotationId, setActiveAnnotationId] = useState<string | null>(null)
+  const undoStackRef = useRef<Annotation[]>([])
 
   // ── Step 1: load PDF and collect page dimensions ───────────────────────────
   // Does NOT render yet — just gets dims so React can mount the canvases
@@ -107,6 +113,38 @@ export default function CanvasView({ pdfUrl }: { pdfUrl: string }) {
     return () => ro.disconnect()
   }, [pageDims])
 
+  // Keep annotationsRef in sync so keyboard handler can read current value without stale closures
+  useEffect(() => { annotationsRef.current = annotations }, [annotations])
+
+
+  // ── Keyboard: Backspace to delete active annotation, Cmd/Ctrl+Z to undo ───
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === 'Backspace' && activeAnnotationId) {
+        const deleted = annotationsRef.current.find(a => a.id === activeAnnotationId)
+        if (deleted) undoStackRef.current = [...undoStackRef.current, deleted]
+        const next = annotationsRef.current.filter(a => a.id !== activeAnnotationId)
+        annotationsRef.current = next
+        setAnnotations(next)
+        setActiveAnnotationId(null)
+      }
+
+      if (e.key === 'z' && (e.metaKey || e.ctrlKey)) {
+        e.preventDefault()
+        if (undoStackRef.current.length === 0) return
+        const restored = undoStackRef.current[undoStackRef.current.length - 1]
+        undoStackRef.current = undoStackRef.current.slice(0, -1)
+        const next = [...annotationsRef.current, restored]
+        annotationsRef.current = next
+        setAnnotations(next)
+        setActiveAnnotationId(restored.id)
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [activeAnnotationId])
+
   // ── Zoom via scroll wheel ──────────────────────────────────────────────────
   const handleWheel = useCallback(
     (e: WheelEvent) => {
@@ -129,6 +167,29 @@ export default function CanvasView({ pdfUrl }: { pdfUrl: string }) {
     el.addEventListener('wheel', handleWheel, { passive: false })
     return () => el.removeEventListener('wheel', handleWheel)
   }, [handleWheel])
+
+  // ── Single click: deselect active annotation ──────────────────────────────
+  const handlePageClick = useCallback(() => {
+    setActiveAnnotationId(null)
+  }, [])
+
+  // ── Double click: place a new annotation ──────────────────────────────────
+  const handlePageDoubleClick = useCallback((e: React.MouseEvent<HTMLDivElement>, pageIndex: number) => {
+    const rect = e.currentTarget.getBoundingClientRect()
+    const x = ((e.clientX - rect.left) / rect.width) * 100
+    const y = ((e.clientY - rect.top) / rect.height) * 100
+    const newAnnotation: Annotation = {
+      id: `annotation-${Date.now()}`,
+      page: pageIndex,
+      x,
+      y,
+      number: annotationsRef.current.length + 1,
+    }
+    const next = [...annotationsRef.current, newAnnotation]
+    annotationsRef.current = next
+    setAnnotations(next)
+    setActiveAnnotationId(newAnnotation.id)
+  }, [])
 
   // ── Derived values ─────────────────────────────────────────────────────────
   const effectiveZoom = zoom ?? minZoom
@@ -202,6 +263,8 @@ export default function CanvasView({ pdfUrl }: { pdfUrl: string }) {
             {naturalPages.map((page, i) => (
               <div
                 key={i}
+                onClick={handlePageClick}
+                onDoubleClick={(e) => handlePageDoubleClick(e, i)}
                 style={{
                   width: `${page.width * effectiveZoom}px`,
                   height: `${page.height * effectiveZoom}px`,
@@ -210,12 +273,37 @@ export default function CanvasView({ pdfUrl }: { pdfUrl: string }) {
                   borderRadius: '2px',
                   overflow: 'hidden',
                   position: 'relative',
+                  cursor: 'default',
                 }}
               >
                 <canvas
                   ref={el => { canvasRefs.current[i] = el }}
                   style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', display: 'block' }}
                 />
+
+                {/* Annotation markers for this page */}
+                {annotations
+                  .filter(a => a.page === i)
+                  .map(a => (
+                    <div
+                      key={a.id}
+                      style={{
+                        position: 'absolute',
+                        left: `${a.x}%`,
+                        top: `${a.y}%`,
+                        transform: 'translate(-50%, -50%)',
+                        zIndex: 10,
+                      }}
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <MinimalDotMarker
+                        number={a.number}
+                        isActive={activeAnnotationId === a.id}
+                        isSpawning={activeAnnotationId === a.id}
+                        onClick={() => setActiveAnnotationId(prev => prev === a.id ? null : a.id)}
+                      />
+                    </div>
+                  ))}
               </div>
             ))}
           </div>
