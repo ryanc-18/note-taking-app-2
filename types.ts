@@ -21,4 +21,5 @@ export type Folder = {
   name: string
   noteIds: string[]
   expanded: boolean
+  parentId: string | null
 }

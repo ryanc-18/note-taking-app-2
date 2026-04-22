@@ -5,6 +5,7 @@ import {
   createFolder,
   renameFolder,
   deleteFolder,
+  moveFolderToFolder,
   createNote,
   renameNote,
   deleteNote,
@@ -42,7 +43,7 @@ export function useWorkspace() {
           }
           noteIds.push(note.id)
         }
-        folderList.push({ id: folder.id, name: folder.name, noteIds, expanded: true })
+        folderList.push({ id: folder.id, name: folder.name, noteIds, expanded: true, parentId: folder.parentId ?? null })
       }
 
       setNotes(notesMap)
@@ -187,9 +188,21 @@ export function useWorkspace() {
     setFolders(prev => prev.map(f => f.id === folderId ? { ...f, expanded: !f.expanded } : f))
   }, [])
 
-  const addFolder = useCallback(async () => {
-    const folder = await createFolder('New Folder')
-    setFolders(prev => [...prev, { id: folder.id, name: folder.name, noteIds: [], expanded: true }])
+  const addFolder = useCallback(async (parentId?: string) => {
+    const folder = await createFolder('New Folder', parentId)
+    setFolders(prev => [...prev, { id: folder.id, name: folder.name, noteIds: [], expanded: true, parentId: parentId ?? null }])
+  }, [])
+
+  const moveFolderTo = useCallback(async (folderId: string, targetParentId: string | null, allFolders: Folder[]) => {
+    // Prevent dropping into own descendant
+    function isDescendant(parentId: string, candidateId: string): boolean {
+      const children = allFolders.filter(f => f.parentId === parentId)
+      return children.some(c => c.id === candidateId || isDescendant(c.id, candidateId))
+    }
+    if (targetParentId && (targetParentId === folderId || isDescendant(folderId, targetParentId))) return
+
+    await moveFolderToFolder(folderId, targetParentId)
+    setFolders(prev => prev.map(f => f.id === folderId ? { ...f, parentId: targetParentId } : f))
   }, [])
 
   const removeFolder = useCallback(async (id: string) => {
@@ -223,5 +236,6 @@ export function useWorkspace() {
     toggleFolder,
     addFolder,
     removeFolder,
+    moveFolderTo,
   }
 }

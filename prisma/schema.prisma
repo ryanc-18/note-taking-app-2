@@ -24,7 +24,10 @@ model Folder {
   name      String
   createdAt DateTime @default(now())
   userId    String
+  parentId  String?
   user      User     @relation(fields: [userId], references: [id])
+  parent    Folder?  @relation("FolderChildren", fields: [parentId], references: [id])
+  children  Folder[] @relation("FolderChildren")
   notes     Note[]
 }
 
