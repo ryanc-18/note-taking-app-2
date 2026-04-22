@@ -12,11 +12,11 @@ export async function getFolders() {
   return res.json()
 }
 
-export async function createFolder(name: string) {
+export async function createFolder(name: string, parentId?: string) {
   const res = await fetch('/api/folders', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ name }),
+    body: JSON.stringify({ name, parentId }),
   })
   if (!res.ok) throw new Error('Failed to create folder')
   return res.json()
@@ -29,6 +29,16 @@ export async function renameFolder(id: string, name: string) {
     body: JSON.stringify({ name }),
   })
   if (!res.ok) throw new Error('Failed to rename folder')
+  return res.json()
+}
+
+export async function moveFolderToFolder(id: string, parentId: string | null) {
+  const res = await fetch(`/api/folders/${id}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ parentId }),
+  })
+  if (!res.ok) throw new Error('Failed to move folder')
   return res.json()
 }
 

@@ -681,7 +681,8 @@ export const FolderScalarFieldEnum = {
   id: 'id',
   name: 'name',
   createdAt: 'createdAt',
-  userId: 'userId'
+  userId: 'userId',
+  parentId: 'parentId'
 } as const
 
 export type FolderScalarFieldEnum = (typeof FolderScalarFieldEnum)[keyof typeof FolderScalarFieldEnum]

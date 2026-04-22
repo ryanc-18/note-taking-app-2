@@ -132,7 +132,7 @@ export default function NoteApp() {
     notes, folders, openTabs, activeTab, activeNote,
     openNote, closeTab,
     onFileSelected, commitRename, duplicateNote, pasteNote, removeNote, moveNoteToFolder,
-    toggleFolder, addFolder, removeFolder,
+    toggleFolder, addFolder, removeFolder, moveFolderTo,
   } = useWorkspace()
 
   const [searchQuery, setSearchQuery] = useState('')
@@ -222,12 +222,13 @@ export default function NoteApp() {
           onOpenNote={openNote}
           onToggleFolder={toggleFolder}
           onAddNote={() => fileInputRef.current?.click()}
-          onAddFolder={addFolder}
+          onAddFolder={() => addFolder(selectedFolderId ?? undefined)}
           selectedFolderId={selectedFolderId}
           onSelectFolder={setSelectedFolderId}
           onContextMenu={openContextMenu}
           onStartRename={startRename}
           onMoveNote={moveNoteToFolder}
+          onMoveFolder={(folderId, targetParentId) => moveFolderTo(folderId, targetParentId, folders)}
           fileInputRef={fileInputRef}
           onFileSelected={handleFileSelected}
         />
