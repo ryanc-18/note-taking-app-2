@@ -32,14 +32,27 @@ model Folder {
 }
 
 model Note {
+  id          String       @id @default(cuid())
+  title       String
+  content     String       @default("")
+  pdfUrl      String?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  userId      String
+  folderId    String
+  user        User         @relation(fields: [userId], references: [id])
+  folder      Folder       @relation(fields: [folderId], references: [id])
+  annotations Annotation[]
+}
+
+model Annotation {
   id        String   @id @default(cuid())
-  title     String
-  content   String   @default("")
-  pdfUrl    String?
+  page      Int
+  x         Float
+  y         Float
+  number    Int
+  text      String   @default("")
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  userId    String
-  folderId  String
-  user      User     @relation(fields: [userId], references: [id])
-  folder    Folder   @relation(fields: [folderId], references: [id])
+  noteId    String
+  note      Note     @relation(fields: [noteId], references: [id])
 }

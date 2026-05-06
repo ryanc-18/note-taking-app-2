@@ -7,7 +7,7 @@ type Props = {
 
 export default function NoteEditor({ activeNote }: Props) {
   if (activeNote?.type === 'document') {
-    return <CanvasView pdfUrl={activeNote.pdfUrl!} />
+    return <CanvasView pdfUrl={activeNote.pdfUrl!} noteId={activeNote.id} />
   }
 
   return (

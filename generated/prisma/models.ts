@@ -11,4 +11,5 @@
 export type * from './models/User'
 export type * from './models/Folder'
 export type * from './models/Note'
+export type * from './models/Annotation'
 export type * from './commonInputTypes'

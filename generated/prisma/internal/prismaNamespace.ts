@@ -386,7 +386,8 @@ type FieldRefInputType<Model, FieldType> = Model extends never ? never : FieldRe
 export const ModelName = {
   User: 'User',
   Folder: 'Folder',
-  Note: 'Note'
+  Note: 'Note',
+  Annotation: 'Annotation'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -402,7 +403,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "folder" | "note"
+    modelProps: "user" | "folder" | "note" | "annotation"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -628,6 +629,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    Annotation: {
+      payload: Prisma.$AnnotationPayload<ExtArgs>
+      fields: Prisma.AnnotationFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.AnnotationFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AnnotationPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.AnnotationFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AnnotationPayload>
+        }
+        findFirst: {
+          args: Prisma.AnnotationFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AnnotationPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.AnnotationFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AnnotationPayload>
+        }
+        findMany: {
+          args: Prisma.AnnotationFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AnnotationPayload>[]
+        }
+        create: {
+          args: Prisma.AnnotationCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AnnotationPayload>
+        }
+        createMany: {
+          args: Prisma.AnnotationCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.AnnotationCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AnnotationPayload>[]
+        }
+        delete: {
+          args: Prisma.AnnotationDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AnnotationPayload>
+        }
+        update: {
+          args: Prisma.AnnotationUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AnnotationPayload>
+        }
+        deleteMany: {
+          args: Prisma.AnnotationDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.AnnotationUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.AnnotationUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AnnotationPayload>[]
+        }
+        upsert: {
+          args: Prisma.AnnotationUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AnnotationPayload>
+        }
+        aggregate: {
+          args: Prisma.AnnotationAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateAnnotation>
+        }
+        groupBy: {
+          args: Prisma.AnnotationGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AnnotationGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.AnnotationCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AnnotationCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -702,6 +777,20 @@ export const NoteScalarFieldEnum = {
 export type NoteScalarFieldEnum = (typeof NoteScalarFieldEnum)[keyof typeof NoteScalarFieldEnum]
 
 
+export const AnnotationScalarFieldEnum = {
+  id: 'id',
+  page: 'page',
+  x: 'x',
+  y: 'y',
+  number: 'number',
+  text: 'text',
+  createdAt: 'createdAt',
+  noteId: 'noteId'
+} as const
+
+export type AnnotationScalarFieldEnum = (typeof AnnotationScalarFieldEnum)[keyof typeof AnnotationScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -771,6 +860,20 @@ export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'In
  * Reference to a field of type 'Int[]'
  */
 export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
+    
+
+
+/**
+ * Reference to a field of type 'Float'
+ */
+export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
+    
+
+
+/**
+ * Reference to a field of type 'Float[]'
+ */
+export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>
     
 
 /**
@@ -871,6 +974,7 @@ export type GlobalOmitConfig = {
   user?: Prisma.UserOmit
   folder?: Prisma.FolderOmit
   note?: Prisma.NoteOmit
+  annotation?: Prisma.AnnotationOmit
 }
 
 /* Types for Logging */

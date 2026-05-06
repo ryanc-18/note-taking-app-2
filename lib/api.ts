@@ -84,6 +84,39 @@ export async function deleteNote(id: string) {
   if (!res.ok) throw new Error('Failed to delete note')
 }
 
+// ── Annotations ───────────────────────────────────────────────────────────────
+
+export async function getAnnotations(noteId: string) {
+  const res = await fetch(`/api/notes/${noteId}/annotations`)
+  if (!res.ok) throw new Error('Failed to load annotations')
+  return res.json()
+}
+
+export async function createAnnotation(noteId: string, annotation: { page: number; x: number; y: number; number: number; text: string }) {
+  const res = await fetch(`/api/notes/${noteId}/annotations`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(annotation),
+  })
+  if (!res.ok) throw new Error('Failed to create annotation')
+  return res.json()
+}
+
+export async function updateAnnotation(id: string, text: string) {
+  const res = await fetch(`/api/annotations/${id}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ text }),
+  })
+  if (!res.ok) throw new Error('Failed to update annotation')
+  return res.json()
+}
+
+export async function deleteAnnotation(id: string) {
+  const res = await fetch(`/api/annotations/${id}`, { method: 'DELETE' })
+  if (!res.ok) throw new Error('Failed to delete annotation')
+}
+
 // ── File Upload ───────────────────────────────────────────────────────────────
 
 export async function uploadPdf(file: File, folderId: string) {

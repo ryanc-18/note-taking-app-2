@@ -208,6 +208,7 @@ export type NoteWhereInput = {
   folderId?: Prisma.StringFilter<"Note"> | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   folder?: Prisma.XOR<Prisma.FolderScalarRelationFilter, Prisma.FolderWhereInput>
+  annotations?: Prisma.AnnotationListRelationFilter
 }
 
 export type NoteOrderByWithRelationInput = {
@@ -221,6 +222,7 @@ export type NoteOrderByWithRelationInput = {
   folderId?: Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
   folder?: Prisma.FolderOrderByWithRelationInput
+  annotations?: Prisma.AnnotationOrderByRelationAggregateInput
 }
 
 export type NoteWhereUniqueInput = Prisma.AtLeast<{
@@ -237,6 +239,7 @@ export type NoteWhereUniqueInput = Prisma.AtLeast<{
   folderId?: Prisma.StringFilter<"Note"> | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   folder?: Prisma.XOR<Prisma.FolderScalarRelationFilter, Prisma.FolderWhereInput>
+  annotations?: Prisma.AnnotationListRelationFilter
 }, "id">
 
 export type NoteOrderByWithAggregationInput = {
@@ -276,6 +279,7 @@ export type NoteCreateInput = {
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutNotesInput
   folder: Prisma.FolderCreateNestedOneWithoutNotesInput
+  annotations?: Prisma.AnnotationCreateNestedManyWithoutNoteInput
 }
 
 export type NoteUncheckedCreateInput = {
@@ -287,6 +291,7 @@ export type NoteUncheckedCreateInput = {
   updatedAt?: Date | string
   userId: string
   folderId: string
+  annotations?: Prisma.AnnotationUncheckedCreateNestedManyWithoutNoteInput
 }
 
 export type NoteUpdateInput = {
@@ -298,6 +303,7 @@ export type NoteUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutNotesNestedInput
   folder?: Prisma.FolderUpdateOneRequiredWithoutNotesNestedInput
+  annotations?: Prisma.AnnotationUpdateManyWithoutNoteNestedInput
 }
 
 export type NoteUncheckedUpdateInput = {
@@ -309,6 +315,7 @@ export type NoteUncheckedUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   folderId?: Prisma.StringFieldUpdateOperationsInput | string
+  annotations?: Prisma.AnnotationUncheckedUpdateManyWithoutNoteNestedInput
 }
 
 export type NoteCreateManyInput = {
@@ -383,6 +390,11 @@ export type NoteMinOrderByAggregateInput = {
   updatedAt?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   folderId?: Prisma.SortOrder
+}
+
+export type NoteScalarRelationFilter = {
+  is?: Prisma.NoteWhereInput
+  isNot?: Prisma.NoteWhereInput
 }
 
 export type NoteCreateNestedManyWithoutUserInput = {
@@ -469,6 +481,20 @@ export type NoteUncheckedUpdateManyWithoutFolderNestedInput = {
   deleteMany?: Prisma.NoteScalarWhereInput | Prisma.NoteScalarWhereInput[]
 }
 
+export type NoteCreateNestedOneWithoutAnnotationsInput = {
+  create?: Prisma.XOR<Prisma.NoteCreateWithoutAnnotationsInput, Prisma.NoteUncheckedCreateWithoutAnnotationsInput>
+  connectOrCreate?: Prisma.NoteCreateOrConnectWithoutAnnotationsInput
+  connect?: Prisma.NoteWhereUniqueInput
+}
+
+export type NoteUpdateOneRequiredWithoutAnnotationsNestedInput = {
+  create?: Prisma.XOR<Prisma.NoteCreateWithoutAnnotationsInput, Prisma.NoteUncheckedCreateWithoutAnnotationsInput>
+  connectOrCreate?: Prisma.NoteCreateOrConnectWithoutAnnotationsInput
+  upsert?: Prisma.NoteUpsertWithoutAnnotationsInput
+  connect?: Prisma.NoteWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.NoteUpdateToOneWithWhereWithoutAnnotationsInput, Prisma.NoteUpdateWithoutAnnotationsInput>, Prisma.NoteUncheckedUpdateWithoutAnnotationsInput>
+}
+
 export type NoteCreateWithoutUserInput = {
   id?: string
   title: string
@@ -477,6 +503,7 @@ export type NoteCreateWithoutUserInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   folder: Prisma.FolderCreateNestedOneWithoutNotesInput
+  annotations?: Prisma.AnnotationCreateNestedManyWithoutNoteInput
 }
 
 export type NoteUncheckedCreateWithoutUserInput = {
@@ -487,6 +514,7 @@ export type NoteUncheckedCreateWithoutUserInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   folderId: string
+  annotations?: Prisma.AnnotationUncheckedCreateNestedManyWithoutNoteInput
 }
 
 export type NoteCreateOrConnectWithoutUserInput = {
@@ -537,6 +565,7 @@ export type NoteCreateWithoutFolderInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutNotesInput
+  annotations?: Prisma.AnnotationCreateNestedManyWithoutNoteInput
 }
 
 export type NoteUncheckedCreateWithoutFolderInput = {
@@ -547,6 +576,7 @@ export type NoteUncheckedCreateWithoutFolderInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   userId: string
+  annotations?: Prisma.AnnotationUncheckedCreateNestedManyWithoutNoteInput
 }
 
 export type NoteCreateOrConnectWithoutFolderInput = {
@@ -575,6 +605,66 @@ export type NoteUpdateManyWithWhereWithoutFolderInput = {
   data: Prisma.XOR<Prisma.NoteUpdateManyMutationInput, Prisma.NoteUncheckedUpdateManyWithoutFolderInput>
 }
 
+export type NoteCreateWithoutAnnotationsInput = {
+  id?: string
+  title: string
+  content?: string
+  pdfUrl?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  user: Prisma.UserCreateNestedOneWithoutNotesInput
+  folder: Prisma.FolderCreateNestedOneWithoutNotesInput
+}
+
+export type NoteUncheckedCreateWithoutAnnotationsInput = {
+  id?: string
+  title: string
+  content?: string
+  pdfUrl?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  userId: string
+  folderId: string
+}
+
+export type NoteCreateOrConnectWithoutAnnotationsInput = {
+  where: Prisma.NoteWhereUniqueInput
+  create: Prisma.XOR<Prisma.NoteCreateWithoutAnnotationsInput, Prisma.NoteUncheckedCreateWithoutAnnotationsInput>
+}
+
+export type NoteUpsertWithoutAnnotationsInput = {
+  update: Prisma.XOR<Prisma.NoteUpdateWithoutAnnotationsInput, Prisma.NoteUncheckedUpdateWithoutAnnotationsInput>
+  create: Prisma.XOR<Prisma.NoteCreateWithoutAnnotationsInput, Prisma.NoteUncheckedCreateWithoutAnnotationsInput>
+  where?: Prisma.NoteWhereInput
+}
+
+export type NoteUpdateToOneWithWhereWithoutAnnotationsInput = {
+  where?: Prisma.NoteWhereInput
+  data: Prisma.XOR<Prisma.NoteUpdateWithoutAnnotationsInput, Prisma.NoteUncheckedUpdateWithoutAnnotationsInput>
+}
+
+export type NoteUpdateWithoutAnnotationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  content?: Prisma.StringFieldUpdateOperationsInput | string
+  pdfUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  user?: Prisma.UserUpdateOneRequiredWithoutNotesNestedInput
+  folder?: Prisma.FolderUpdateOneRequiredWithoutNotesNestedInput
+}
+
+export type NoteUncheckedUpdateWithoutAnnotationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  content?: Prisma.StringFieldUpdateOperationsInput | string
+  pdfUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  folderId?: Prisma.StringFieldUpdateOperationsInput | string
+}
+
 export type NoteCreateManyUserInput = {
   id?: string
   title: string
@@ -593,6 +683,7 @@ export type NoteUpdateWithoutUserInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   folder?: Prisma.FolderUpdateOneRequiredWithoutNotesNestedInput
+  annotations?: Prisma.AnnotationUpdateManyWithoutNoteNestedInput
 }
 
 export type NoteUncheckedUpdateWithoutUserInput = {
@@ -603,6 +694,7 @@ export type NoteUncheckedUpdateWithoutUserInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   folderId?: Prisma.StringFieldUpdateOperationsInput | string
+  annotations?: Prisma.AnnotationUncheckedUpdateManyWithoutNoteNestedInput
 }
 
 export type NoteUncheckedUpdateManyWithoutUserInput = {
@@ -633,6 +725,7 @@ export type NoteUpdateWithoutFolderInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutNotesNestedInput
+  annotations?: Prisma.AnnotationUpdateManyWithoutNoteNestedInput
 }
 
 export type NoteUncheckedUpdateWithoutFolderInput = {
@@ -643,6 +736,7 @@ export type NoteUncheckedUpdateWithoutFolderInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
+  annotations?: Prisma.AnnotationUncheckedUpdateManyWithoutNoteNestedInput
 }
 
 export type NoteUncheckedUpdateManyWithoutFolderInput = {
@@ -656,6 +750,35 @@ export type NoteUncheckedUpdateManyWithoutFolderInput = {
 }
 
 
+/**
+ * Count Type NoteCountOutputType
+ */
+
+export type NoteCountOutputType = {
+  annotations: number
+}
+
+export type NoteCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  annotations?: boolean | NoteCountOutputTypeCountAnnotationsArgs
+}
+
+/**
+ * NoteCountOutputType without action
+ */
+export type NoteCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the NoteCountOutputType
+   */
+  select?: Prisma.NoteCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * NoteCountOutputType without action
+ */
+export type NoteCountOutputTypeCountAnnotationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.AnnotationWhereInput
+}
+
 
 export type NoteSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -668,6 +791,8 @@ export type NoteSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   folderId?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   folder?: boolean | Prisma.FolderDefaultArgs<ExtArgs>
+  annotations?: boolean | Prisma.Note$annotationsArgs<ExtArgs>
+  _count?: boolean | Prisma.NoteCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["note"]>
 
 export type NoteSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -711,6 +836,8 @@ export type NoteOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = run
 export type NoteInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   folder?: boolean | Prisma.FolderDefaultArgs<ExtArgs>
+  annotations?: boolean | Prisma.Note$annotationsArgs<ExtArgs>
+  _count?: boolean | Prisma.NoteCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type NoteIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -726,6 +853,7 @@ export type $NotePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   objects: {
     user: Prisma.$UserPayload<ExtArgs>
     folder: Prisma.$FolderPayload<ExtArgs>
+    annotations: Prisma.$AnnotationPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1132,6 +1260,7 @@ export interface Prisma__NoteClient<T, Null = never, ExtArgs extends runtime.Typ
   readonly [Symbol.toStringTag]: "PrismaPromise"
   user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   folder<T extends Prisma.FolderDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.FolderDefaultArgs<ExtArgs>>): Prisma.Prisma__FolderClient<runtime.Types.Result.GetResult<Prisma.$FolderPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  annotations<T extends Prisma.Note$annotationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Note$annotationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AnnotationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1567,6 +1696,30 @@ export type NoteDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Internal
    * Limit how many Notes to delete.
    */
   limit?: number
+}
+
+/**
+ * Note.annotations
+ */
+export type Note$annotationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Annotation
+   */
+  select?: Prisma.AnnotationSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Annotation
+   */
+  omit?: Prisma.AnnotationOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.AnnotationInclude<ExtArgs> | null
+  where?: Prisma.AnnotationWhereInput
+  orderBy?: Prisma.AnnotationOrderByWithRelationInput | Prisma.AnnotationOrderByWithRelationInput[]
+  cursor?: Prisma.AnnotationWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.AnnotationScalarFieldEnum | Prisma.AnnotationScalarFieldEnum[]
 }
 
 /**
