@@ -53,7 +53,8 @@ export const AnyNull = runtime.AnyNull
 export const ModelName = {
   User: 'User',
   Folder: 'Folder',
-  Note: 'Note'
+  Note: 'Note',
+  Annotation: 'Annotation'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -105,6 +106,20 @@ export const NoteScalarFieldEnum = {
 } as const
 
 export type NoteScalarFieldEnum = (typeof NoteScalarFieldEnum)[keyof typeof NoteScalarFieldEnum]
+
+
+export const AnnotationScalarFieldEnum = {
+  id: 'id',
+  page: 'page',
+  x: 'x',
+  y: 'y',
+  number: 'number',
+  text: 'text',
+  createdAt: 'createdAt',
+  noteId: 'noteId'
+} as const
+
+export type AnnotationScalarFieldEnum = (typeof AnnotationScalarFieldEnum)[keyof typeof AnnotationScalarFieldEnum]
 
 
 export const SortOrder = {

@@ -56,3 +56,8 @@ export type Folder = Prisma.FolderModel
  * 
  */
 export type Note = Prisma.NoteModel
+/**
+ * Model Annotation
+ * 
+ */
+export type Annotation = Prisma.AnnotationModel

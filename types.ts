@@ -14,6 +14,7 @@ export type Annotation = {
   x: number      // percentage across the page (0–100)
   y: number      // percentage down the page (0–100)
   number: number // the number shown in the marker dot
+  text: string   // the note text written by the user
 }
 
 export type Folder = {
