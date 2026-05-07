@@ -59,3 +59,6 @@
   --font-mono: 'DM Mono', monospace;
 }
 
+body {
+  font-family: var(--font-ui);
+}
