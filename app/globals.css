@@ -54,8 +54,8 @@
   --tab-active-bg: #faf7f2;
 
   /* Fonts */
-  --font-display: 'Lora', Georgia, serif;
-  --font-ui: 'DM Sans', sans-serif;
+  --font-display: 'Inter', sans-serif;
+  --font-ui: 'Inter', sans-serif;
   --font-mono: 'DM Mono', monospace;
 }
 

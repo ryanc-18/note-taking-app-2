@@ -12,7 +12,7 @@ export default function NoteEditor({ activeNote }: Props) {
 
   return (
     <div
-      className="flex-1 flex flex-col items-center justify-center gap-2 p-12 text-[15px] italic text-[var(--text-muted)]"
+      className="flex-1 flex flex-col items-center justify-center gap-2 p-12 text-[15px] text-[var(--text-muted)]"
       style={{ fontFamily: 'var(--font-display)' }}
     >
       <span>No note open</span>
