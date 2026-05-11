@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, useCallback } from 'react'
 import type { PDFDocumentProxy } from 'pdfjs-dist'
 import { MinimalDotMarker } from '@/components/ui/annotationMarker'
 import AnnotationPanel, { type AnnotationPanelHandle } from './AnnotationPanel'
+import ConfirmDialog from '@/components/ui/ConfirmDialog'
 import type { Annotation } from '@/types'
 import {
   getAnnotations,
@@ -34,6 +35,7 @@ export default function CanvasView({ pdfUrl, noteId }: { pdfUrl: string; noteId:
   )
   const undoStackRef = useRef<Annotation[]>([])
   const panelRef = useRef<AnnotationPanelHandle>(null)
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null)
 
   // ── Step 1: load PDF and collect page dimensions ───────────────────────────
   // Does NOT render yet — just gets dims so React can mount the canvases
@@ -142,6 +144,18 @@ export default function CanvasView({ pdfUrl, noteId }: { pdfUrl: string; noteId:
     loadAnnotations()
   }, [pdfUrl, noteId])
 
+  // ── Delete an annotation by id ────────────────────────────────────────────
+  const performDelete = useCallback((id: string) => {
+    const deleted = annotationsRef.current.find(a => a.id === id)
+    if (deleted) undoStackRef.current = [...undoStackRef.current, deleted]
+    const next = annotationsRef.current.filter(a => a.id !== id)
+    annotationsRef.current = next
+    setAnnotations(next)
+    setActiveAnnotationId(null)
+    setConfirmDeleteId(null)
+    deleteAnnotation(id)
+  }, [])
+
   // Keep annotationsRef in sync so keyboard handler can read current value without stale closures
   useEffect(() => {
     annotationsRef.current = annotations
@@ -162,17 +176,12 @@ export default function CanvasView({ pdfUrl, noteId }: { pdfUrl: string; noteId:
         tag !== 'TEXTAREA' &&
         tag !== 'INPUT'
       ) {
-        const deleted = annotationsRef.current.find(
-          (a) => a.id === activeAnnotationId
-        )
-        if (deleted) undoStackRef.current = [...undoStackRef.current, deleted]
-        const next = annotationsRef.current.filter(
-          (a) => a.id !== activeAnnotationId
-        )
-        annotationsRef.current = next
-        setAnnotations(next)
-        setActiveAnnotationId(null)
-        deleteAnnotation(activeAnnotationId)
+        const annotation = annotationsRef.current.find(a => a.id === activeAnnotationId)
+        if (annotation?.text.trim()) {
+          setConfirmDeleteId(activeAnnotationId)
+        } else {
+          performDelete(activeAnnotationId)
+        }
       }
 
       if (e.key.length === 1 && !e.metaKey && !e.ctrlKey && activeAnnotationId) {
@@ -277,6 +286,8 @@ export default function CanvasView({ pdfUrl, noteId }: { pdfUrl: string; noteId:
     PAGE_GAP * (pageDims.length - 1) * effectiveZoom
   const containerH = containerRef.current?.clientHeight ?? 0
   const fitsVertically = scaledTotalHeight <= containerH
+
+  const confirmAnnotation = annotations.find(a => a.id === confirmDeleteId) ?? null
 
   const activeAnnotation =
     annotations.find((a) => a.id === activeAnnotationId) ?? null
@@ -419,6 +430,13 @@ export default function CanvasView({ pdfUrl, noteId }: { pdfUrl: string; noteId:
         onTextChange={handleAnnotationTextChange}
         onClose={() => setActiveAnnotationId(null)}
       />
+      {confirmAnnotation && (
+        <ConfirmDialog
+          message={`Delete annotation ${confirmAnnotation.number} and its note?`}
+          onConfirm={() => performDelete(confirmAnnotation.id)}
+          onCancel={() => setConfirmDeleteId(null)}
+        />
+      )}
     </div>
   )
 }
