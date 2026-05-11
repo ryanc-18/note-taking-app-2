@@ -198,6 +198,13 @@ export default function CanvasView({ pdfUrl, noteId }: { pdfUrl: string; noteId:
         annotationsRef.current = next
         setAnnotations(next)
         setActiveAnnotationId(restored.id)
+        createAnnotation(noteId, { page: restored.page, x: restored.x, y: restored.y, number: restored.number, text: restored.text })
+          .then(saved => {
+            const updated = annotationsRef.current.map(a => a.id === restored.id ? { ...a, id: saved.id } : a)
+            annotationsRef.current = updated
+            setAnnotations(updated)
+            setActiveAnnotationId(saved.id)
+          })
       }
     }
 
