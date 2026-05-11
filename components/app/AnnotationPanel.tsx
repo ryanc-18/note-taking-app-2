@@ -1,5 +1,6 @@
 'use client'
 
+import { useRef, useImperativeHandle, forwardRef } from 'react'
 import type { Annotation } from '@/types'
 
 type Props = {
@@ -8,7 +9,18 @@ type Props = {
   onClose: () => void
 }
 
-export default function AnnotationPanel({ annotation, onTextChange, onClose }: Props) {
+export type AnnotationPanelHandle = {
+  focusTextarea: () => void
+}
+
+const AnnotationPanel = forwardRef<AnnotationPanelHandle, Props>(function AnnotationPanel(
+  { annotation, onTextChange, onClose }, ref
+) {
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
+
+  useImperativeHandle(ref, () => ({
+    focusTextarea: () => textareaRef.current?.focus(),
+  }))
   return (
     <div
       style={{
@@ -86,7 +98,7 @@ export default function AnnotationPanel({ annotation, onTextChange, onClose }: P
 
           {/* Note textarea */}
           <textarea
-            autoFocus
+            ref={textareaRef}
             value={annotation.text}
             onChange={e => onTextChange(annotation.id, e.target.value)}
             placeholder="Write your note here…"
@@ -107,4 +119,6 @@ export default function AnnotationPanel({ annotation, onTextChange, onClose }: P
       )}
     </div>
   )
-}
+})
+
+export default AnnotationPanel

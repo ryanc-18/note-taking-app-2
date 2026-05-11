@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
 import type { PDFDocumentProxy } from 'pdfjs-dist'
 import { MinimalDotMarker } from '@/components/ui/annotationMarker'
-import AnnotationPanel from './AnnotationPanel'
+import AnnotationPanel, { type AnnotationPanelHandle } from './AnnotationPanel'
 import type { Annotation } from '@/types'
 import {
   getAnnotations,
@@ -33,6 +33,7 @@ export default function CanvasView({ pdfUrl, noteId }: { pdfUrl: string; noteId:
     null
   )
   const undoStackRef = useRef<Annotation[]>([])
+  const panelRef = useRef<AnnotationPanelHandle>(null)
 
   // ── Step 1: load PDF and collect page dimensions ───────────────────────────
   // Does NOT render yet — just gets dims so React can mount the canvases
@@ -172,6 +173,11 @@ export default function CanvasView({ pdfUrl, noteId }: { pdfUrl: string; noteId:
         setAnnotations(next)
         setActiveAnnotationId(null)
         deleteAnnotation(activeAnnotationId)
+      }
+
+      if (e.key.length === 1 && !e.metaKey && !e.ctrlKey && activeAnnotationId) {
+        panelRef.current?.focusTextarea()
+        return
       }
 
       if (e.key === 'z' && (e.metaKey || e.ctrlKey)) {
@@ -408,6 +414,7 @@ export default function CanvasView({ pdfUrl, noteId }: { pdfUrl: string; noteId:
         )}
       </div>
       <AnnotationPanel
+        ref={panelRef}
         annotation={activeAnnotation}
         onTextChange={handleAnnotationTextChange}
         onClose={() => setActiveAnnotationId(null)}
