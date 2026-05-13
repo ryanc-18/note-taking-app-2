@@ -44,11 +44,43 @@ function ToolbarButton({ onClick, active, title, children }: {
   )
 }
 
+const MIN_WIDTH = 220
+const MAX_WIDTH = 640
+const DEFAULT_WIDTH = 320
+
 const AnnotationPanel = forwardRef<AnnotationPanelHandle, Props>(function AnnotationPanel(
   { annotation, contentLoadKey, onTextChange, onClose }, ref
 ) {
   const annotationRef = useRef(annotation)
   annotationRef.current = annotation
+
+  const [panelWidth, setPanelWidth] = useState(DEFAULT_WIDTH)
+  const isDraggingRef = useRef(false)
+
+  const handleDragMouseDown = (e: React.MouseEvent) => {
+    e.preventDefault()
+    const startX = e.clientX
+    const startWidth = panelWidth
+    isDraggingRef.current = true
+    document.body.style.cursor = 'ew-resize'
+    document.body.style.userSelect = 'none'
+
+    function onMouseMove(e: MouseEvent) {
+      const delta = startX - e.clientX
+      setPanelWidth(Math.min(MAX_WIDTH, Math.max(MIN_WIDTH, startWidth + delta)))
+    }
+
+    function onMouseUp() {
+      isDraggingRef.current = false
+      document.body.style.cursor = ''
+      document.body.style.userSelect = ''
+      window.removeEventListener('mousemove', onMouseMove)
+      window.removeEventListener('mouseup', onMouseUp)
+    }
+
+    window.addEventListener('mousemove', onMouseMove)
+    window.addEventListener('mouseup', onMouseUp)
+  }
 
   // Track active formatting states — only re-render when they actually change
   const activeRef = useRef({ bold: false, italic: false, bulletList: false })
@@ -105,18 +137,32 @@ const AnnotationPanel = forwardRef<AnnotationPanelHandle, Props>(function Annota
   return (
     <div
       style={{
-        width: annotation ? '320px' : '0px',
-        minWidth: annotation ? '320px' : '0px',
-        transition: 'width 0.25s ease, min-width 0.25s ease',
+        width: annotation ? `${panelWidth}px` : '0px',
+        minWidth: annotation ? `${panelWidth}px` : '0px',
+        transition: isDraggingRef.current ? 'none' : 'width 0.25s ease, min-width 0.25s ease',
         overflow: 'hidden',
         borderLeft: '1px solid var(--border-strong)',
         background: 'var(--paper-elevated)',
         display: 'flex',
         flexDirection: 'column',
+        position: 'relative',
       }}
     >
       {annotation && (
         <>
+          {/* Drag handle */}
+          <div
+            onMouseDown={handleDragMouseDown}
+            style={{
+              position: 'absolute',
+              left: 0,
+              top: 0,
+              bottom: 0,
+              width: '4px',
+              cursor: 'ew-resize',
+              zIndex: 20,
+            }}
+          />
           {/* Header */}
           <div
             style={{
