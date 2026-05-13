@@ -36,6 +36,7 @@ export default function CanvasView({ pdfUrl, noteId }: { pdfUrl: string; noteId:
   const undoStackRef = useRef<Annotation[]>([])
   const panelRef = useRef<AnnotationPanelHandle>(null)
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null)
+  const [contentLoadKey, setContentLoadKey] = useState(0)
 
   // ── Step 1: load PDF and collect page dimensions ───────────────────────────
   // Does NOT render yet — just gets dims so React can mount the canvases
@@ -169,13 +170,9 @@ export default function CanvasView({ pdfUrl, noteId }: { pdfUrl: string; noteId:
         return
       }
 
-      const tag = e.target instanceof Element ? e.target.tagName : ''
-      if (
-        e.key === 'Backspace' &&
-        activeAnnotationId &&
-        tag !== 'TEXTAREA' &&
-        tag !== 'INPUT'
-      ) {
+      const target = e.target instanceof Element ? e.target : null
+      const isTyping = target?.tagName === 'TEXTAREA' || target?.tagName === 'INPUT' || (target as HTMLElement)?.isContentEditable
+      if (e.key === 'Backspace' && activeAnnotationId && !isTyping) {
         const annotation = annotationsRef.current.find(a => a.id === activeAnnotationId)
         if (annotation?.text.trim()) {
           setConfirmDeleteId(activeAnnotationId)
@@ -184,7 +181,7 @@ export default function CanvasView({ pdfUrl, noteId }: { pdfUrl: string; noteId:
         }
       }
 
-      if (e.key.length === 1 && !e.metaKey && !e.ctrlKey && activeAnnotationId) {
+      if (e.key.length === 1 && !e.metaKey && !e.ctrlKey && activeAnnotationId && !isTyping) {
         panelRef.current?.focusTextarea()
         return
       }
@@ -197,6 +194,7 @@ export default function CanvasView({ pdfUrl, noteId }: { pdfUrl: string; noteId:
         const next = [...annotationsRef.current, restored]
         annotationsRef.current = next
         setAnnotations(next)
+        setContentLoadKey(k => k + 1)
         setActiveAnnotationId(restored.id)
         createAnnotation(noteId, { page: restored.page, x: restored.x, y: restored.y, number: restored.number, text: restored.text })
           .then(saved => {
@@ -257,6 +255,7 @@ export default function CanvasView({ pdfUrl, noteId }: { pdfUrl: string; noteId:
       const next = [...annotationsRef.current, newAnnotation]
       annotationsRef.current = next
       setAnnotations(next)
+      setContentLoadKey(k => k + 1)
       setActiveAnnotationId(newAnnotation.id)
 
       // Save to DB and swap temp id for the real one
@@ -266,6 +265,9 @@ export default function CanvasView({ pdfUrl, noteId }: { pdfUrl: string; noteId:
           annotationsRef.current = updated
           setAnnotations(updated)
           setActiveAnnotationId(saved.id)
+          // Flush any text typed during the temp-ID window
+          const flushed = updated.find(a => a.id === saved.id)
+          if (flushed?.text) updateAnnotation(saved.id, flushed.text)
         })
     },
     []
@@ -278,7 +280,8 @@ export default function CanvasView({ pdfUrl, noteId }: { pdfUrl: string; noteId:
     )
     annotationsRef.current = next
     setAnnotations(next)
-    updateAnnotation(id, text)
+    // Skip DB update while annotation still has a temp id (real id arrives via createAnnotation)
+    if (!id.startsWith('annotation-')) updateAnnotation(id, text)
   }, [])
 
   // ── Derived values ─────────────────────────────────────────────────────────
@@ -417,11 +420,10 @@ export default function CanvasView({ pdfUrl, noteId }: { pdfUrl: string; noteId:
                           number={a.number}
                           isActive={activeAnnotationId === a.id}
                           isSpawning={activeAnnotationId === a.id}
-                          onClick={() =>
-                            setActiveAnnotationId((prev) =>
-                              prev === a.id ? null : a.id
-                            )
-                          }
+                          onClick={() => {
+                            if (activeAnnotationId !== a.id) setContentLoadKey(k => k + 1)
+                            setActiveAnnotationId((prev) => prev === a.id ? null : a.id)
+                          }}
                         />
                       </div>
                     ))}
@@ -434,6 +436,7 @@ export default function CanvasView({ pdfUrl, noteId }: { pdfUrl: string; noteId:
       <AnnotationPanel
         ref={panelRef}
         annotation={activeAnnotation}
+        contentLoadKey={contentLoadKey}
         onTextChange={handleAnnotationTextChange}
         onClose={() => setActiveAnnotationId(null)}
       />
