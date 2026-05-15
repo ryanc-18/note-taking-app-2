@@ -55,9 +55,18 @@ export function useWorkspace() {
 
   // ── Tabs ───────────────────────────────────────────────────────────────────
 
+  const [recentNoteIds, setRecentNoteIds] = useState<string[]>(() => {
+    try { return JSON.parse(localStorage.getItem('recentNotes') ?? '[]') } catch { return [] }
+  })
+
   const openNote = useCallback((noteId: string) => {
     setOpenTabs(prev => prev.includes(noteId) ? prev : [...prev, noteId])
     setActiveTab(noteId)
+    setRecentNoteIds(prev => {
+      const next = [noteId, ...prev.filter(id => id !== noteId)].slice(0, 10)
+      localStorage.setItem('recentNotes', JSON.stringify(next))
+      return next
+    })
   }, [])
 
   const closeTab = useCallback((noteId: string, e: React.MouseEvent) => {
@@ -222,6 +231,7 @@ export function useWorkspace() {
     openTabs,
     activeTab,
     activeNote,
+    recentNoteIds,
     // Tab operations
     openNote,
     closeTab,
