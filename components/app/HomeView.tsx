@@ -1,5 +1,6 @@
 'use client'
 
+import { useState } from 'react'
 import type { Note, Folder } from '@/types'
 
 type Props = {
@@ -10,7 +11,15 @@ type Props = {
 }
 
 export default function HomeView({ recentNoteIds, notes, folders, onOpenNote }: Props) {
+  const [searchQuery, setSearchQuery] = useState('')
+
   const recentNotes = recentNoteIds.map(id => notes[id]).filter(Boolean)
+
+  const searchResults = searchQuery.trim()
+    ? Object.values(notes).filter(n =>
+        n.title.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    : []
 
   const getFolderName = (note: Note) =>
     folders.find(f => f.id === note.folder)?.name ?? 'Unknown folder'
@@ -27,12 +36,87 @@ export default function HomeView({ recentNoteIds, notes, folders, onOpenNote }: 
           color: 'var(--text-primary)',
           fontFamily: 'var(--font-ui)',
           letterSpacing: '-0.02em',
-          marginBottom: '8px',
+          marginBottom: '24px',
         }}
       >
         Home
       </h1>
-      <p style={{ fontSize: '13px', color: 'var(--text-muted)', fontFamily: 'var(--font-ui)', marginBottom: '32px' }}>
+
+      {/* Search bar */}
+      <div style={{ position: 'relative', maxWidth: '480px', marginBottom: '40px' }}>
+        <input
+          type="text"
+          placeholder="Search documents..."
+          value={searchQuery}
+          onChange={e => setSearchQuery(e.target.value)}
+          style={{
+            width: '100%',
+            padding: '10px 14px 10px 36px',
+            fontSize: '13.5px',
+            fontFamily: 'var(--font-ui)',
+            color: 'var(--text-primary)',
+            background: 'var(--paper-elevated)',
+            border: '1px solid var(--border-strong)',
+            borderRadius: '8px',
+            outline: 'none',
+            boxSizing: 'border-box',
+          }}
+          onFocus={e => (e.target.style.borderColor = 'var(--accent)')}
+          onBlur={e => (e.target.style.borderColor = 'var(--border-strong)')}
+        />
+        <svg
+          style={{ position: 'absolute', left: '11px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: 'var(--text-muted)' }}
+          width="14" height="14" viewBox="0 0 16 16" fill="none"
+        >
+          <circle cx="6.5" cy="6.5" r="5" stroke="currentColor" strokeWidth="1.5" />
+          <path d="M10.5 10.5L14 14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+        </svg>
+
+        {/* Search results dropdown */}
+        {searchResults.length > 0 && (
+          <div style={{
+            position: 'absolute',
+            top: 'calc(100% + 4px)',
+            left: 0,
+            right: 0,
+            background: 'var(--paper-elevated)',
+            border: '1px solid var(--border-strong)',
+            borderRadius: '8px',
+            overflow: 'hidden',
+            boxShadow: '0 4px 16px rgba(0,0,0,0.1)',
+            zIndex: 100,
+          }}>
+            {searchResults.map(note => (
+              <button
+                key={note.id}
+                onMouseDown={() => { onOpenNote(note.id); setSearchQuery('') }}
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  width: '100%',
+                  padding: '10px 14px',
+                  background: 'transparent',
+                  border: 'none',
+                  borderBottom: '1px solid var(--border)',
+                  cursor: 'pointer',
+                  textAlign: 'left',
+                }}
+                onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = 'var(--sidebar-hover)')}
+                onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = 'transparent')}
+              >
+                <span style={{ fontSize: '13px', fontWeight: 500, color: 'var(--text-primary)', fontFamily: 'var(--font-ui)' }}>
+                  {note.title}
+                </span>
+                <span style={{ fontSize: '11.5px', color: 'var(--text-muted)', fontFamily: 'var(--font-ui)' }}>
+                  {getFolderName(note)}
+                </span>
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <p style={{ fontSize: '12px', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--text-muted)', fontFamily: 'var(--font-ui)', marginBottom: '16px' }}>
         Recently opened
       </p>
 
