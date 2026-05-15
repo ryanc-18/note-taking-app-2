@@ -6,6 +6,7 @@ import type { Note } from '@/types'
 import Sidebar from './Sidebar'
 import TabBar from './TabBar'
 import NoteEditor from './NoteEditor'
+import HomeView from './HomeView'
 import ContextMenu from './ContextMenu'
 
 // ─── CSS: only what Tailwind cannot express ───────────────────────────────────
@@ -129,11 +130,13 @@ const appStyles = `
 
 export default function NoteApp() {
   const {
-    notes, folders, openTabs, activeTab, activeNote,
+    notes, folders, openTabs, activeTab, activeNote, recentNoteIds,
     openNote, closeTab,
     onFileSelected, commitRename, duplicateNote, pasteNote, removeNote, moveNoteToFolder,
     toggleFolder, addFolder, removeFolder, moveFolderTo,
   } = useWorkspace()
+
+  const [view, setView] = useState<'home' | 'editor'>('home')
 
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedFolderId, setSelectedFolderId] = useState<string | null>(null)
@@ -219,7 +222,7 @@ export default function NoteApp() {
           searchQuery={searchQuery}
           onSearchChange={setSearchQuery}
           filteredNotes={filteredNotes}
-          onOpenNote={openNote}
+          onOpenNote={(id) => { openNote(id); setView('editor') }}
           onToggleFolder={toggleFolder}
           onAddNote={() => fileInputRef.current?.click()}
           onAddFolder={() => addFolder(selectedFolderId ?? undefined)}
@@ -227,6 +230,7 @@ export default function NoteApp() {
           onSelectFolder={setSelectedFolderId}
           onContextMenu={openContextMenu}
           onStartRename={startRename}
+          onHomeClick={() => setView('home')}
           onMoveNote={moveNoteToFolder}
           onMoveFolder={(folderId, targetParentId) => moveFolderTo(folderId, targetParentId, folders)}
           fileInputRef={fileInputRef}
@@ -238,10 +242,13 @@ export default function NoteApp() {
             openTabs={openTabs}
             notes={notes}
             activeTab={activeTab}
-            onSelect={openNote}
+            onSelect={(id) => { openNote(id); setView('editor') }}
             onClose={closeTab}
           />
-          <NoteEditor activeNote={activeNote} />
+          {view === 'home'
+            ? <HomeView recentNoteIds={recentNoteIds} notes={notes} folders={folders} onOpenNote={(id) => { openNote(id); setView('editor') }} />
+            : <NoteEditor activeNote={activeNote} />
+          }
         </div>
       </div>
     </>

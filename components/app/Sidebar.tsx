@@ -25,6 +25,7 @@ type Props = {
   onSelectFolder: (id: string) => void
   onContextMenu: (e: React.MouseEvent, id: string, type: 'folder' | 'note') => void
   onStartRename: (id: string, currentName: string) => void
+  onHomeClick: () => void
   onMoveNote: (noteId: string, targetFolderId: string) => void
   onMoveFolder: (folderId: string, targetParentId: string | null) => void
   fileInputRef: React.RefObject<HTMLInputElement | null>
@@ -37,7 +38,7 @@ export default function Sidebar({
   searchQuery, onSearchChange, filteredNotes,
   onOpenNote, onToggleFolder, onAddNote, onAddFolder,
   selectedFolderId, onSelectFolder,
-  onContextMenu, onStartRename, onMoveNote, onMoveFolder,
+  onContextMenu, onStartRename, onHomeClick, onMoveNote, onMoveFolder,
   fileInputRef, onFileSelected,
 }: Props) {
   const addMenuRef = useRef<HTMLDivElement>(null)
@@ -79,11 +80,12 @@ export default function Sidebar({
       {/* Top nav */}
       <nav className="p-1.5 border-b border-[var(--sidebar-border)]">
         {[
-          { icon: <HomeIcon />, label: 'Home' },
-          { icon: <SettingsIcon />, label: 'Settings' },
-        ].map(({ icon, label }) => (
+          { icon: <HomeIcon />, label: 'Home', onClick: onHomeClick },
+          { icon: <SettingsIcon />, label: 'Settings', onClick: undefined },
+        ].map(({ icon, label, onClick }) => (
           <button
             key={label}
+            onClick={onClick}
             className="flex items-center gap-2 w-full px-2 py-1.5 rounded-md text-[13px] text-[var(--sidebar-text)] bg-transparent border-none cursor-pointer select-none transition-colors duration-100 hover:bg-[var(--sidebar-hover)] hover:text-[var(--sidebar-text-active)] focus-visible:outline focus-visible:outline-1 focus-visible:outline-[var(--accent)]"
           >
             {icon}<span>{label}</span>
