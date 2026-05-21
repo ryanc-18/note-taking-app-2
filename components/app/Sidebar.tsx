@@ -26,6 +26,7 @@ type Props = {
   onContextMenu: (e: React.MouseEvent, id: string, type: 'folder' | 'note') => void
   onStartRename: (id: string, currentName: string) => void
   onHomeClick: () => void
+  onSettingsClick: () => void
   onMoveNote: (noteId: string, targetFolderId: string) => void
   onMoveFolder: (folderId: string, targetParentId: string | null) => void
   fileInputRef: React.RefObject<HTMLInputElement | null>
@@ -38,7 +39,7 @@ export default function Sidebar({
   searchQuery, onSearchChange, filteredNotes,
   onOpenNote, onToggleFolder, onAddNote, onAddFolder,
   selectedFolderId, onSelectFolder,
-  onContextMenu, onStartRename, onHomeClick, onMoveNote, onMoveFolder,
+  onContextMenu, onStartRename, onHomeClick, onSettingsClick, onMoveNote, onMoveFolder,
   fileInputRef, onFileSelected,
 }: Props) {
   const addMenuRef = useRef<HTMLDivElement>(null)
@@ -81,7 +82,7 @@ export default function Sidebar({
       <nav className="p-1.5 border-b border-[var(--sidebar-border)]">
         {[
           { icon: <HomeIcon />, label: 'Home', onClick: onHomeClick },
-          { icon: <SettingsIcon />, label: 'Settings', onClick: undefined },
+          { icon: <SettingsIcon />, label: 'Settings', onClick: onSettingsClick },
         ].map(({ icon, label, onClick }) => (
           <button
             key={label}

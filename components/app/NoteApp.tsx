@@ -7,6 +7,7 @@ import Sidebar from './Sidebar'
 import TabBar from './TabBar'
 import NoteEditor from './NoteEditor'
 import HomeView from './HomeView'
+import SettingsView from './SettingsView'
 import ContextMenu from './ContextMenu'
 
 // ─── CSS: only what Tailwind cannot express ───────────────────────────────────
@@ -136,7 +137,7 @@ export default function NoteApp() {
     toggleFolder, addFolder, removeFolder, moveFolderTo,
   } = useWorkspace()
 
-  const [view, setView] = useState<'home' | 'editor'>('home')
+  const [view, setView] = useState<'home' | 'editor' | 'settings'>('home')
 
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedFolderId, setSelectedFolderId] = useState<string | null>(null)
@@ -231,6 +232,7 @@ export default function NoteApp() {
           onContextMenu={openContextMenu}
           onStartRename={startRename}
           onHomeClick={() => setView('home')}
+          onSettingsClick={() => setView('settings')}
           onMoveNote={moveNoteToFolder}
           onMoveFolder={(folderId, targetParentId) => moveFolderTo(folderId, targetParentId, folders)}
           fileInputRef={fileInputRef}
@@ -245,10 +247,9 @@ export default function NoteApp() {
             onSelect={(id) => { openNote(id); setView('editor') }}
             onClose={closeTab}
           />
-          {view === 'home'
-            ? <HomeView recentNoteIds={recentNoteIds} notes={notes} folders={folders} onOpenNote={(id) => { openNote(id); setView('editor') }} />
-            : <NoteEditor activeNote={activeNote} />
-          }
+          {view === 'home' && <HomeView recentNoteIds={recentNoteIds} notes={notes} folders={folders} onOpenNote={(id) => { openNote(id); setView('editor') }} />}
+          {view === 'settings' && <SettingsView name="Ryan Chin" email="dev@local.com" />}
+          {view === 'editor' && <NoteEditor activeNote={activeNote} />}
         </div>
       </div>
     </>

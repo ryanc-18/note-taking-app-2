@@ -37,6 +37,8 @@ export default function CanvasView({ pdfUrl, noteId }: { pdfUrl: string; noteId:
   const panelRef = useRef<AnnotationPanelHandle>(null)
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null)
   const [contentLoadKey, setContentLoadKey] = useState(0)
+  const [panelMode, setPanelMode] = useState<'single' | 'all'>('single')
+  const [hoveredAnnotationId, setHoveredAnnotationId] = useState<string | null>(null)
 
   // ── Step 1: load PDF and collect page dimensions ───────────────────────────
   // Does NOT render yet — just gets dims so React can mount the canvases
@@ -165,9 +167,9 @@ export default function CanvasView({ pdfUrl, noteId }: { pdfUrl: string; noteId:
   // ── Keyboard: Backspace to delete active annotation, Cmd/Ctrl+Z to undo ───
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
-      if (e.key === 'Escape' && activeAnnotationId) {
-        setActiveAnnotationId(null)
-        return
+      if (e.key === 'Escape') {
+        if (panelMode === 'all') { setPanelMode('single'); return }
+        if (activeAnnotationId) { setActiveAnnotationId(null); return }
       }
 
       const target = e.target instanceof Element ? e.target : null
@@ -208,7 +210,7 @@ export default function CanvasView({ pdfUrl, noteId }: { pdfUrl: string; noteId:
 
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [activeAnnotationId])
+  }, [activeAnnotationId, panelMode])
 
   // ── Zoom via scroll wheel ──────────────────────────────────────────────────
   const handleWheel = useCallback(
@@ -411,16 +413,24 @@ export default function CanvasView({ pdfUrl, noteId }: { pdfUrl: string; noteId:
                           position: 'absolute',
                           left: `${a.x}%`,
                           top: `${a.y}%`,
-                          transform: 'translate(-50%, -50%)',
-                          zIndex: 10,
+                          transform: `translate(-50%, -50%) ${panelMode === 'all' && hoveredAnnotationId === a.id ? 'scale(1.25)' : 'scale(1)'}`,
+                          zIndex: panelMode === 'all' && hoveredAnnotationId === a.id ? 20 : 10,
+                          opacity: panelMode === 'all' && hoveredAnnotationId !== null && hoveredAnnotationId !== a.id ? 0.3 : 1,
+                          transition: 'opacity 0.15s ease, transform 0.15s ease',
                         }}
                         onClick={(e) => e.stopPropagation()}
                       >
                         <MinimalDotMarker
                           number={a.number}
-                          isActive={activeAnnotationId === a.id}
+                          isActive={panelMode === 'all' || activeAnnotationId === a.id}
                           isSpawning={activeAnnotationId === a.id}
                           onClick={() => {
+                            if (panelMode === 'all') {
+                              setPanelMode('single')
+                              setContentLoadKey(k => k + 1)
+                              setActiveAnnotationId(a.id)
+                              return
+                            }
                             if (activeAnnotationId !== a.id) setContentLoadKey(k => k + 1)
                             setActiveAnnotationId((prev) => prev === a.id ? null : a.id)
                           }}
@@ -435,10 +445,21 @@ export default function CanvasView({ pdfUrl, noteId }: { pdfUrl: string; noteId:
       </div>
       <AnnotationPanel
         ref={panelRef}
+        isOpen={activeAnnotation !== null || panelMode === 'all'}
         annotation={activeAnnotation}
+        annotations={annotations}
+        panelMode={panelMode}
+        onPanelModeChange={setPanelMode}
         contentLoadKey={contentLoadKey}
         onTextChange={handleAnnotationTextChange}
-        onClose={() => setActiveAnnotationId(null)}
+        onHoverAnnotation={setHoveredAnnotationId}
+        onSelectAnnotation={(a) => {
+          setPanelMode('single')
+          setActiveAnnotationId(a.id)
+          setContentLoadKey(k => k + 1)
+          canvasRefs.current[a.page]?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+        }}
+        onClose={() => { setActiveAnnotationId(null); setPanelMode('single') }}
       />
       {confirmAnnotation && (
         <ConfirmDialog
