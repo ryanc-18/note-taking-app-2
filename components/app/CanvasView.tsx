@@ -122,8 +122,10 @@ export default function CanvasView({ pdfUrl, noteId }: { pdfUrl: string; noteId:
         pageDims.reduce((sum, d) => sum + d.height / BASE_RENDER_SCALE, 0) +
         PAGE_GAP * (pageDims.length - 1)
       const min = viewportH / totalDocH
+      const firstPageH = pageDims[0].height / BASE_RENDER_SCALE
+      const fitFirstPage = (viewportH - 64) / firstPageH
       setMinZoom(min)
-      setZoom((prev) => (prev === null ? min : prev))
+      setZoom((prev) => (prev === null ? fitFirstPage : prev))
     }
 
     computeMin()
