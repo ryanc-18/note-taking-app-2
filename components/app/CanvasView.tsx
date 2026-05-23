@@ -237,11 +237,6 @@ export default function CanvasView({ pdfUrl, noteId }: { pdfUrl: string; noteId:
     return () => el.removeEventListener('wheel', handleWheel)
   }, [handleWheel])
 
-  // ── Single click: deselect active annotation ──────────────────────────────
-  const handlePageClick = useCallback(() => {
-    setActiveAnnotationId(null)
-  }, [])
-
   // ── Double click: place a new annotation ──────────────────────────────────
   const handlePageDoubleClick = useCallback(
     (e: React.MouseEvent<HTMLDivElement>, pageIndex: number) => {
@@ -378,7 +373,6 @@ export default function CanvasView({ pdfUrl, noteId }: { pdfUrl: string; noteId:
               {naturalPages.map((page, i) => (
                 <div
                   key={i}
-                  onClick={handlePageClick}
                   onDoubleClick={(e) => handlePageDoubleClick(e, i)}
                   style={{
                     width: `${page.width * effectiveZoom}px`,
