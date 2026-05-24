@@ -170,8 +170,18 @@ const AnnotationPanel = forwardRef<AnnotationPanelHandle, Props>(function Annota
     focusTextarea: () => editor?.commands.focus('end'),
   }))
 
+  const [searchQuery, setSearchQuery] = useState('')
+
+  useEffect(() => {
+    if (panelMode !== 'all') setSearchQuery('')
+  }, [panelMode])
+
+  const visibleAnnotations = searchQuery
+    ? annotations.filter(a => a.text.replace(/<[^>]*>/g, '').toLowerCase().includes(searchQuery.toLowerCase()))
+    : annotations
+
   // Group annotations by page for list view
-  const annotationsByPage = annotations.reduce<Record<number, Annotation[]>>((acc, a) => {
+  const annotationsByPage = visibleAnnotations.reduce<Record<number, Annotation[]>>((acc, a) => {
     if (!acc[a.page]) acc[a.page] = []
     acc[a.page].push(a)
     return acc
@@ -272,10 +282,36 @@ const AnnotationPanel = forwardRef<AnnotationPanelHandle, Props>(function Annota
 
           {/* All notes mode */}
           {panelMode === 'all' && (
-            <div style={{ flex: 1, overflowY: 'auto', padding: '8px 0' }}>
+            <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column' }}>
+              <div style={{ padding: '8px 10px', borderBottom: '1px solid var(--border)', flexShrink: 0, position: 'sticky', top: 0, background: 'var(--paper-elevated)', zIndex: 1 }}>
+                <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                  <svg style={{ position: 'absolute', left: '8px', pointerEvents: 'none', color: 'var(--text-muted)', flexShrink: 0 }} width="12" height="12" viewBox="0 0 16 16" fill="none">
+                    <circle cx="6.5" cy="6.5" r="5" stroke="currentColor" strokeWidth="1.5" />
+                    <path d="M10.5 10.5L14 14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                  </svg>
+                  <input
+                    type="text"
+                    placeholder="Search annotations..."
+                    value={searchQuery}
+                    onChange={e => setSearchQuery(e.target.value)}
+                    style={{ width: '100%', padding: '5px 8px 5px 26px', fontSize: '12px', fontFamily: 'var(--font-ui)', color: 'var(--text-primary)', background: 'var(--sidebar-hover)', border: '1px solid var(--border)', borderRadius: '6px', outline: 'none', boxSizing: 'border-box' }}
+                  />
+                  {searchQuery && (
+                    <button
+                      onClick={() => setSearchQuery('')}
+                      style={{ position: 'absolute', right: '6px', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', fontSize: '14px', lineHeight: 1, padding: '0 2px' }}
+                    >×</button>
+                  )}
+                </div>
+              </div>
+              <div style={{ flex: 1, overflowY: 'auto', padding: '8px 0' }}>
               {annotations.length === 0 ? (
                 <div style={{ padding: '24px 16px' }}>
                   <p style={{ fontSize: '13px', color: 'var(--text-muted)', fontFamily: 'var(--font-ui)' }}>No annotations yet. Double-click on the document to add one.</p>
+                </div>
+              ) : visibleAnnotations.length === 0 ? (
+                <div style={{ padding: '24px 16px' }}>
+                  <p style={{ fontSize: '13px', color: 'var(--text-muted)', fontFamily: 'var(--font-ui)' }}>No annotations match &ldquo;{searchQuery}&rdquo;</p>
                 </div>
               ) : (
                 pageNumbers.map(pageNum => (
@@ -311,6 +347,7 @@ const AnnotationPanel = forwardRef<AnnotationPanelHandle, Props>(function Annota
                   </div>
                 ))
               )}
+              </div>
             </div>
           )}
         </>
