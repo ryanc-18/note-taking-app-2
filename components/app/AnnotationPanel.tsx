@@ -15,6 +15,7 @@ type Props = {
   onTextChange: (id: string, text: string) => void
   onSelectAnnotation: (annotation: Annotation) => void
   onHoverAnnotation: (id: string | null) => void
+  hoveredAnnotationId: string | null
   onClose: () => void
 }
 
@@ -78,10 +79,18 @@ const MAX_WIDTH = 640
 const DEFAULT_WIDTH = 320
 
 const AnnotationPanel = forwardRef<AnnotationPanelHandle, Props>(function AnnotationPanel(
-  { isOpen, annotation, annotations, panelMode, onPanelModeChange, contentLoadKey, onTextChange, onSelectAnnotation, onHoverAnnotation, onClose }, ref
+  { isOpen, annotation, annotations, panelMode, onPanelModeChange, contentLoadKey, onTextChange, onSelectAnnotation, onHoverAnnotation, hoveredAnnotationId, onClose }, ref
 ) {
   const annotationRef = useRef(annotation)
   annotationRef.current = annotation
+
+  const cardRefs = useRef<Record<string, HTMLButtonElement | null>>({})
+
+  useEffect(() => {
+    if (hoveredAnnotationId && cardRefs.current[hoveredAnnotationId]) {
+      cardRefs.current[hoveredAnnotationId]?.scrollIntoView({ block: 'nearest', behavior: 'smooth' })
+    }
+  }, [hoveredAnnotationId])
 
   const [panelWidth, setPanelWidth] = useState(DEFAULT_WIDTH)
   const isDraggingRef = useRef(false)
@@ -277,10 +286,11 @@ const AnnotationPanel = forwardRef<AnnotationPanelHandle, Props>(function Annota
                     {annotationsByPage[pageNum].sort((a, b) => a.number - b.number).map(a => (
                       <button
                         key={a.id}
+                        ref={el => { cardRefs.current[a.id] = el }}
                         onClick={() => onSelectAnnotation(a)}
-                        style={{ display: 'flex', flexDirection: 'column', gap: '6px', width: '100%', padding: '10px 16px', background: 'transparent', border: 'none', borderBottom: '1px solid var(--border)', cursor: 'pointer', textAlign: 'left' }}
-                        onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'var(--sidebar-hover)'; onHoverAnnotation(a.id) }}
-                        onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent'; onHoverAnnotation(null) }}
+                        style={{ display: 'flex', flexDirection: 'column', gap: '6px', width: '100%', padding: '10px 16px', background: hoveredAnnotationId === a.id ? 'var(--sidebar-hover)' : 'transparent', border: 'none', borderBottom: '1px solid var(--border)', cursor: 'pointer', textAlign: 'left', transition: 'background 0.15s ease' }}
+                        onMouseEnter={() => onHoverAnnotation(a.id)}
+                        onMouseLeave={() => onHoverAnnotation(null)}
                       >
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                           <div style={{ width: '18px', height: '18px', borderRadius: '50%', background: 'var(--accent)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>

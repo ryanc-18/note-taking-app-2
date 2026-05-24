@@ -464,6 +464,8 @@ export default function CanvasView({
                             'opacity 0.15s ease, transform 0.15s ease',
                         }}
                         onClick={(e) => e.stopPropagation()}
+                        onMouseEnter={() => { if (panelMode === 'all') setHoveredAnnotationId(a.id) }}
+                        onMouseLeave={() => { if (panelMode === 'all') setHoveredAnnotationId(null) }}
                       >
                         <PillMarker
                           number={a.number}
@@ -503,6 +505,7 @@ export default function CanvasView({
         contentLoadKey={contentLoadKey}
         onTextChange={handleAnnotationTextChange}
         onHoverAnnotation={setHoveredAnnotationId}
+        hoveredAnnotationId={hoveredAnnotationId}
         onSelectAnnotation={(a) => {
           setPanelMode('single')
           setActiveAnnotationId(a.id)
