@@ -1,21 +1,18 @@
 import { put } from '@vercel/blob'
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-
-const DEV_USER_EMAIL = 'dev@local.com'
+import { getDbUser } from '@/lib/auth'
 
 export async function POST(request: Request) {
+  const user = await getDbUser()
+  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
   const formData = await request.formData()
   const file = formData.get('file') as File | null
   const folderId = formData.get('folderId') as string | null
 
   if (!file || !folderId) {
     return NextResponse.json({ error: 'Missing file or folderId' }, { status: 400 })
-  }
-
-  const user = await prisma.user.findUnique({ where: { email: DEV_USER_EMAIL } })
-  if (!user) {
-    return NextResponse.json({ error: 'User not found' }, { status: 404 })
   }
 
   // Upload to Vercel Blob

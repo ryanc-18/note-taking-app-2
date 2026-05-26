@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useCallback, useRef } from 'react'
+import { useUser } from '@clerk/nextjs'
 import { useWorkspace } from '@/hooks/useWorkspace'
 import type { Note } from '@/types'
 import Sidebar from './Sidebar'
@@ -130,6 +131,10 @@ const appStyles = `
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 export default function NoteApp() {
+  const { user } = useUser()
+  const userName = user ? [user.firstName, user.lastName].filter(Boolean).join(' ') || user.emailAddresses[0]?.emailAddress : ''
+  const userEmail = user?.emailAddresses[0]?.emailAddress ?? ''
+
   const {
     notes, folders, openTabs, activeTab, activeNote, recentNoteIds,
     openNote, closeTab,
@@ -237,6 +242,7 @@ export default function NoteApp() {
           onMoveFolder={(folderId, targetParentId) => moveFolderTo(folderId, targetParentId, folders)}
           fileInputRef={fileInputRef}
           onFileSelected={handleFileSelected}
+          userName={userName}
         />
 
         <div className="flex-1 flex flex-col overflow-hidden bg-[var(--paper-surface)]">
@@ -248,7 +254,7 @@ export default function NoteApp() {
             onClose={closeTab}
           />
           {view === 'home' && <HomeView recentNoteIds={recentNoteIds} notes={notes} folders={folders} onOpenNote={(id) => { openNote(id); setView('editor') }} />}
-          {view === 'settings' && <SettingsView name="Ryan Chin" email="dev@local.com" />}
+          {view === 'settings' && <SettingsView name={userName} email={userEmail} />}
           {view === 'editor' && <NoteEditor activeNote={activeNote} />}
         </div>
       </div>

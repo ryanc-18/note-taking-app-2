@@ -31,6 +31,7 @@ type Props = {
   onMoveFolder: (folderId: string, targetParentId: string | null) => void
   fileInputRef: React.RefObject<HTMLInputElement | null>
   onFileSelected: (e: React.ChangeEvent<HTMLInputElement>) => void
+  userName: string
 }
 
 export default function Sidebar({
@@ -40,7 +41,7 @@ export default function Sidebar({
   onOpenNote, onToggleFolder, onAddNote, onAddFolder,
   selectedFolderId, onSelectFolder,
   onContextMenu, onStartRename, onHomeClick, onSettingsClick, onMoveNote, onMoveFolder,
-  fileInputRef, onFileSelected,
+  fileInputRef, onFileSelected, userName,
 }: Props) {
   const addMenuRef = useRef<HTMLDivElement>(null)
   const renameInputRef = useRef<HTMLInputElement>(null)
@@ -71,10 +72,10 @@ export default function Sidebar({
           className="w-[26px] h-[26px] rounded-[6px] flex items-center justify-center text-xs font-semibold text-white shrink-0"
           style={{ background: 'linear-gradient(135deg, var(--accent), #a06030)', fontFamily: 'var(--font-display)' }}
         >
-          R
+          {userName.charAt(0).toUpperCase() || '?'}
         </div>
         <span className="text-[13px] font-medium tracking-[-0.01em] truncate flex-1 text-[var(--sidebar-text-active)]">
-          Ryan&apos;s Workspace
+          {userName ? `${userName.split(' ')[0]}'s Workspace` : 'My Workspace'}
         </span>
       </div>
 
@@ -271,9 +272,9 @@ export default function Sidebar({
       <div className="px-1.5 py-2 border-t border-[var(--sidebar-border)]">
         <button className="flex items-center gap-2 w-full px-2 py-1.5 rounded-md text-[12px] text-[var(--sidebar-text-muted)] bg-transparent border-none cursor-pointer select-none transition-colors duration-100 hover:bg-[var(--sidebar-hover)]">
           <span className="flex items-center justify-center w-[22px] h-[22px] rounded-full bg-white/10 text-[11px] font-medium text-[var(--sidebar-text)] shrink-0">
-            R
+            {userName.charAt(0).toUpperCase() || '?'}
           </span>
-          <span>Ryan Chin</span>
+          <span>{userName || 'Account'}</span>
         </button>
       </div>
 
