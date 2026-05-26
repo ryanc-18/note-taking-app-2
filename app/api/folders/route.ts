@@ -1,33 +1,25 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-
-const DEV_USER_EMAIL = 'dev@local.com'
+import { getDbUser } from '@/lib/auth'
 
 export async function GET() {
-  const user = await prisma.user.findUnique({
-    where: { email: DEV_USER_EMAIL },
-    include: {
-      folders: {
-        include: { notes: true },
-        orderBy: { createdAt: 'asc' },
-      },
-    },
+  const user = await getDbUser()
+  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
+  const folders = await prisma.folder.findMany({
+    where: { userId: user.id },
+    include: { notes: true },
+    orderBy: { createdAt: 'asc' },
   })
 
-  if (!user) {
-    return NextResponse.json({ error: 'User not found' }, { status: 404 })
-  }
-
-  return NextResponse.json(user.folders)
+  return NextResponse.json(folders)
 }
 
 export async function POST(request: Request) {
-  const { name, parentId } = await request.json()
+  const user = await getDbUser()
+  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  const user = await prisma.user.findUnique({ where: { email: DEV_USER_EMAIL } })
-  if (!user) {
-    return NextResponse.json({ error: 'User not found' }, { status: 404 })
-  }
+  const { name, parentId } = await request.json()
 
   let folder
   try {

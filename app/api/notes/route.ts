@@ -1,15 +1,12 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-
-const DEV_USER_EMAIL = 'dev@local.com'
+import { getDbUser } from '@/lib/auth'
 
 export async function POST(request: Request) {
-  const { title, content, folderId, pdfUrl } = await request.json()
+  const user = await getDbUser()
+  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  const user = await prisma.user.findUnique({ where: { email: DEV_USER_EMAIL } })
-  if (!user) {
-    return NextResponse.json({ error: 'User not found' }, { status: 404 })
-  }
+  const { title, content, folderId, pdfUrl } = await request.json()
 
   const note = await prisma.note.create({
     data: {
