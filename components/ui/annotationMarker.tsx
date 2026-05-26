@@ -9,8 +9,8 @@ interface MarkerProps {
   onClick?: () => void
 }
 
-// Design 5: Minimal Dot Marker - Super clean with expanding ring
-export function MinimalDotMarker({
+// Design 6: Pill Marker - Horizontal pill shape
+export function PillMarker({
   isActive,
   isSpawning,
   number = 1,
@@ -20,34 +20,31 @@ export function MinimalDotMarker({
     <button
       onClick={onClick}
       className={cn(
-        'relative flex items-center justify-center',
-        'focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-600/50 focus-visible:ring-offset-2 rounded-full'
+        'relative flex items-center justify-center transition-all duration-300',
+        'focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-600/50 focus-visible:ring-offset-2 rounded-full',
+        isSpawning && 'animate-[scaleSpring_0.4s_ease-out_forwards]'
       )}
     >
-      {/* Expanding ring */}
+      {/* Pill shape */}
       <span
         className={cn(
-          'absolute w-8 h-8 rounded-full border-2 transition-all duration-300',
+          'flex items-center gap-1 px-2 py-1 rounded-full transition-all duration-300',
           isActive
-            ? 'border-amber-500/60 scale-100 opacity-100'
-            : 'border-amber-500/20 scale-75 opacity-0',
-          isSpawning && 'animate-[circleExpand_0.35s_ease-out_forwards]'
-        )}
-      />
-
-      {/* Main dot */}
-      <span
-        className={cn(
-          'relative flex items-center justify-center w-5 h-5 rounded-full transition-all duration-300',
-          isActive
-            ? 'bg-amber-600 scale-100'
-            : 'bg-amber-600/35 scale-90 hover:bg-amber-600/50',
-          isSpawning && 'animate-[popIn_0.3s_ease-out_forwards]'
+            ? 'bg-amber-600 shadow-md shadow-amber-600/30'
+            : 'bg-amber-600/30 hover:bg-amber-600/50'
         )}
       >
+        {/* Dot indicator */}
         <span
           className={cn(
-            'text-[9px] font-bold transition-colors duration-300',
+            'w-1.5 h-1.5 rounded-full transition-all duration-300',
+            isActive ? 'bg-amber-200' : 'bg-amber-700/50'
+          )}
+        />
+        {/* Number */}
+        <span
+          className={cn(
+            'text-[10px] font-semibold transition-colors duration-300',
             isActive ? 'text-white' : 'text-amber-900/60'
           )}
         >

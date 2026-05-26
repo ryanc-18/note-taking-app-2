@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, useCallback } from 'react'
 import type { PDFDocumentProxy } from 'pdfjs-dist'
-import { MinimalDotMarker } from '@/components/ui/annotationMarker'
+import { PillMarker } from '@/components/ui/annotationMarker'
 import AnnotationPanel, { type AnnotationPanelHandle } from './AnnotationPanel'
 import ConfirmDialog from '@/components/ui/ConfirmDialog'
 import type { Annotation } from '@/types'
@@ -18,7 +18,13 @@ const PAGE_GAP = 16
 
 type PageDimension = { width: number; height: number }
 
-export default function CanvasView({ pdfUrl, noteId }: { pdfUrl: string; noteId: string }) {
+export default function CanvasView({
+  pdfUrl,
+  noteId,
+}: {
+  pdfUrl: string
+  noteId: string
+}) {
   const containerRef = useRef<HTMLDivElement>(null)
   const canvasRefs = useRef<(HTMLCanvasElement | null)[]>([])
   const pdfRef = useRef<PDFDocumentProxy | null>(null)
@@ -38,7 +44,9 @@ export default function CanvasView({ pdfUrl, noteId }: { pdfUrl: string; noteId:
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null)
   const [contentLoadKey, setContentLoadKey] = useState(0)
   const [panelMode, setPanelMode] = useState<'single' | 'all'>('single')
-  const [hoveredAnnotationId, setHoveredAnnotationId] = useState<string | null>(null)
+  const [hoveredAnnotationId, setHoveredAnnotationId] = useState<string | null>(
+    null
+  )
 
   // ── Step 1: load PDF and collect page dimensions ───────────────────────────
   // Does NOT render yet — just gets dims so React can mount the canvases
@@ -151,9 +159,9 @@ export default function CanvasView({ pdfUrl, noteId }: { pdfUrl: string; noteId:
 
   // ── Delete an annotation by id ────────────────────────────────────────────
   const performDelete = useCallback((id: string) => {
-    const deleted = annotationsRef.current.find(a => a.id === id)
+    const deleted = annotationsRef.current.find((a) => a.id === id)
     if (deleted) undoStackRef.current = [...undoStackRef.current, deleted]
-    const next = annotationsRef.current.filter(a => a.id !== id)
+    const next = annotationsRef.current.filter((a) => a.id !== id)
     annotationsRef.current = next
     setAnnotations(next)
     setActiveAnnotationId(null)
@@ -170,14 +178,25 @@ export default function CanvasView({ pdfUrl, noteId }: { pdfUrl: string; noteId:
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
       if (e.key === 'Escape') {
-        if (panelMode === 'all') { setPanelMode('single'); return }
-        if (activeAnnotationId) { setActiveAnnotationId(null); return }
+        if (panelMode === 'all') {
+          setPanelMode('single')
+          return
+        }
+        if (activeAnnotationId) {
+          setActiveAnnotationId(null)
+          return
+        }
       }
 
       const target = e.target instanceof Element ? e.target : null
-      const isTyping = target?.tagName === 'TEXTAREA' || target?.tagName === 'INPUT' || (target as HTMLElement)?.isContentEditable
+      const isTyping =
+        target?.tagName === 'TEXTAREA' ||
+        target?.tagName === 'INPUT' ||
+        (target as HTMLElement)?.isContentEditable
       if (e.key === 'Backspace' && activeAnnotationId && !isTyping) {
-        const annotation = annotationsRef.current.find(a => a.id === activeAnnotationId)
+        const annotation = annotationsRef.current.find(
+          (a) => a.id === activeAnnotationId
+        )
         if (annotation?.text.trim()) {
           setConfirmDeleteId(activeAnnotationId)
         } else {
@@ -185,7 +204,13 @@ export default function CanvasView({ pdfUrl, noteId }: { pdfUrl: string; noteId:
         }
       }
 
-      if (e.key.length === 1 && !e.metaKey && !e.ctrlKey && activeAnnotationId && !isTyping) {
+      if (
+        e.key.length === 1 &&
+        !e.metaKey &&
+        !e.ctrlKey &&
+        activeAnnotationId &&
+        !isTyping
+      ) {
         panelRef.current?.focusTextarea()
         return
       }
@@ -198,15 +223,22 @@ export default function CanvasView({ pdfUrl, noteId }: { pdfUrl: string; noteId:
         const next = [...annotationsRef.current, restored]
         annotationsRef.current = next
         setAnnotations(next)
-        setContentLoadKey(k => k + 1)
+        setContentLoadKey((k) => k + 1)
         setActiveAnnotationId(restored.id)
-        createAnnotation(noteId, { page: restored.page, x: restored.x, y: restored.y, number: restored.number, text: restored.text })
-          .then(saved => {
-            const updated = annotationsRef.current.map(a => a.id === restored.id ? { ...a, id: saved.id } : a)
-            annotationsRef.current = updated
-            setAnnotations(updated)
-            setActiveAnnotationId(saved.id)
-          })
+        createAnnotation(noteId, {
+          page: restored.page,
+          x: restored.x,
+          y: restored.y,
+          number: restored.number,
+          text: restored.text,
+        }).then((saved) => {
+          const updated = annotationsRef.current.map((a) =>
+            a.id === restored.id ? { ...a, id: saved.id } : a
+          )
+          annotationsRef.current = updated
+          setAnnotations(updated)
+          setActiveAnnotationId(saved.id)
+        })
       }
     }
 
@@ -237,11 +269,6 @@ export default function CanvasView({ pdfUrl, noteId }: { pdfUrl: string; noteId:
     return () => el.removeEventListener('wheel', handleWheel)
   }, [handleWheel])
 
-  // ── Single click: deselect active annotation ──────────────────────────────
-  const handlePageClick = useCallback(() => {
-    setActiveAnnotationId(null)
-  }, [])
-
   // ── Double click: place a new annotation ──────────────────────────────────
   const handlePageDoubleClick = useCallback(
     (e: React.MouseEvent<HTMLDivElement>, pageIndex: number) => {
@@ -259,20 +286,27 @@ export default function CanvasView({ pdfUrl, noteId }: { pdfUrl: string; noteId:
       const next = [...annotationsRef.current, newAnnotation]
       annotationsRef.current = next
       setAnnotations(next)
-      setContentLoadKey(k => k + 1)
+      setContentLoadKey((k) => k + 1)
       setActiveAnnotationId(newAnnotation.id)
 
       // Save to DB and swap temp id for the real one
-      createAnnotation(noteId, { page: pageIndex, x, y, number: newAnnotation.number, text: '' })
-        .then(saved => {
-          const updated = annotationsRef.current.map(a => a.id === newAnnotation.id ? { ...a, id: saved.id } : a)
-          annotationsRef.current = updated
-          setAnnotations(updated)
-          setActiveAnnotationId(saved.id)
-          // Flush any text typed during the temp-ID window
-          const flushed = updated.find(a => a.id === saved.id)
-          if (flushed?.text) updateAnnotation(saved.id, flushed.text)
-        })
+      createAnnotation(noteId, {
+        page: pageIndex,
+        x,
+        y,
+        number: newAnnotation.number,
+        text: '',
+      }).then((saved) => {
+        const updated = annotationsRef.current.map((a) =>
+          a.id === newAnnotation.id ? { ...a, id: saved.id } : a
+        )
+        annotationsRef.current = updated
+        setAnnotations(updated)
+        setActiveAnnotationId(saved.id)
+        // Flush any text typed during the temp-ID window
+        const flushed = updated.find((a) => a.id === saved.id)
+        if (flushed?.text) updateAnnotation(saved.id, flushed.text)
+      })
     },
     []
   )
@@ -301,7 +335,8 @@ export default function CanvasView({ pdfUrl, noteId }: { pdfUrl: string; noteId:
   const containerH = containerRef.current?.clientHeight ?? 0
   const fitsVertically = scaledTotalHeight <= containerH
 
-  const confirmAnnotation = annotations.find(a => a.id === confirmDeleteId) ?? null
+  const confirmAnnotation =
+    annotations.find((a) => a.id === confirmDeleteId) ?? null
 
   const activeAnnotation =
     annotations.find((a) => a.id === activeAnnotationId) ?? null
@@ -378,7 +413,6 @@ export default function CanvasView({ pdfUrl, noteId }: { pdfUrl: string; noteId:
               {naturalPages.map((page, i) => (
                 <div
                   key={i}
-                  onClick={handlePageClick}
                   onDoubleClick={(e) => handlePageDoubleClick(e, i)}
                   style={{
                     width: `${page.width * effectiveZoom}px`,
@@ -416,25 +450,41 @@ export default function CanvasView({ pdfUrl, noteId }: { pdfUrl: string; noteId:
                           left: `${a.x}%`,
                           top: `${a.y}%`,
                           transform: `translate(-50%, -50%) ${panelMode === 'all' && hoveredAnnotationId === a.id ? 'scale(1.25)' : 'scale(1)'}`,
-                          zIndex: panelMode === 'all' && hoveredAnnotationId === a.id ? 20 : 10,
-                          opacity: panelMode === 'all' && hoveredAnnotationId !== null && hoveredAnnotationId !== a.id ? 0.3 : 1,
-                          transition: 'opacity 0.15s ease, transform 0.15s ease',
+                          zIndex:
+                            panelMode === 'all' && hoveredAnnotationId === a.id
+                              ? 20
+                              : 10,
+                          opacity:
+                            panelMode === 'all' &&
+                            hoveredAnnotationId !== null &&
+                            hoveredAnnotationId !== a.id
+                              ? 0.3
+                              : 1,
+                          transition:
+                            'opacity 0.15s ease, transform 0.15s ease',
                         }}
                         onClick={(e) => e.stopPropagation()}
+                        onMouseEnter={() => { if (panelMode === 'all') setHoveredAnnotationId(a.id) }}
+                        onMouseLeave={() => { if (panelMode === 'all') setHoveredAnnotationId(null) }}
                       >
-                        <MinimalDotMarker
+                        <PillMarker
                           number={a.number}
-                          isActive={panelMode === 'all' || activeAnnotationId === a.id}
+                          isActive={
+                            panelMode === 'all' || activeAnnotationId === a.id
+                          }
                           isSpawning={activeAnnotationId === a.id}
                           onClick={() => {
                             if (panelMode === 'all') {
                               setPanelMode('single')
-                              setContentLoadKey(k => k + 1)
+                              setContentLoadKey((k) => k + 1)
                               setActiveAnnotationId(a.id)
                               return
                             }
-                            if (activeAnnotationId !== a.id) setContentLoadKey(k => k + 1)
-                            setActiveAnnotationId((prev) => prev === a.id ? null : a.id)
+                            if (activeAnnotationId !== a.id)
+                              setContentLoadKey((k) => k + 1)
+                            setActiveAnnotationId((prev) =>
+                              prev === a.id ? null : a.id
+                            )
                           }}
                         />
                       </div>
@@ -455,13 +505,20 @@ export default function CanvasView({ pdfUrl, noteId }: { pdfUrl: string; noteId:
         contentLoadKey={contentLoadKey}
         onTextChange={handleAnnotationTextChange}
         onHoverAnnotation={setHoveredAnnotationId}
+        hoveredAnnotationId={hoveredAnnotationId}
         onSelectAnnotation={(a) => {
           setPanelMode('single')
           setActiveAnnotationId(a.id)
-          setContentLoadKey(k => k + 1)
-          canvasRefs.current[a.page]?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+          setContentLoadKey((k) => k + 1)
+          canvasRefs.current[a.page]?.scrollIntoView({
+            behavior: 'smooth',
+            block: 'center',
+          })
         }}
-        onClose={() => { setActiveAnnotationId(null); setPanelMode('single') }}
+        onClose={() => {
+          setActiveAnnotationId(null)
+          setPanelMode('single')
+        }}
       />
       {confirmAnnotation && (
         <ConfirmDialog
