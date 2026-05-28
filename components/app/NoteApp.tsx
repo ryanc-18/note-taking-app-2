@@ -150,6 +150,7 @@ export default function NoteApp() {
   const [renameValue, setRenameValue] = useState('')
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number; id: string; type: 'folder' | 'note' } | null>(null)
   const [clipboard, setClipboard] = useState<{ note: Note; action: 'copy' | 'cut' } | null>(null)
+  const [noFolderHint, setNoFolderHint] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const handleFileSelected = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -230,10 +231,19 @@ export default function NoteApp() {
           filteredNotes={filteredNotes}
           onOpenNote={(id) => { openNote(id); setView('editor') }}
           onToggleFolder={toggleFolder}
-          onAddNote={() => fileInputRef.current?.click()}
+          onAddNote={() => {
+            if (!selectedFolderId) {
+              setNoFolderHint(true)
+              setTimeout(() => setNoFolderHint(false), 2500)
+              return
+            }
+            fileInputRef.current?.click()
+          }}
           onAddFolder={() => addFolder(selectedFolderId ?? undefined)}
           selectedFolderId={selectedFolderId}
           onSelectFolder={setSelectedFolderId}
+          onDeselectFolder={() => setSelectedFolderId(null)}
+          showNoFolderHint={noFolderHint}
           onContextMenu={openContextMenu}
           onStartRename={startRename}
           onHomeClick={() => setView('home')}

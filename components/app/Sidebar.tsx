@@ -23,6 +23,7 @@ type Props = {
   onAddFolder: () => void
   selectedFolderId: string | null
   onSelectFolder: (id: string) => void
+  onDeselectFolder: () => void
   onContextMenu: (e: React.MouseEvent, id: string, type: 'folder' | 'note') => void
   onStartRename: (id: string, currentName: string) => void
   onHomeClick: () => void
@@ -32,6 +33,7 @@ type Props = {
   fileInputRef: React.RefObject<HTMLInputElement | null>
   onFileSelected: (e: React.ChangeEvent<HTMLInputElement>) => void
   userName: string
+  showNoFolderHint: boolean
 }
 
 export default function Sidebar({
@@ -39,9 +41,9 @@ export default function Sidebar({
   renamingId, renameValue, onRenameValueChange, onCommitRename, onCancelRename,
   searchQuery, onSearchChange, filteredNotes,
   onOpenNote, onToggleFolder, onAddNote, onAddFolder,
-  selectedFolderId, onSelectFolder,
+  selectedFolderId, onSelectFolder, onDeselectFolder,
   onContextMenu, onStartRename, onHomeClick, onSettingsClick, onMoveNote, onMoveFolder,
-  fileInputRef, onFileSelected, userName,
+  fileInputRef, onFileSelected, userName, showNoFolderHint,
 }: Props) {
   const addMenuRef = useRef<HTMLDivElement>(null)
   const renameInputRef = useRef<HTMLInputElement>(null)
@@ -129,7 +131,10 @@ export default function Sidebar({
       </div>
 
       {/* File tree */}
-      <div className="sidebar-tree flex-1 overflow-y-auto p-1.5">
+      <div
+        className="sidebar-tree flex-1 overflow-y-auto p-1.5"
+        onClick={(e) => { if (e.target === e.currentTarget) onDeselectFolder() }}
+      >
         <div className="flex items-center justify-between px-2 pt-2 pb-1 text-[10.5px] font-medium uppercase tracking-[0.08em] text-[var(--sidebar-text-muted)]">
           <span>Notes</span>
           <div className="relative" ref={addMenuRef}>
@@ -158,6 +163,12 @@ export default function Sidebar({
             )}
           </div>
         </div>
+
+        {showNoFolderHint && (
+          <div className="mx-1 mb-1.5 px-2.5 py-2 rounded-md bg-[rgba(194,130,74,0.12)] border border-[rgba(194,130,74,0.25)] text-[11.5px] text-[var(--accent)] leading-snug">
+            Select a folder first to import a PDF
+          </div>
+        )}
 
         {(() => {
           function renderFolder(folder: Folder, depth: number): React.ReactNode {
