@@ -6,9 +6,9 @@
 
 // ── Folders ───────────────────────────────────────────────────────────────────
 
-export async function getFolders() {
+export async function getWorkspaceData(): Promise<{ folders: any[]; rootNotes: any[] }> {
   const res = await fetch('/api/folders')
-  if (!res.ok) throw new Error('Failed to load folders')
+  if (!res.ok) throw new Error('Failed to load workspace')
   return res.json()
 }
 
@@ -119,10 +119,10 @@ export async function deleteAnnotation(id: string) {
 
 // ── File Upload ───────────────────────────────────────────────────────────────
 
-export async function uploadPdf(file: File, folderId: string) {
+export async function uploadPdf(file: File, folderId: string | null) {
   const form = new FormData()
   form.append('file', file)
-  form.append('folderId', folderId)
+  if (folderId) form.append('folderId', folderId)
 
   const res = await fetch('/api/upload', { method: 'POST', body: form })
   if (!res.ok) throw new Error('Failed to upload file')

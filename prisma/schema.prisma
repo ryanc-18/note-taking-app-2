@@ -40,9 +40,9 @@ model Note {
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
   userId      String
-  folderId    String
+  folderId    String?
   user        User         @relation(fields: [userId], references: [id])
-  folder      Folder       @relation(fields: [folderId], references: [id])
+  folder      Folder?      @relation(fields: [folderId], references: [id])
   annotations Annotation[]
 }
 

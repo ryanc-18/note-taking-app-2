@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect } from 'react'
 import type { Note, Folder } from '@/types'
 import {
-  getFolders,
+  getWorkspaceData,
   createFolder,
   renameFolder,
   deleteFolder,
@@ -16,16 +16,16 @@ import {
 export function useWorkspace() {
   const [notes, setNotes] = useState<Record<string, Note>>({})
   const [folders, setFolders] = useState<Folder[]>([])
+  const [rootNoteIds, setRootNoteIds] = useState<string[]>([])
   const [openTabs, setOpenTabs] = useState<string[]>([])
   const [activeTab, setActiveTab] = useState<string>('')
 
-  // Derived value — the note currently being viewed
   const activeNote = notes[activeTab]
 
   // ── Load data from the database on mount ───────────────────────────────────
   useEffect(() => {
     async function loadData() {
-      const dbFolders = await getFolders()
+      const { folders: dbFolders, rootNotes: dbRootNotes } = await getWorkspaceData()
       const notesMap: Record<string, Note> = {}
       const folderList: Folder[] = []
 
@@ -36,7 +36,7 @@ export function useWorkspace() {
             id: note.id,
             title: note.title,
             content: note.content,
-            folder: note.folderId,
+            folder: note.folderId ?? null,
             updatedAt: new Date(note.updatedAt).toLocaleDateString(),
             type: note.pdfUrl ? 'document' : 'note',
             pdfUrl: note.pdfUrl ?? undefined,
@@ -46,8 +46,23 @@ export function useWorkspace() {
         folderList.push({ id: folder.id, name: folder.name, noteIds, expanded: true, parentId: folder.parentId ?? null })
       }
 
+      const rootIds: string[] = []
+      for (const note of dbRootNotes) {
+        notesMap[note.id] = {
+          id: note.id,
+          title: note.title,
+          content: note.content,
+          folder: null,
+          updatedAt: new Date(note.updatedAt).toLocaleDateString(),
+          type: note.pdfUrl ? 'document' : 'note',
+          pdfUrl: note.pdfUrl ?? undefined,
+        }
+        rootIds.push(note.id)
+      }
+
       setNotes(notesMap)
       setFolders(folderList)
+      setRootNoteIds(rootIds)
     }
 
     loadData()
@@ -81,11 +96,7 @@ export function useWorkspace() {
 
   // ── Notes ──────────────────────────────────────────────────────────────────
 
-  // Called by the component when the user picks a file from the OS picker
-  const onFileSelected = useCallback(async (file: File, folderId: string) => {
-    if (!folderId) return
-
-    // Show a temp entry immediately so the UI doesn't feel frozen
+  const onFileSelected = useCallback(async (file: File, folderId: string | null) => {
     const tempId = `uploading-${Date.now()}`
     const tempDoc: Note = {
       id: tempId,
@@ -97,9 +108,13 @@ export function useWorkspace() {
       pdfUrl: URL.createObjectURL(file),
     }
     setNotes(prev => ({ ...prev, [tempId]: tempDoc }))
-    setFolders(prev => prev.map(f =>
-      f.id === folderId ? { ...f, expanded: true, noteIds: [...f.noteIds, tempId] } : f
-    ))
+    if (folderId) {
+      setFolders(prev => prev.map(f =>
+        f.id === folderId ? { ...f, expanded: true, noteIds: [...f.noteIds, tempId] } : f
+      ))
+    } else {
+      setRootNoteIds(prev => [...prev, tempId])
+    }
     setOpenTabs(prev => [...prev, tempId])
     setActiveTab(tempId)
 
@@ -109,27 +124,32 @@ export function useWorkspace() {
         id: saved.id,
         title: saved.title,
         content: saved.content,
-        folder: saved.folderId,
+        folder: saved.folderId ?? null,
         updatedAt: 'Just now',
         type: 'document',
         pdfUrl: saved.pdfUrl,
       }
-      // Swap the temp entry out for the real saved one
       setNotes(prev => { const { [tempId]: _, ...rest } = prev; return { ...rest, [saved.id]: savedDoc } })
-      setFolders(prev => prev.map(f =>
-        f.id === folderId ? { ...f, noteIds: f.noteIds.map(id => id === tempId ? saved.id : id) } : f
-      ))
+      if (folderId) {
+        setFolders(prev => prev.map(f =>
+          f.id === folderId ? { ...f, noteIds: f.noteIds.map(id => id === tempId ? saved.id : id) } : f
+        ))
+      } else {
+        setRootNoteIds(prev => prev.map(id => id === tempId ? saved.id : id))
+      }
       setOpenTabs(prev => prev.map(id => id === tempId ? saved.id : id))
       setActiveTab(saved.id)
     } catch {
-      // Upload failed — remove the temp entry
       setNotes(prev => Object.fromEntries(Object.entries(prev).filter(([k]) => k !== tempId)))
-      setFolders(prev => prev.map(f => ({ ...f, noteIds: f.noteIds.filter(n => n !== tempId) })))
+      if (folderId) {
+        setFolders(prev => prev.map(f => ({ ...f, noteIds: f.noteIds.filter(n => n !== tempId) })))
+      } else {
+        setRootNoteIds(prev => prev.filter(id => id !== tempId))
+      }
       setOpenTabs(prev => prev.filter(t => t !== tempId))
     }
-  }, [folders])
+  }, [])
 
-  // value is passed in from the component (it owns the rename input state)
   const commitRename = useCallback(async (id: string, type: 'folder' | 'note', value: string) => {
     const trimmed = value.trim()
     if (!trimmed) return
@@ -146,12 +166,12 @@ export function useWorkspace() {
     const note = notes[id]
     if (!note) return
     const validFolderIds = new Set(folders.map(f => f.id))
-    const folderId = validFolderIds.has(note.folder) ? note.folder : folders[0]?.id
+    const folderId = (note.folder && validFolderIds.has(note.folder)) ? note.folder : folders[0]?.id
     if (!folderId) return
     const saved = await createNote(`${note.title} (copy)`, note.content, folderId, note.pdfUrl)
     const newNote: Note = {
       id: saved.id, title: saved.title, content: saved.content,
-      folder: saved.folderId, updatedAt: 'Just now',
+      folder: saved.folderId ?? null, updatedAt: 'Just now',
       type: note.pdfUrl ? 'document' : 'note',
       pdfUrl: note.pdfUrl,
     }
@@ -161,7 +181,7 @@ export function useWorkspace() {
 
   const pasteNote = useCallback(async (sourceNote: Note, action: 'copy' | 'cut', folderId: string) => {
     const saved = await createNote(sourceNote.title, sourceNote.content, folderId)
-    const newNote: Note = { id: saved.id, title: saved.title, content: saved.content, folder: saved.folderId, updatedAt: 'Just now', type: 'note' }
+    const newNote: Note = { id: saved.id, title: saved.title, content: saved.content, folder: saved.folderId ?? null, updatedAt: 'Just now', type: 'note' }
     setNotes(prev => ({ ...prev, [saved.id]: newNote }))
     setFolders(prev => prev.map(f => f.id === folderId ? { ...f, noteIds: [...f.noteIds, saved.id] } : f))
     if (action === 'cut') {
@@ -174,8 +194,8 @@ export function useWorkspace() {
 
   const moveNoteToFolder = useCallback(async (noteId: string, targetFolderId: string) => {
     await moveNote(noteId, targetFolderId)
-
     setNotes(prev => ({ ...prev, [noteId]: { ...prev[noteId], folder: targetFolderId } }))
+    setRootNoteIds(prev => prev.filter(id => id !== noteId))
     setFolders(prev => prev.map(f => {
       if (f.noteIds.includes(noteId)) return { ...f, noteIds: f.noteIds.filter(id => id !== noteId) }
       if (f.id === targetFolderId) return { ...f, noteIds: [...f.noteIds, noteId] }
@@ -187,6 +207,7 @@ export function useWorkspace() {
     await deleteNote(id)
     setNotes(prev => Object.fromEntries(Object.entries(prev).filter(([k]) => k !== id)))
     setFolders(prev => prev.map(f => ({ ...f, noteIds: f.noteIds.filter(n => n !== id) })))
+    setRootNoteIds(prev => prev.filter(n => n !== id))
     setOpenTabs(prev => prev.filter(t => t !== id))
     setActiveTab(prev => prev === id ? '' : prev)
   }, [])
@@ -203,7 +224,6 @@ export function useWorkspace() {
   }, [])
 
   const moveFolderTo = useCallback(async (folderId: string, targetParentId: string | null, allFolders: Folder[]) => {
-    // Prevent dropping into own descendant
     function isDescendant(parentId: string, candidateId: string): boolean {
       const children = allFolders.filter(f => f.parentId === parentId)
       return children.some(c => c.id === candidateId || isDescendant(c.id, candidateId))
@@ -225,24 +245,21 @@ export function useWorkspace() {
   }, [folders])
 
   return {
-    // State
     notes,
     folders,
+    rootNoteIds,
     openTabs,
     activeTab,
     activeNote,
     recentNoteIds,
-    // Tab operations
     openNote,
     closeTab,
-    // Note operations
     onFileSelected,
     commitRename,
     duplicateNote,
     pasteNote,
     removeNote,
     moveNoteToFolder,
-    // Folder operations
     toggleFolder,
     addFolder,
     removeFolder,

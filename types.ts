@@ -2,7 +2,7 @@ export type Note = {
   id: string
   title: string
   content: string
-  folder: string
+  folder: string | null
   updatedAt: string
   type?: 'note' | 'document'
   pdfUrl?: string

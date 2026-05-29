@@ -23,6 +23,8 @@ type Props = {
   onAddFolder: () => void
   selectedFolderId: string | null
   onSelectFolder: (id: string) => void
+  onDeselectFolder: () => void
+  rootNoteIds: string[]
   onContextMenu: (e: React.MouseEvent, id: string, type: 'folder' | 'note') => void
   onStartRename: (id: string, currentName: string) => void
   onHomeClick: () => void
@@ -39,7 +41,8 @@ export default function Sidebar({
   renamingId, renameValue, onRenameValueChange, onCommitRename, onCancelRename,
   searchQuery, onSearchChange, filteredNotes,
   onOpenNote, onToggleFolder, onAddNote, onAddFolder,
-  selectedFolderId, onSelectFolder,
+  selectedFolderId, onSelectFolder, onDeselectFolder,
+  rootNoteIds,
   onContextMenu, onStartRename, onHomeClick, onSettingsClick, onMoveNote, onMoveFolder,
   fileInputRef, onFileSelected, userName,
 }: Props) {
@@ -129,7 +132,10 @@ export default function Sidebar({
       </div>
 
       {/* File tree */}
-      <div className="sidebar-tree flex-1 overflow-y-auto p-1.5">
+      <div
+        className="sidebar-tree flex-1 overflow-y-auto p-1.5"
+        onClick={(e) => { if (e.target === e.currentTarget) onDeselectFolder() }}
+      >
         <div className="flex items-center justify-between px-2 pt-2 pb-1 text-[10.5px] font-medium uppercase tracking-[0.08em] text-[var(--sidebar-text-muted)]">
           <span>Notes</span>
           <div className="relative" ref={addMenuRef}>
@@ -158,6 +164,39 @@ export default function Sidebar({
             )}
           </div>
         </div>
+
+        {rootNoteIds.map(id => notes[id]).filter(Boolean).map(note => (
+          <button
+            key={note.id}
+            className={`flex items-center gap-1.5 w-full py-1 px-2 rounded-md text-[12.5px] text-left border-none cursor-pointer select-none truncate transition-colors duration-100 focus-visible:outline focus-visible:outline-1 focus-visible:outline-[var(--accent)] ${
+              activeTab === note.id
+                ? 'bg-[var(--sidebar-active)] text-[var(--sidebar-text-active)]'
+                : 'bg-transparent text-[var(--sidebar-text-muted)] hover:bg-[var(--sidebar-hover)] hover:text-[var(--sidebar-text)]'
+            }`}
+            onClick={() => onOpenNote(note.id)}
+            onDoubleClick={(e) => { e.stopPropagation(); onStartRename(note.id, note.title) }}
+            onContextMenu={(e) => onContextMenu(e, note.id, 'note')}
+          >
+            <span className="shrink-0 flex"><NoteIcon /></span>
+            {renamingId === note.id ? (
+              <input
+                ref={renameInputRef}
+                className="flex-1 bg-[var(--paper-elevated)] border border-[var(--accent)] rounded px-1 py-0 text-[12.5px] text-[var(--text-primary)] outline-none"
+                value={renameValue}
+                onChange={e => onRenameValueChange(e.target.value)}
+                onBlur={() => onCommitRename(note.id, 'note')}
+                onKeyDown={e => {
+                  if (e.key === 'Enter') onCommitRename(note.id, 'note')
+                  if (e.key === 'Escape') onCancelRename()
+                }}
+                onClick={e => e.stopPropagation()}
+                autoFocus
+              />
+            ) : (
+              <span className="truncate">{note.title}</span>
+            )}
+          </button>
+        ))}
 
         {(() => {
           function renderFolder(folder: Folder, depth: number): React.ReactNode {

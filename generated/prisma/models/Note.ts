@@ -173,7 +173,7 @@ export type NoteGroupByOutputType = {
   createdAt: Date
   updatedAt: Date
   userId: string
-  folderId: string
+  folderId: string | null
   _count: NoteCountAggregateOutputType | null
   _min: NoteMinAggregateOutputType | null
   _max: NoteMaxAggregateOutputType | null
@@ -205,9 +205,9 @@ export type NoteWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"Note"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Note"> | Date | string
   userId?: Prisma.StringFilter<"Note"> | string
-  folderId?: Prisma.StringFilter<"Note"> | string
+  folderId?: Prisma.StringNullableFilter<"Note"> | string | null
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
-  folder?: Prisma.XOR<Prisma.FolderScalarRelationFilter, Prisma.FolderWhereInput>
+  folder?: Prisma.XOR<Prisma.FolderNullableScalarRelationFilter, Prisma.FolderWhereInput> | null
   annotations?: Prisma.AnnotationListRelationFilter
 }
 
@@ -219,7 +219,7 @@ export type NoteOrderByWithRelationInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   userId?: Prisma.SortOrder
-  folderId?: Prisma.SortOrder
+  folderId?: Prisma.SortOrderInput | Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
   folder?: Prisma.FolderOrderByWithRelationInput
   annotations?: Prisma.AnnotationOrderByRelationAggregateInput
@@ -236,9 +236,9 @@ export type NoteWhereUniqueInput = Prisma.AtLeast<{
   createdAt?: Prisma.DateTimeFilter<"Note"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Note"> | Date | string
   userId?: Prisma.StringFilter<"Note"> | string
-  folderId?: Prisma.StringFilter<"Note"> | string
+  folderId?: Prisma.StringNullableFilter<"Note"> | string | null
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
-  folder?: Prisma.XOR<Prisma.FolderScalarRelationFilter, Prisma.FolderWhereInput>
+  folder?: Prisma.XOR<Prisma.FolderNullableScalarRelationFilter, Prisma.FolderWhereInput> | null
   annotations?: Prisma.AnnotationListRelationFilter
 }, "id">
 
@@ -250,7 +250,7 @@ export type NoteOrderByWithAggregationInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   userId?: Prisma.SortOrder
-  folderId?: Prisma.SortOrder
+  folderId?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.NoteCountOrderByAggregateInput
   _max?: Prisma.NoteMaxOrderByAggregateInput
   _min?: Prisma.NoteMinOrderByAggregateInput
@@ -267,7 +267,7 @@ export type NoteScalarWhereWithAggregatesInput = {
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Note"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Note"> | Date | string
   userId?: Prisma.StringWithAggregatesFilter<"Note"> | string
-  folderId?: Prisma.StringWithAggregatesFilter<"Note"> | string
+  folderId?: Prisma.StringNullableWithAggregatesFilter<"Note"> | string | null
 }
 
 export type NoteCreateInput = {
@@ -278,7 +278,7 @@ export type NoteCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutNotesInput
-  folder: Prisma.FolderCreateNestedOneWithoutNotesInput
+  folder?: Prisma.FolderCreateNestedOneWithoutNotesInput
   annotations?: Prisma.AnnotationCreateNestedManyWithoutNoteInput
 }
 
@@ -290,7 +290,7 @@ export type NoteUncheckedCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   userId: string
-  folderId: string
+  folderId?: string | null
   annotations?: Prisma.AnnotationUncheckedCreateNestedManyWithoutNoteInput
 }
 
@@ -302,7 +302,7 @@ export type NoteUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutNotesNestedInput
-  folder?: Prisma.FolderUpdateOneRequiredWithoutNotesNestedInput
+  folder?: Prisma.FolderUpdateOneWithoutNotesNestedInput
   annotations?: Prisma.AnnotationUpdateManyWithoutNoteNestedInput
 }
 
@@ -314,7 +314,7 @@ export type NoteUncheckedUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
-  folderId?: Prisma.StringFieldUpdateOperationsInput | string
+  folderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   annotations?: Prisma.AnnotationUncheckedUpdateManyWithoutNoteNestedInput
 }
 
@@ -326,7 +326,7 @@ export type NoteCreateManyInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   userId: string
-  folderId: string
+  folderId?: string | null
 }
 
 export type NoteUpdateManyMutationInput = {
@@ -346,7 +346,7 @@ export type NoteUncheckedUpdateManyInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
-  folderId?: Prisma.StringFieldUpdateOperationsInput | string
+  folderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type NoteListRelationFilter = {
@@ -502,7 +502,7 @@ export type NoteCreateWithoutUserInput = {
   pdfUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  folder: Prisma.FolderCreateNestedOneWithoutNotesInput
+  folder?: Prisma.FolderCreateNestedOneWithoutNotesInput
   annotations?: Prisma.AnnotationCreateNestedManyWithoutNoteInput
 }
 
@@ -513,7 +513,7 @@ export type NoteUncheckedCreateWithoutUserInput = {
   pdfUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  folderId: string
+  folderId?: string | null
   annotations?: Prisma.AnnotationUncheckedCreateNestedManyWithoutNoteInput
 }
 
@@ -554,7 +554,7 @@ export type NoteScalarWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"Note"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Note"> | Date | string
   userId?: Prisma.StringFilter<"Note"> | string
-  folderId?: Prisma.StringFilter<"Note"> | string
+  folderId?: Prisma.StringNullableFilter<"Note"> | string | null
 }
 
 export type NoteCreateWithoutFolderInput = {
@@ -613,7 +613,7 @@ export type NoteCreateWithoutAnnotationsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutNotesInput
-  folder: Prisma.FolderCreateNestedOneWithoutNotesInput
+  folder?: Prisma.FolderCreateNestedOneWithoutNotesInput
 }
 
 export type NoteUncheckedCreateWithoutAnnotationsInput = {
@@ -624,7 +624,7 @@ export type NoteUncheckedCreateWithoutAnnotationsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   userId: string
-  folderId: string
+  folderId?: string | null
 }
 
 export type NoteCreateOrConnectWithoutAnnotationsInput = {
@@ -651,7 +651,7 @@ export type NoteUpdateWithoutAnnotationsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutNotesNestedInput
-  folder?: Prisma.FolderUpdateOneRequiredWithoutNotesNestedInput
+  folder?: Prisma.FolderUpdateOneWithoutNotesNestedInput
 }
 
 export type NoteUncheckedUpdateWithoutAnnotationsInput = {
@@ -662,7 +662,7 @@ export type NoteUncheckedUpdateWithoutAnnotationsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
-  folderId?: Prisma.StringFieldUpdateOperationsInput | string
+  folderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type NoteCreateManyUserInput = {
@@ -672,7 +672,7 @@ export type NoteCreateManyUserInput = {
   pdfUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  folderId: string
+  folderId?: string | null
 }
 
 export type NoteUpdateWithoutUserInput = {
@@ -682,7 +682,7 @@ export type NoteUpdateWithoutUserInput = {
   pdfUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  folder?: Prisma.FolderUpdateOneRequiredWithoutNotesNestedInput
+  folder?: Prisma.FolderUpdateOneWithoutNotesNestedInput
   annotations?: Prisma.AnnotationUpdateManyWithoutNoteNestedInput
 }
 
@@ -693,7 +693,7 @@ export type NoteUncheckedUpdateWithoutUserInput = {
   pdfUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  folderId?: Prisma.StringFieldUpdateOperationsInput | string
+  folderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   annotations?: Prisma.AnnotationUncheckedUpdateManyWithoutNoteNestedInput
 }
 
@@ -704,7 +704,7 @@ export type NoteUncheckedUpdateManyWithoutUserInput = {
   pdfUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  folderId?: Prisma.StringFieldUpdateOperationsInput | string
+  folderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type NoteCreateManyFolderInput = {
@@ -790,7 +790,7 @@ export type NoteSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   userId?: boolean
   folderId?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
-  folder?: boolean | Prisma.FolderDefaultArgs<ExtArgs>
+  folder?: boolean | Prisma.Note$folderArgs<ExtArgs>
   annotations?: boolean | Prisma.Note$annotationsArgs<ExtArgs>
   _count?: boolean | Prisma.NoteCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["note"]>
@@ -805,7 +805,7 @@ export type NoteSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   userId?: boolean
   folderId?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
-  folder?: boolean | Prisma.FolderDefaultArgs<ExtArgs>
+  folder?: boolean | Prisma.Note$folderArgs<ExtArgs>
 }, ExtArgs["result"]["note"]>
 
 export type NoteSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -818,7 +818,7 @@ export type NoteSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   userId?: boolean
   folderId?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
-  folder?: boolean | Prisma.FolderDefaultArgs<ExtArgs>
+  folder?: boolean | Prisma.Note$folderArgs<ExtArgs>
 }, ExtArgs["result"]["note"]>
 
 export type NoteSelectScalar = {
@@ -835,24 +835,24 @@ export type NoteSelectScalar = {
 export type NoteOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "content" | "pdfUrl" | "createdAt" | "updatedAt" | "userId" | "folderId", ExtArgs["result"]["note"]>
 export type NoteInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
-  folder?: boolean | Prisma.FolderDefaultArgs<ExtArgs>
+  folder?: boolean | Prisma.Note$folderArgs<ExtArgs>
   annotations?: boolean | Prisma.Note$annotationsArgs<ExtArgs>
   _count?: boolean | Prisma.NoteCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type NoteIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
-  folder?: boolean | Prisma.FolderDefaultArgs<ExtArgs>
+  folder?: boolean | Prisma.Note$folderArgs<ExtArgs>
 }
 export type NoteIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
-  folder?: boolean | Prisma.FolderDefaultArgs<ExtArgs>
+  folder?: boolean | Prisma.Note$folderArgs<ExtArgs>
 }
 
 export type $NotePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Note"
   objects: {
     user: Prisma.$UserPayload<ExtArgs>
-    folder: Prisma.$FolderPayload<ExtArgs>
+    folder: Prisma.$FolderPayload<ExtArgs> | null
     annotations: Prisma.$AnnotationPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
@@ -863,7 +863,7 @@ export type $NotePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     createdAt: Date
     updatedAt: Date
     userId: string
-    folderId: string
+    folderId: string | null
   }, ExtArgs["result"]["note"]>
   composites: {}
 }
@@ -1259,7 +1259,7 @@ readonly fields: NoteFieldRefs;
 export interface Prisma__NoteClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  folder<T extends Prisma.FolderDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.FolderDefaultArgs<ExtArgs>>): Prisma.Prisma__FolderClient<runtime.Types.Result.GetResult<Prisma.$FolderPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  folder<T extends Prisma.Note$folderArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Note$folderArgs<ExtArgs>>): Prisma.Prisma__FolderClient<runtime.Types.Result.GetResult<Prisma.$FolderPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   annotations<T extends Prisma.Note$annotationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Note$annotationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AnnotationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -1696,6 +1696,25 @@ export type NoteDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Internal
    * Limit how many Notes to delete.
    */
   limit?: number
+}
+
+/**
+ * Note.folder
+ */
+export type Note$folderArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Folder
+   */
+  select?: Prisma.FolderSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Folder
+   */
+  omit?: Prisma.FolderOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.FolderInclude<ExtArgs> | null
+  where?: Prisma.FolderWhereInput
 }
 
 /**
