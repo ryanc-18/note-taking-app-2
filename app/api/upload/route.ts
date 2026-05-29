@@ -11,8 +11,8 @@ export async function POST(request: Request) {
   const file = formData.get('file') as File | null
   const folderId = formData.get('folderId') as string | null
 
-  if (!file || !folderId) {
-    return NextResponse.json({ error: 'Missing file or folderId' }, { status: 400 })
+  if (!file) {
+    return NextResponse.json({ error: 'Missing file' }, { status: 400 })
   }
 
   // Upload to Vercel Blob
@@ -25,7 +25,7 @@ export async function POST(request: Request) {
       content: '',
       pdfUrl: blob.url,
       userId: user.id,
-      folderId,
+      folderId: folderId ?? undefined,
     },
   })
 

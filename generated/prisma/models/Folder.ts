@@ -338,11 +338,6 @@ export type FolderMinOrderByAggregateInput = {
   parentId?: Prisma.SortOrder
 }
 
-export type FolderScalarRelationFilter = {
-  is?: Prisma.FolderWhereInput
-  isNot?: Prisma.FolderWhereInput
-}
-
 export type FolderCreateNestedManyWithoutUserInput = {
   create?: Prisma.XOR<Prisma.FolderCreateWithoutUserInput, Prisma.FolderUncheckedCreateWithoutUserInput> | Prisma.FolderCreateWithoutUserInput[] | Prisma.FolderUncheckedCreateWithoutUserInput[]
   connectOrCreate?: Prisma.FolderCreateOrConnectWithoutUserInput | Prisma.FolderCreateOrConnectWithoutUserInput[]
@@ -449,10 +444,12 @@ export type FolderCreateNestedOneWithoutNotesInput = {
   connect?: Prisma.FolderWhereUniqueInput
 }
 
-export type FolderUpdateOneRequiredWithoutNotesNestedInput = {
+export type FolderUpdateOneWithoutNotesNestedInput = {
   create?: Prisma.XOR<Prisma.FolderCreateWithoutNotesInput, Prisma.FolderUncheckedCreateWithoutNotesInput>
   connectOrCreate?: Prisma.FolderCreateOrConnectWithoutNotesInput
   upsert?: Prisma.FolderUpsertWithoutNotesInput
+  disconnect?: Prisma.FolderWhereInput | boolean
+  delete?: Prisma.FolderWhereInput | boolean
   connect?: Prisma.FolderWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.FolderUpdateToOneWithWhereWithoutNotesInput, Prisma.FolderUpdateWithoutNotesInput>, Prisma.FolderUncheckedUpdateWithoutNotesInput>
 }

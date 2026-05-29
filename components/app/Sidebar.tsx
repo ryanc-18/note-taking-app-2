@@ -24,6 +24,7 @@ type Props = {
   selectedFolderId: string | null
   onSelectFolder: (id: string) => void
   onDeselectFolder: () => void
+  rootNoteIds: string[]
   onContextMenu: (e: React.MouseEvent, id: string, type: 'folder' | 'note') => void
   onStartRename: (id: string, currentName: string) => void
   onHomeClick: () => void
@@ -33,7 +34,6 @@ type Props = {
   fileInputRef: React.RefObject<HTMLInputElement | null>
   onFileSelected: (e: React.ChangeEvent<HTMLInputElement>) => void
   userName: string
-  showNoFolderHint: boolean
 }
 
 export default function Sidebar({
@@ -42,8 +42,9 @@ export default function Sidebar({
   searchQuery, onSearchChange, filteredNotes,
   onOpenNote, onToggleFolder, onAddNote, onAddFolder,
   selectedFolderId, onSelectFolder, onDeselectFolder,
+  rootNoteIds,
   onContextMenu, onStartRename, onHomeClick, onSettingsClick, onMoveNote, onMoveFolder,
-  fileInputRef, onFileSelected, userName, showNoFolderHint,
+  fileInputRef, onFileSelected, userName,
 }: Props) {
   const addMenuRef = useRef<HTMLDivElement>(null)
   const renameInputRef = useRef<HTMLInputElement>(null)
@@ -164,11 +165,38 @@ export default function Sidebar({
           </div>
         </div>
 
-        {showNoFolderHint && (
-          <div className="mx-1 mb-1.5 px-2.5 py-2 rounded-md bg-[rgba(194,130,74,0.12)] border border-[rgba(194,130,74,0.25)] text-[11.5px] text-[var(--accent)] leading-snug">
-            Select a folder first to import a PDF
-          </div>
-        )}
+        {rootNoteIds.map(id => notes[id]).filter(Boolean).map(note => (
+          <button
+            key={note.id}
+            className={`flex items-center gap-1.5 w-full py-1 px-2 rounded-md text-[12.5px] text-left border-none cursor-pointer select-none truncate transition-colors duration-100 focus-visible:outline focus-visible:outline-1 focus-visible:outline-[var(--accent)] ${
+              activeTab === note.id
+                ? 'bg-[var(--sidebar-active)] text-[var(--sidebar-text-active)]'
+                : 'bg-transparent text-[var(--sidebar-text-muted)] hover:bg-[var(--sidebar-hover)] hover:text-[var(--sidebar-text)]'
+            }`}
+            onClick={() => onOpenNote(note.id)}
+            onDoubleClick={(e) => { e.stopPropagation(); onStartRename(note.id, note.title) }}
+            onContextMenu={(e) => onContextMenu(e, note.id, 'note')}
+          >
+            <span className="shrink-0 flex"><NoteIcon /></span>
+            {renamingId === note.id ? (
+              <input
+                ref={renameInputRef}
+                className="flex-1 bg-[var(--paper-elevated)] border border-[var(--accent)] rounded px-1 py-0 text-[12.5px] text-[var(--text-primary)] outline-none"
+                value={renameValue}
+                onChange={e => onRenameValueChange(e.target.value)}
+                onBlur={() => onCommitRename(note.id, 'note')}
+                onKeyDown={e => {
+                  if (e.key === 'Enter') onCommitRename(note.id, 'note')
+                  if (e.key === 'Escape') onCancelRename()
+                }}
+                onClick={e => e.stopPropagation()}
+                autoFocus
+              />
+            ) : (
+              <span className="truncate">{note.title}</span>
+            )}
+          </button>
+        ))}
 
         {(() => {
           function renderFolder(folder: Folder, depth: number): React.ReactNode {

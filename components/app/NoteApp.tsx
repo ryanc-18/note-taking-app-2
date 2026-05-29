@@ -136,7 +136,7 @@ export default function NoteApp() {
   const userEmail = user?.emailAddresses[0]?.emailAddress ?? ''
 
   const {
-    notes, folders, openTabs, activeTab, activeNote, recentNoteIds,
+    notes, folders, rootNoteIds, openTabs, activeTab, activeNote, recentNoteIds,
     openNote, closeTab,
     onFileSelected, commitRename, duplicateNote, pasteNote, removeNote, moveNoteToFolder,
     toggleFolder, addFolder, removeFolder, moveFolderTo,
@@ -150,16 +150,14 @@ export default function NoteApp() {
   const [renameValue, setRenameValue] = useState('')
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number; id: string; type: 'folder' | 'note' } | null>(null)
   const [clipboard, setClipboard] = useState<{ note: Note; action: 'copy' | 'cut' } | null>(null)
-  const [noFolderHint, setNoFolderHint] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const handleFileSelected = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
-    const folderId = selectedFolderId ?? folders[0]?.id ?? ''
-    await onFileSelected(file, folderId)
+    await onFileSelected(file, selectedFolderId)
     e.target.value = ''
-  }, [onFileSelected, selectedFolderId, folders])
+  }, [onFileSelected, selectedFolderId])
 
   const startRename = useCallback((id: string, currentName: string) => {
     setRenamingId(id)
@@ -231,19 +229,12 @@ export default function NoteApp() {
           filteredNotes={filteredNotes}
           onOpenNote={(id) => { openNote(id); setView('editor') }}
           onToggleFolder={toggleFolder}
-          onAddNote={() => {
-            if (!selectedFolderId) {
-              setNoFolderHint(true)
-              setTimeout(() => setNoFolderHint(false), 2500)
-              return
-            }
-            fileInputRef.current?.click()
-          }}
+          onAddNote={() => fileInputRef.current?.click()}
           onAddFolder={() => addFolder(selectedFolderId ?? undefined)}
           selectedFolderId={selectedFolderId}
           onSelectFolder={setSelectedFolderId}
           onDeselectFolder={() => setSelectedFolderId(null)}
-          showNoFolderHint={noFolderHint}
+          rootNoteIds={rootNoteIds}
           onContextMenu={openContextMenu}
           onStartRename={startRename}
           onHomeClick={() => setView('home')}

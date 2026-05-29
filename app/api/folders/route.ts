@@ -6,13 +6,19 @@ export async function GET() {
   const user = await getDbUser()
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  const folders = await prisma.folder.findMany({
-    where: { userId: user.id },
-    include: { notes: true },
-    orderBy: { createdAt: 'asc' },
-  })
+  const [folders, rootNotes] = await Promise.all([
+    prisma.folder.findMany({
+      where: { userId: user.id },
+      include: { notes: true },
+      orderBy: { createdAt: 'asc' },
+    }),
+    prisma.note.findMany({
+      where: { userId: user.id, folderId: null },
+      orderBy: { createdAt: 'asc' },
+    }),
+  ])
 
-  return NextResponse.json(folders)
+  return NextResponse.json({ folders, rootNotes })
 }
 
 export async function POST(request: Request) {
