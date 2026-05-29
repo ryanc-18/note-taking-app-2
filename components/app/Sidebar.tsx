@@ -1,9 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react'
 import type { Note, Folder } from '@/types'
-import {
-  SearchIcon, FolderIcon, NoteIcon, ChevronIcon,
-  PlusIcon, HomeIcon, SettingsIcon,
-} from '@/components/ui/icons'
+import { Search, Folder as FolderIcon, FolderOpen as FolderOpenIcon, FileText, ChevronRight, Plus, Home, Settings, LogOut } from 'lucide-react'
 
 type Props = {
   notes: Record<string, Note>
@@ -34,6 +31,7 @@ type Props = {
   fileInputRef: React.RefObject<HTMLInputElement | null>
   onFileSelected: (e: React.ChangeEvent<HTMLInputElement>) => void
   userName: string
+  onSignOut: () => void
 }
 
 export default function Sidebar({
@@ -44,11 +42,13 @@ export default function Sidebar({
   selectedFolderId, onSelectFolder, onDeselectFolder,
   rootNoteIds,
   onContextMenu, onStartRename, onHomeClick, onSettingsClick, onMoveNote, onMoveFolder,
-  fileInputRef, onFileSelected, userName,
+  fileInputRef, onFileSelected, userName, onSignOut,
 }: Props) {
   const addMenuRef = useRef<HTMLDivElement>(null)
+  const accountMenuRef = useRef<HTMLDivElement>(null)
   const renameInputRef = useRef<HTMLInputElement>(null)
   const [addMenuOpen, setAddMenuOpen] = useState(false)
+  const [accountMenuOpen, setAccountMenuOpen] = useState(false)
   const [dragOverFolderId, setDragOverFolderId] = useState<string | null>(null)
 
   useEffect(() => {
@@ -65,6 +65,17 @@ export default function Sidebar({
     document.addEventListener('mousedown', handleClick)
     return () => document.removeEventListener('mousedown', handleClick)
   }, [addMenuOpen])
+
+  useEffect(() => {
+    if (!accountMenuOpen) return
+    function handleClick(e: MouseEvent) {
+      if (accountMenuRef.current && !accountMenuRef.current.contains(e.target as Node)) {
+        setAccountMenuOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClick)
+    return () => document.removeEventListener('mousedown', handleClick)
+  }, [accountMenuOpen])
 
   return (
     <aside className="w-60 shrink-0 flex flex-col bg-[var(--sidebar-bg)] border-r border-[var(--sidebar-border)] overflow-hidden">
@@ -84,25 +95,19 @@ export default function Sidebar({
 
       {/* Top nav */}
       <nav className="p-1.5 border-b border-[var(--sidebar-border)]">
-        {[
-          { icon: <HomeIcon />, label: 'Home', onClick: onHomeClick },
-          { icon: <SettingsIcon />, label: 'Settings', onClick: onSettingsClick },
-        ].map(({ icon, label, onClick }) => (
-          <button
-            key={label}
-            onClick={onClick}
-            className="flex items-center gap-2 w-full px-2 py-1.5 rounded-md text-[13px] text-[var(--sidebar-text)] bg-transparent border-none cursor-pointer select-none transition-colors duration-100 hover:bg-[var(--sidebar-hover)] hover:text-[var(--sidebar-text-active)] focus-visible:outline focus-visible:outline-1 focus-visible:outline-[var(--accent)]"
-          >
-            {icon}<span>{label}</span>
-          </button>
-        ))}
+        <button
+          onClick={onHomeClick}
+          className="flex items-center gap-2 w-full px-2 py-1.5 rounded-md text-[13px] text-[var(--sidebar-text)] bg-transparent border-none cursor-pointer select-none transition-colors duration-100 hover:bg-[var(--sidebar-hover)] hover:text-[var(--sidebar-text-active)] focus-visible:outline focus-visible:outline-1 focus-visible:outline-[var(--accent)]"
+        >
+          <Home size={14} /><span>Home</span>
+        </button>
       </nav>
 
       {/* Search */}
       <div className="px-1.5 py-2 border-b border-[var(--sidebar-border)] relative">
         <div className="relative flex items-center">
           <span className="absolute left-2 flex pointer-events-none text-[var(--sidebar-text-muted)]">
-            <SearchIcon />
+            <Search size={14} />
           </span>
           <input
             className="w-full bg-white/5 border border-white/[0.08] rounded-md py-[5px] pl-7 pr-2 text-[12.5px] text-[var(--sidebar-text-active)] outline-none transition-colors duration-150 placeholder:text-[var(--sidebar-text-muted)] focus:border-[rgba(194,130,74,0.4)] focus:bg-white/[0.07]"
@@ -144,7 +149,7 @@ export default function Sidebar({
               title="Add"
               onClick={() => setAddMenuOpen((prev: boolean) => !prev)}
             >
-              <PlusIcon />
+              <Plus size={12} />
             </button>
             {addMenuOpen && (
               <div className="absolute top-[calc(100%+4px)] right-0 w-40 bg-[var(--paper-elevated)] border border-[var(--sidebar-border)] rounded-lg overflow-hidden z-[100] shadow-[0_4px_16px_rgba(0,0,0,0.1)] normal-case tracking-normal">
@@ -152,13 +157,13 @@ export default function Sidebar({
                   className="flex items-center gap-2 w-full px-3 py-2 text-[12.5px] text-[var(--text-primary)] bg-transparent border-none cursor-pointer text-left transition-colors duration-100 hover:bg-[var(--sidebar-hover)]"
                   onClick={() => { onAddNote(); setAddMenuOpen(false) }}
                 >
-                  <NoteIcon /><span>New File</span>
+                  <FileText size={12} /><span>New File</span>
                 </button>
                 <button
                   className="flex items-center gap-2 w-full px-3 py-2 text-[12.5px] text-[var(--text-primary)] bg-transparent border-none cursor-pointer text-left transition-colors duration-100 hover:bg-[var(--sidebar-hover)]"
                   onClick={() => { onAddFolder(); setAddMenuOpen(false) }}
                 >
-                  <FolderIcon /><span>New Folder</span>
+                  <FolderIcon size={14} /><span>New Folder</span>
                 </button>
               </div>
             )}
@@ -177,7 +182,7 @@ export default function Sidebar({
             onDoubleClick={(e) => { e.stopPropagation(); onStartRename(note.id, note.title) }}
             onContextMenu={(e) => onContextMenu(e, note.id, 'note')}
           >
-            <span className="shrink-0 flex"><NoteIcon /></span>
+            <span className="shrink-0 flex"><FileText size={12} /></span>
             {renamingId === note.id ? (
               <input
                 ref={renameInputRef}
@@ -234,8 +239,10 @@ export default function Sidebar({
                     setDragOverFolderId(null)
                   }}
                 >
-                  <span className="flex text-[var(--sidebar-text-muted)] -mr-0.5"><ChevronIcon down={folder.expanded} /></span>
-                  <FolderIcon open={folder.expanded} />
+                  <span className="flex text-[var(--sidebar-text-muted)] -mr-0.5">
+                    <ChevronRight size={10} style={{ transform: folder.expanded ? 'rotate(90deg)' : 'rotate(0deg)', transition: 'transform 0.15s ease' }} />
+                  </span>
+                  {folder.expanded ? <FolderOpenIcon size={14} /> : <FolderIcon size={14} />}
                   {renamingId === folder.id ? (
                     <input
                       ref={renameInputRef}
@@ -276,7 +283,7 @@ export default function Sidebar({
                           e.dataTransfer.effectAllowed = 'move'
                         }}
                       >
-                        <span className="shrink-0 flex"><NoteIcon /></span>
+                        <span className="shrink-0 flex"><FileText size={12} /></span>
                         {renamingId === note.id ? (
                           <input
                             ref={renameInputRef}
@@ -308,8 +315,28 @@ export default function Sidebar({
       </div>
 
       {/* Footer */}
-      <div className="px-1.5 py-2 border-t border-[var(--sidebar-border)]">
-        <button className="flex items-center gap-2 w-full px-2 py-1.5 rounded-md text-[12px] text-[var(--sidebar-text-muted)] bg-transparent border-none cursor-pointer select-none transition-colors duration-100 hover:bg-[var(--sidebar-hover)]">
+      <div className="px-1.5 py-2 border-t border-[var(--sidebar-border)] relative" ref={accountMenuRef}>
+        {accountMenuOpen && (
+          <div className="absolute bottom-[calc(100%+4px)] left-1.5 right-1.5 bg-[var(--paper-elevated)] border border-[var(--sidebar-border)] rounded-lg overflow-hidden z-[100] shadow-[0_4px_16px_rgba(0,0,0,0.1)]">
+            <button
+              className="flex items-center gap-2 w-full px-3 py-2 text-[12.5px] text-[var(--text-primary)] bg-transparent border-none cursor-pointer text-left transition-colors duration-100 hover:bg-[var(--sidebar-hover)]"
+              onClick={() => { setAccountMenuOpen(false); onSettingsClick() }}
+            >
+              <Settings size={14} />Settings
+            </button>
+            <div className="border-t border-[var(--sidebar-border)]" />
+            <button
+              className="flex items-center gap-2 w-full px-3 py-2 text-[12.5px] text-[var(--text-primary)] bg-transparent border-none cursor-pointer text-left transition-colors duration-100 hover:bg-[var(--sidebar-hover)]"
+              onClick={() => { setAccountMenuOpen(false); onSignOut() }}
+            >
+              <LogOut size={14} />Sign out
+            </button>
+          </div>
+        )}
+        <button
+          className="flex items-center gap-2 w-full px-2 py-1.5 rounded-md text-[12px] text-[var(--sidebar-text-muted)] bg-transparent border-none cursor-pointer select-none transition-colors duration-100 hover:bg-[var(--sidebar-hover)]"
+          onClick={() => setAccountMenuOpen(prev => !prev)}
+        >
           <span className="flex items-center justify-center w-[22px] h-[22px] rounded-full bg-white/10 text-[11px] font-medium text-[var(--sidebar-text)] shrink-0">
             {userName.charAt(0).toUpperCase() || '?'}
           </span>

@@ -78,30 +78,6 @@ export default function SettingsView({ name, email }: Props) {
           <Row label="Email" value={email} />
         </Section>
 
-        <Section title="Account">
-          <div style={{ padding: '12px 16px' }}>
-            <button
-              disabled
-              style={{
-                padding: '7px 14px',
-                fontSize: '13px',
-                fontFamily: 'var(--font-ui)',
-                fontWeight: 500,
-                color: 'var(--text-muted)',
-                background: 'transparent',
-                border: '1px solid var(--border-strong)',
-                borderRadius: '6px',
-                cursor: 'not-allowed',
-                opacity: 0.5,
-              }}
-            >
-              Sign out
-            </button>
-            <p style={{ marginTop: '8px', fontSize: '12px', color: 'var(--text-muted)', fontFamily: 'var(--font-ui)' }}>
-              Authentication not yet implemented.
-            </p>
-          </div>
-        </Section>
       </div>
     </div>
   )
