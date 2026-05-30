@@ -1,5 +1,5 @@
 import type { Note } from '@/types'
-import { DocIcon, NoteIcon, CloseIcon } from '@/components/ui/icons'
+import { FileText, BookOpen, X } from 'lucide-react'
 
 type Props = {
   openTabs: string[]
@@ -28,14 +28,14 @@ export default function TabBar({ openTabs, notes, activeTab, onSelect, onClose }
             }`}
             onClick={() => onSelect(tabId)}
           >
-            {note.type === 'document' ? <DocIcon /> : <NoteIcon />}
+            {note.type === 'document' ? <BookOpen size={12} /> : <FileText size={12} />}
             <span>{note.title}</span>
             <button
               className="tab-close flex items-center justify-center w-4 h-4 rounded-[3px] border-none bg-transparent text-[var(--text-muted)] cursor-pointer opacity-0 transition-opacity duration-100 ml-0.5 hover:bg-black/[0.08] hover:text-[var(--text-primary)]"
               onClick={(e) => onClose(tabId, e)}
               title="Close tab"
             >
-              <CloseIcon />
+              <X size={10} />
             </button>
           </div>
         )

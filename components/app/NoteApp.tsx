@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useCallback, useRef } from 'react'
-import { useUser } from '@clerk/nextjs'
+import { useUser, useClerk } from '@clerk/nextjs'
 import { useWorkspace } from '@/hooks/useWorkspace'
 import type { Note } from '@/types'
 import Sidebar from './Sidebar'
@@ -132,6 +132,7 @@ const appStyles = `
 
 export default function NoteApp() {
   const { user } = useUser()
+  const { signOut } = useClerk()
   const userName = user ? [user.firstName, user.lastName].filter(Boolean).join(' ') || user.emailAddresses[0]?.emailAddress : ''
   const userEmail = user?.emailAddresses[0]?.emailAddress ?? ''
 
@@ -244,6 +245,7 @@ export default function NoteApp() {
           fileInputRef={fileInputRef}
           onFileSelected={handleFileSelected}
           userName={userName}
+          onSignOut={() => signOut({ redirectUrl: '/sign-in' })}
         />
 
         <div className="flex-1 flex flex-col overflow-hidden bg-[var(--paper-surface)]">
