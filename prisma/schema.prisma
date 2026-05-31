@@ -2,10 +2,58 @@
 // Learn more: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
+  provider = "prisma-client"
+  output   = "../generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  clerkId   String?  @unique
+  email     String   @unique
+  name      String?
+  createdAt DateTime @default(now())
+  folders   Folder[]
+  notes     Note[]
+}
+
+model Folder {
+  id        String   @id @default(cuid())
+  name      String
+  createdAt DateTime @default(now())
+  userId    String
+  parentId  String?
+  user      User     @relation(fields: [userId], references: [id])
+  parent    Folder?  @relation("FolderChildren", fields: [parentId], references: [id])
+  children  Folder[] @relation("FolderChildren")
+  notes     Note[]
+}
+
+model Note {
+  id          String       @id @default(cuid())
+  title       String
+  content     String       @default("")
+  pdfUrl      String?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  userId      String
+  folderId    String?
+  user        User         @relation(fields: [userId], references: [id])
+  folder      Folder?      @relation(fields: [folderId], references: [id])
+  annotations Annotation[]
+}
+
+model Annotation {
+  id        String   @id @default(cuid())
+  page      Int
+  x         Float
+  y         Float
+  number    Int
+  text      String   @default("")
+  createdAt DateTime @default(now())
+  noteId    String
+  note      Note     @relation(fields: [noteId], references: [id])
 }

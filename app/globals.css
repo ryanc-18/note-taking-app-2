@@ -1,26 +1,93 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@keyframes circleExpand {
+  from {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
   }
 }
 
+@keyframes popIn {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  70% {
+    transform: scale(1.15);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+:root {
+  /* Paper palette */
+  --paper-bg: #f5f0e8;
+  --paper-surface: #faf7f2;
+  --paper-elevated: #fffdf8;
+
+  /* Sidebar */
+  --sidebar-bg: #eeebe4;
+  --sidebar-hover: #e5e1d8;
+  --sidebar-active: #dbd6cc;
+  --sidebar-border: rgba(0, 0, 0, 0.07);
+  --sidebar-text: #57534e;
+  --sidebar-text-muted: #a8a29e;
+  --sidebar-text-active: #1c1917;
+
+  /* Content */
+  --text-primary: #1c1917;
+  --text-secondary: #57534e;
+  --text-muted: #a8a29e;
+  --accent: #c2824a;
+  --border: rgba(0, 0, 0, 0.07);
+  --border-strong: rgba(0, 0, 0, 0.12);
+
+  /* Tabs */
+  --tab-bg: #e8e4dc;
+  --tab-active-bg: #faf7f2;
+
+  /* Fonts */
+  --font-display: 'Inter', sans-serif;
+  --font-ui: 'Inter', sans-serif;
+  --font-mono: 'DM Mono', monospace;
+}
+
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-ui);
+}
+
+/* Required ProseMirror base styles */
+.ProseMirror {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  position: relative;
+}
+
+/* Tiptap editor content styles */
+.tiptap ul {
+  list-style-type: disc;
+  padding-left: 1.25rem;
+}
+
+.tiptap strong {
+  font-weight: 600;
+}
+
+.tiptap em {
+  font-style: italic;
+}
+
+.tiptap p {
+  margin: 0;
+}
+
+.tiptap p + p {
+  margin-top: 0.25rem;
 }
