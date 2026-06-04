@@ -31,10 +31,10 @@ export function PinnoteLogo({ title, size = 48, ...props }: MarkProps) {
       <Stem />
       <g transform="rotate(34 26 15)">
         <path
-          d="M26 5.5C20.5 5.5 16 10 16 15.5 16 23.1 26 32.5 26 32.5S36 23.1 36 15.5C36 10 31.5 5.5 26 5.5Z"
+          d="M26 5.5C20.5 5.5 16 10 16 15.5 16 23.1 26 32.5 26 32.5S36 23.1 36 15.5C36 10 31.5 5.5 26 5.5Z M30 15.5A4 4 0 1 0 22 15.5A4 4 0 1 0 30 15.5Z"
           fill={PERIWINKLE}
+          fillRule="evenodd"
         />
-        <circle cx={26} cy={15.5} r={4} fill={PALE} />
       </g>
     </svg>
   )
