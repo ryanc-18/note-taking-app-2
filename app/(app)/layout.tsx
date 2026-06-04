@@ -3,5 +3,5 @@ export default function AppLayout({
 }: {
   children: React.ReactNode
 }) {
-  return <>{children}</>
+  return <div className="h-screen overflow-hidden">{children}</div>
 }
