@@ -544,8 +544,9 @@ export default function LandingPage() {
           className="absolute inset-0 pointer-events-none"
           style={{
             background: `
-              radial-gradient(ellipse 70% 55% at 50% -5%, rgba(51,89,244,0.08) 0%, transparent 65%),
-              radial-gradient(ellipse 45% 35% at 85% 25%, rgba(139,159,232,0.07) 0%, transparent 55%)
+              radial-gradient(ellipse 90% 60% at 50% -10%, rgba(45,62,158,0.13) 0%, transparent 65%),
+              radial-gradient(ellipse 55% 45% at 90% 15%, rgba(128,144,216,0.1) 0%, transparent 55%),
+              radial-gradient(ellipse 40% 30% at 10% 30%, rgba(196,203,248,0.08) 0%, transparent 50%)
             `,
           }}
         />
@@ -795,27 +796,28 @@ export default function LandingPage() {
       </section>
 
       {/* ── Dark callout band ──────────────────────────────────────────────── */}
-      <section style={{ background: NAVY }}>
+      <section>
         <div
           className="mx-auto py-24 px-6 text-center"
           style={{ maxWidth: '760px' }}
         >
           <Reveal>
             <h2
-              className="font-bold text-white mb-5"
+              className="font-bold mb-5"
               style={{
                 fontSize: 'clamp(34px, 5vw, 58px)',
                 letterSpacing: '-0.035em',
                 lineHeight: '1.1',
+                color: NAVY,
               }}
             >
               Read smarter.
               <br />
-              <span style={{ color: PERIWINKLE }}>Remember more.</span>
+              <span style={{ color: BLUE }}>Remember more.</span>
             </h2>
             <p
               style={{
-                color: 'rgba(200,210,255,0.65)',
+                color: '#6B6B80',
                 fontSize: '17px',
                 lineHeight: '1.75',
                 maxWidth: '440px',
@@ -1035,7 +1037,6 @@ export default function LandingPage() {
       {/* ── FAQ ────────────────────────────────────────────────────────────── */}
       <section
         id="faq"
-        style={{ background: '#FAFBFF' }}
         className="py-24 px-6"
       >
         <div className="mx-auto" style={{ maxWidth: '680px' }}>
