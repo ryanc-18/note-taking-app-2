@@ -474,11 +474,11 @@ export default function LandingPage() {
         >
           <Link
             href="/"
-            className="flex items-center gap-2.5 focus-visible:outline-none"
+            className="flex items-center gap-3 focus-visible:outline-none"
           >
-            <PinnoteLogo size={22} />
+            <PinnoteLogo size={30} />
             <span
-              className="font-semibold text-[15px]"
+              className="font-semibold text-[18px]"
               style={{ color: NAVY, letterSpacing: '-0.02em' }}
             >
               Pinnote
