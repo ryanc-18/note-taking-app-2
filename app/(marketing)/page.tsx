@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { useEffect, useRef, useState, ReactNode } from 'react'
+import { Particles } from '@/components/ui/particles'
 import { SVGProps } from 'react'
 
 // ── Brand ─────────────────────────────────────────────────────────────────────
@@ -549,6 +550,14 @@ export default function LandingPage() {
               radial-gradient(ellipse 40% 30% at 10% 30%, rgba(196,203,248,0.08) 0%, transparent 50%)
             `,
           }}
+        />
+        <Particles
+          className="absolute inset-0 pointer-events-none"
+          style={{ maskImage: 'linear-gradient(to bottom, black 40%, transparent 70%)' }}
+          quantity={120}
+          ease={80}
+          color={BLUE}
+          refresh={false}
         />
 
         <div

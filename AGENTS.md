@@ -9,6 +9,8 @@ This version has breaking changes — APIs, conventions, and file structure may 
 ## Always Do First
 
 - **Invoke the `frontend-design` skill** before writing any frontend code, every session, no exceptions.
+- **Invoke the `design-taste-frontend` skill** before writing any frontend code, every session, no exceptions.
+- **Invoke the `ui-ux-pro-max` skill** before writing any frontend code, every session, no exceptions.
 
 ## Reference Images
 
