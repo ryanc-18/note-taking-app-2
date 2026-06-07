@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useEffect, useRef, useState, ReactNode } from 'react'
 import { SVGProps } from 'react'
 import { MacbookScroll } from '@/components/ui/macbook-scroll'
+import { Highlighter } from '@/components/ui/highlighter'
 
 // ── Brand ─────────────────────────────────────────────────────────────────────
 const BLUE = '#2D3E9E'
@@ -135,9 +136,7 @@ function FaqItem({ q, a }: { q: string; a: string }) {
 // ── App mockup ────────────────────────────────────────────────────────────────
 function AppMockup() {
   return (
-    <div
-      className="flex flex-col overflow-hidden w-full h-full"
-    >
+    <div className="flex flex-col overflow-hidden w-full h-full">
       {/* Traffic lights bar */}
       <div
         className="flex items-center gap-2 px-4 h-9"
@@ -146,9 +145,18 @@ function AppMockup() {
           borderBottom: '1px solid rgba(0,0,0,0.07)',
         }}
       >
-        <div className="w-3 h-3 rounded-full" style={{ background: '#FF6058' }} />
-        <div className="w-3 h-3 rounded-full" style={{ background: '#FFBD2E' }} />
-        <div className="w-3 h-3 rounded-full" style={{ background: '#28C840' }} />
+        <div
+          className="w-3 h-3 rounded-full"
+          style={{ background: '#FF6058' }}
+        />
+        <div
+          className="w-3 h-3 rounded-full"
+          style={{ background: '#FFBD2E' }}
+        />
+        <div
+          className="w-3 h-3 rounded-full"
+          style={{ background: '#28C840' }}
+        />
       </div>
 
       {/* App body */}
@@ -209,9 +217,31 @@ function AppMockup() {
               style={{ color: '#78716C', paddingLeft: '16px' }}
             >
               <svg width="10" height="10" viewBox="0 0 12 12" fill="none">
-                <rect x="2" y="1" width="8" height="10" rx="1" stroke="currentColor" strokeWidth="1" />
-                <line x1="4" y1="4" x2="8" y2="4" stroke="currentColor" strokeWidth="0.8" />
-                <line x1="4" y1="6.5" x2="8" y2="6.5" stroke="currentColor" strokeWidth="0.8" />
+                <rect
+                  x="2"
+                  y="1"
+                  width="8"
+                  height="10"
+                  rx="1"
+                  stroke="currentColor"
+                  strokeWidth="1"
+                />
+                <line
+                  x1="4"
+                  y1="4"
+                  x2="8"
+                  y2="4"
+                  stroke="currentColor"
+                  strokeWidth="0.8"
+                />
+                <line
+                  x1="4"
+                  y1="6.5"
+                  x2="8"
+                  y2="6.5"
+                  stroke="currentColor"
+                  strokeWidth="0.8"
+                />
               </svg>
               {n}
             </div>
@@ -237,7 +267,15 @@ function AppMockup() {
               }}
             >
               <svg width="9" height="9" viewBox="0 0 12 12" fill="none">
-                <rect x="2" y="1" width="8" height="10" rx="1" stroke="currentColor" strokeWidth="1" />
+                <rect
+                  x="2"
+                  y="1"
+                  width="8"
+                  height="10"
+                  rx="1"
+                  stroke="currentColor"
+                  strokeWidth="1"
+                />
               </svg>
               climate-study.pdf
             </div>
@@ -258,13 +296,15 @@ function AppMockup() {
                   className="h-3 rounded text-[10px] font-bold mb-3"
                   style={{ width: '65%', background: '#1C1917' }}
                 />
-                {[92, 78, 85, 72, 88, 65, 80, 75, 90, 60, 82, 70].map((w, i) => (
-                  <div
-                    key={i}
-                    className="h-1.5 rounded-full"
-                    style={{ width: `${w}%`, background: '#D6D3D1' }}
-                  />
-                ))}
+                {[92, 78, 85, 72, 88, 65, 80, 75, 90, 60, 82, 70].map(
+                  (w, i) => (
+                    <div
+                      key={i}
+                      className="h-1.5 rounded-full"
+                      style={{ width: `${w}%`, background: '#D6D3D1' }}
+                    />
+                  )
+                )}
               </div>
 
               <div
@@ -338,11 +378,17 @@ function AppMockup() {
                 >
                   {n}
                 </div>
-                <span className="text-[10px] font-semibold" style={{ color: NAVY }}>
+                <span
+                  className="text-[10px] font-semibold"
+                  style={{ color: NAVY }}
+                >
                   {label}
                 </span>
               </div>
-              <p className="text-[10px] leading-relaxed" style={{ color: '#78716C' }}>
+              <p
+                className="text-[10px] leading-relaxed"
+                style={{ color: '#78716C' }}
+              >
                 {body}
               </p>
             </div>
@@ -416,7 +462,9 @@ export default function LandingPage() {
           background: scrolled ? 'rgba(22,22,22,0.92)' : 'transparent',
           backdropFilter: scrolled ? 'blur(16px)' : 'none',
           WebkitBackdropFilter: scrolled ? 'blur(16px)' : 'none',
-          borderBottom: scrolled ? `1px solid ${BORDER}` : '1px solid transparent',
+          borderBottom: scrolled
+            ? `1px solid ${BORDER}`
+            : '1px solid transparent',
           transition: 'background 0.35s ease, border-color 0.35s ease',
         }}
       >
@@ -473,11 +521,13 @@ export default function LandingPage() {
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.background = '#2244DC'
-                e.currentTarget.style.boxShadow = '0 4px 16px rgba(51,89,244,0.4)'
+                e.currentTarget.style.boxShadow =
+                  '0 4px 16px rgba(51,89,244,0.4)'
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.background = BLUE
-                e.currentTarget.style.boxShadow = '0 2px 10px rgba(51,89,244,0.3)'
+                e.currentTarget.style.boxShadow =
+                  '0 2px 10px rgba(51,89,244,0.3)'
               }}
             >
               Get started
@@ -521,7 +571,10 @@ export default function LandingPage() {
           >
             Your PDFs,
             <br />
-            finally understood
+            finally{' '}
+            <Highlighter action="highlight" color="#2D3E9E" isView={true}>
+              understood
+            </Highlighter>
           </h1>
 
           {/* Subtitle */}
@@ -552,11 +605,13 @@ export default function LandingPage() {
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.background = '#2244DC'
-                e.currentTarget.style.boxShadow = '0 6px 28px rgba(51,89,244,0.45)'
+                e.currentTarget.style.boxShadow =
+                  '0 6px 28px rgba(51,89,244,0.45)'
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.background = BLUE
-                e.currentTarget.style.boxShadow = '0 4px 20px rgba(51,89,244,0.35)'
+                e.currentTarget.style.boxShadow =
+                  '0 4px 20px rgba(51,89,244,0.35)'
               }}
             >
               Start for free
@@ -613,8 +668,21 @@ export default function LandingPage() {
               {
                 icon: (
                   <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-                    <circle cx="14" cy="14" r="13" stroke="rgba(255,255,255,0.45)" strokeWidth="1.5" />
-                    <text x="14" y="19" textAnchor="middle" fill="rgba(255,255,255,0.45)" fontSize="13" fontWeight="700">
+                    <circle
+                      cx="14"
+                      cy="14"
+                      r="13"
+                      stroke="rgba(255,255,255,0.45)"
+                      strokeWidth="1.5"
+                    />
+                    <text
+                      x="14"
+                      y="19"
+                      textAnchor="middle"
+                      fill="rgba(255,255,255,0.45)"
+                      fontSize="13"
+                      fontWeight="700"
+                    >
                       1
                     </text>
                   </svg>
@@ -626,10 +694,42 @@ export default function LandingPage() {
               {
                 icon: (
                   <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-                    <rect x="4" y="5" width="20" height="18" rx="2.5" stroke="rgba(255,255,255,0.45)" strokeWidth="1.5" />
-                    <line x1="8" y1="10" x2="20" y2="10" stroke="rgba(255,255,255,0.45)" strokeWidth="1.5" strokeLinecap="round" />
-                    <line x1="8" y1="14" x2="17" y2="14" stroke="rgba(255,255,255,0.45)" strokeWidth="1.5" strokeLinecap="round" />
-                    <line x1="8" y1="18" x2="14" y2="18" stroke="rgba(255,255,255,0.45)" strokeWidth="1.5" strokeLinecap="round" />
+                    <rect
+                      x="4"
+                      y="5"
+                      width="20"
+                      height="18"
+                      rx="2.5"
+                      stroke="rgba(255,255,255,0.45)"
+                      strokeWidth="1.5"
+                    />
+                    <line
+                      x1="8"
+                      y1="10"
+                      x2="20"
+                      y2="10"
+                      stroke="rgba(255,255,255,0.45)"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                    />
+                    <line
+                      x1="8"
+                      y1="14"
+                      x2="17"
+                      y2="14"
+                      stroke="rgba(255,255,255,0.45)"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                    />
+                    <line
+                      x1="8"
+                      y1="18"
+                      x2="14"
+                      y2="18"
+                      stroke="rgba(255,255,255,0.45)"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                    />
                   </svg>
                 ),
                 title: 'Write your note',
@@ -639,8 +739,18 @@ export default function LandingPage() {
               {
                 icon: (
                   <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-                    <path d="M5 8h18v14H5V8z" stroke="rgba(255,255,255,0.45)" strokeWidth="1.5" strokeLinejoin="round" />
-                    <path d="M5 8l4-4h6l3 4" stroke="rgba(255,255,255,0.45)" strokeWidth="1.5" strokeLinejoin="round" />
+                    <path
+                      d="M5 8h18v14H5V8z"
+                      stroke="rgba(255,255,255,0.45)"
+                      strokeWidth="1.5"
+                      strokeLinejoin="round"
+                    />
+                    <path
+                      d="M5 8l4-4h6l3 4"
+                      stroke="rgba(255,255,255,0.45)"
+                      strokeWidth="1.5"
+                      strokeLinejoin="round"
+                    />
                   </svg>
                 ),
                 title: 'Stay organized',
@@ -737,7 +847,11 @@ export default function LandingPage() {
               </h2>
               <p
                 className="mb-7"
-                style={{ fontSize: '16px', lineHeight: '1.8', color: TEXT_MUTED }}
+                style={{
+                  fontSize: '16px',
+                  lineHeight: '1.8',
+                  color: TEXT_MUTED,
+                }}
               >
                 Stop writing notes on a separate sheet that you&apos;ll never
                 connect back to the text. Drop a numbered pin exactly where your
@@ -811,7 +925,10 @@ export default function LandingPage() {
                       Your note here
                     </span>
                   </div>
-                  <p className="text-[13px]" style={{ color: TEXT_MUTED, lineHeight: '1.6' }}>
+                  <p
+                    className="text-[13px]"
+                    style={{ color: TEXT_MUTED, lineHeight: '1.6' }}
+                  >
                     Pinned to the exact paragraph. Always in context.
                   </p>
                 </div>
@@ -841,7 +958,11 @@ export default function LandingPage() {
               </h2>
               <p
                 className="mb-7"
-                style={{ fontSize: '16px', lineHeight: '1.8', color: TEXT_MUTED }}
+                style={{
+                  fontSize: '16px',
+                  lineHeight: '1.8',
+                  color: TEXT_MUTED,
+                }}
               >
                 Create nested folders — Research &rarr; Papers &rarr; 2024. Your
                 workspace grows with you without ever becoming a mess.
@@ -870,11 +991,26 @@ export default function LandingPage() {
                 {[
                   { depth: 0, icon: '📁', label: 'Research', highlight: true },
                   { depth: 1, icon: '📁', label: 'Papers', highlight: false },
-                  { depth: 2, icon: '📄', label: 'climate-2024.pdf', highlight: false },
-                  { depth: 2, icon: '📄', label: 'ml-survey.pdf', highlight: false },
+                  {
+                    depth: 2,
+                    icon: '📄',
+                    label: 'climate-2024.pdf',
+                    highlight: false,
+                  },
+                  {
+                    depth: 2,
+                    icon: '📄',
+                    label: 'ml-survey.pdf',
+                    highlight: false,
+                  },
                   { depth: 1, icon: '📁', label: 'Notes', highlight: false },
                   { depth: 0, icon: '📁', label: 'Essays', highlight: false },
-                  { depth: 1, icon: '📄', label: 'draft-final.pdf', highlight: false },
+                  {
+                    depth: 1,
+                    icon: '📄',
+                    label: 'draft-final.pdf',
+                    highlight: false,
+                  },
                 ].map((item, i) => (
                   <div
                     key={i}
@@ -943,7 +1079,11 @@ export default function LandingPage() {
             </h2>
             <p
               className="mb-10"
-              style={{ fontSize: '17px', lineHeight: '1.75', color: TEXT_MUTED }}
+              style={{
+                fontSize: '17px',
+                lineHeight: '1.75',
+                color: TEXT_MUTED,
+              }}
             >
               Join readers who finally understand what they read.
             </p>
@@ -1009,7 +1149,10 @@ export default function LandingPage() {
             ))}
           </div>
 
-          <p className="text-[12px]" style={{ color: 'rgba(255,255,255,0.25)' }}>
+          <p
+            className="text-[12px]"
+            style={{ color: 'rgba(255,255,255,0.25)' }}
+          >
             &copy; 2026 Pinnote. All rights reserved.
           </p>
         </div>
