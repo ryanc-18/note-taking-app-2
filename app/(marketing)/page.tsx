@@ -2,16 +2,23 @@
 
 import Link from 'next/link'
 import { useEffect, useRef, useState, ReactNode } from 'react'
-import { BackgroundRippleEffect } from '@/components/ui/background-ripple-effect'
 import { SVGProps } from 'react'
+import { MacbookScroll } from '@/components/ui/macbook-scroll'
 
 // ── Brand ─────────────────────────────────────────────────────────────────────
 const BLUE = '#2D3E9E'
 const NAVY = '#101640'
 const PERIWINKLE = '#8090D8'
-const PALE = '#ECEFFE'
 
-// ── Logo SVG (inline, matches brand_assets/image.png) ─────────────────────────
+// ── Dark theme tokens ─────────────────────────────────────────────────────────
+const BG = '#161616'
+const SURFACE = '#1F1F1F'
+const ELEVATED = '#272727'
+const TEXT = '#E4E8FF'
+const TEXT_MUTED = '#7A82A8'
+const BORDER = 'rgba(255,255,255,0.08)'
+
+// ── Logo SVG ──────────────────────────────────────────────────────────────────
 type MarkProps = SVGProps<SVGSVGElement> & { title?: string; size?: number }
 
 function Stem() {
@@ -82,24 +89,25 @@ function Reveal({
   )
 }
 
-// ── FAQ item ─────────────────────────────────────────────────────────────────
+// ── FAQ item ──────────────────────────────────────────────────────────────────
 function FaqItem({ q, a }: { q: string; a: string }) {
   const [open, setOpen] = useState(false)
   return (
-    <div className="border-b border-gray-100">
+    <div style={{ borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
       <button
         onClick={() => setOpen((v) => !v)}
-        className="w-full flex items-center justify-between py-5 text-left focus-visible:outline-none group"
+        className="w-full flex items-center justify-between py-5 text-left focus-visible:outline-none"
       >
         <span
           className="text-[15px] font-medium"
-          style={{ color: NAVY, transition: 'color 0.15s ease' }}
+          style={{ color: TEXT, transition: 'color 0.15s ease' }}
         >
           {q}
         </span>
         <span
-          className="ml-6 flex-shrink-0 text-gray-300 text-2xl font-light leading-none"
+          className="ml-6 flex-shrink-0 text-2xl font-light leading-none"
           style={{
+            color: TEXT_MUTED,
             transform: open ? 'rotate(45deg)' : 'rotate(0deg)',
             transition: 'transform 0.25s cubic-bezier(0.16,1,0.3,1)',
           }}
@@ -115,8 +123,8 @@ function FaqItem({ q, a }: { q: string; a: string }) {
         }}
       >
         <p
-          className="text-gray-500 text-[15px] pb-6 leading-relaxed"
-          style={{ lineHeight: '1.75' }}
+          className="text-[15px] pb-6"
+          style={{ color: TEXT_MUTED, lineHeight: '1.75' }}
         >
           {a}
         </p>
@@ -129,11 +137,7 @@ function FaqItem({ q, a }: { q: string; a: string }) {
 function AppMockup() {
   return (
     <div
-      className="rounded-2xl overflow-hidden"
-      style={{
-        border: '1px solid rgba(0,0,0,0.08)',
-        boxShadow: `0 0 0 1px rgba(51,89,244,0.04), 0 24px 64px rgba(51,89,244,0.1), 0 8px 24px rgba(0,0,0,0.08)`,
-      }}
+      className="flex flex-col overflow-hidden w-full h-full"
     >
       {/* Traffic lights bar */}
       <div
@@ -143,22 +147,13 @@ function AppMockup() {
           borderBottom: '1px solid rgba(0,0,0,0.07)',
         }}
       >
-        <div
-          className="w-3 h-3 rounded-full"
-          style={{ background: '#FF6058' }}
-        />
-        <div
-          className="w-3 h-3 rounded-full"
-          style={{ background: '#FFBD2E' }}
-        />
-        <div
-          className="w-3 h-3 rounded-full"
-          style={{ background: '#28C840' }}
-        />
+        <div className="w-3 h-3 rounded-full" style={{ background: '#FF6058' }} />
+        <div className="w-3 h-3 rounded-full" style={{ background: '#FFBD2E' }} />
+        <div className="w-3 h-3 rounded-full" style={{ background: '#28C840' }} />
       </div>
 
       {/* App body */}
-      <div className="flex" style={{ background: '#FAF7F2', height: '320px' }}>
+      <div className="flex flex-1 min-h-0" style={{ background: '#FAF7F2' }}>
         {/* Sidebar */}
         <div
           className="flex-shrink-0 flex flex-col pt-3 pb-3 gap-0.5"
@@ -215,31 +210,9 @@ function AppMockup() {
               style={{ color: '#78716C', paddingLeft: '20px' }}
             >
               <svg width="10" height="10" viewBox="0 0 12 12" fill="none">
-                <rect
-                  x="2"
-                  y="1"
-                  width="8"
-                  height="10"
-                  rx="1"
-                  stroke="currentColor"
-                  strokeWidth="1"
-                />
-                <line
-                  x1="4"
-                  y1="4"
-                  x2="8"
-                  y2="4"
-                  stroke="currentColor"
-                  strokeWidth="0.8"
-                />
-                <line
-                  x1="4"
-                  y1="6.5"
-                  x2="8"
-                  y2="6.5"
-                  stroke="currentColor"
-                  strokeWidth="0.8"
-                />
+                <rect x="2" y="1" width="8" height="10" rx="1" stroke="currentColor" strokeWidth="1" />
+                <line x1="4" y1="4" x2="8" y2="4" stroke="currentColor" strokeWidth="0.8" />
+                <line x1="4" y1="6.5" x2="8" y2="6.5" stroke="currentColor" strokeWidth="0.8" />
               </svg>
               {n}
             </div>
@@ -265,15 +238,7 @@ function AppMockup() {
               }}
             >
               <svg width="9" height="9" viewBox="0 0 12 12" fill="none">
-                <rect
-                  x="2"
-                  y="1"
-                  width="8"
-                  height="10"
-                  rx="1"
-                  stroke="currentColor"
-                  strokeWidth="1"
-                />
+                <rect x="2" y="1" width="8" height="10" rx="1" stroke="currentColor" strokeWidth="1" />
               </svg>
               climate-study.pdf
             </div>
@@ -289,45 +254,40 @@ function AppMockup() {
                 boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
               }}
             >
-              {/* Fake text lines */}
               <div className="space-y-2 mb-5">
                 <div
-                  className="h-3 bg-gray-900/90 rounded text-[10px] font-bold mb-3"
+                  className="h-3 rounded text-[10px] font-bold mb-3"
                   style={{ width: '65%', background: '#1C1917' }}
                 />
-                {[92, 78, 85, 72, 88, 65, 80, 75, 90, 60, 82, 70].map(
-                  (w, i) => (
-                    <div
-                      key={i}
-                      className="h-1.5 rounded-full"
-                      style={{ width: `${w}%`, background: '#D6D3D1' }}
-                    />
-                  )
-                )}
+                {[92, 78, 85, 72, 88, 65, 80, 75, 90, 60, 82, 70].map((w, i) => (
+                  <div
+                    key={i}
+                    className="h-1.5 rounded-full"
+                    style={{ width: `${w}%`, background: '#D6D3D1' }}
+                  />
+                ))}
               </div>
 
-              {/* Annotation pin 1 */}
               <div
                 className="absolute flex items-center justify-center text-white text-[10px] font-bold rounded-full w-5 h-5"
                 style={{
                   background: BLUE,
                   top: '28%',
                   right: '14%',
-                  boxShadow: `0 0 0 3px rgba(51,89,244,0.2), 0 3px 8px rgba(51,89,244,0.45)`,
+                  boxShadow: `0 2px 6px rgba(0,0,0,0.4)`,
                   cursor: 'pointer',
                 }}
               >
                 1
               </div>
 
-              {/* Annotation pin 2 */}
               <div
                 className="absolute flex items-center justify-center text-white text-[10px] font-bold rounded-full w-5 h-5"
                 style={{
                   background: BLUE,
                   top: '60%',
                   left: '42%',
-                  boxShadow: `0 0 0 3px rgba(51,89,244,0.2), 0 3px 8px rgba(51,89,244,0.45)`,
+                  boxShadow: `0 2px 6px rgba(0,0,0,0.4)`,
                   cursor: 'pointer',
                 }}
               >
@@ -379,17 +339,11 @@ function AppMockup() {
                 >
                   {n}
                 </div>
-                <span
-                  className="text-[10px] font-semibold"
-                  style={{ color: NAVY }}
-                >
+                <span className="text-[10px] font-semibold" style={{ color: NAVY }}>
                   {label}
                 </span>
               </div>
-              <p
-                className="text-[10px] leading-relaxed"
-                style={{ color: '#78716C' }}
-              >
+              <p className="text-[10px] leading-relaxed" style={{ color: '#78716C' }}>
                 {body}
               </p>
             </div>
@@ -452,20 +406,18 @@ export default function LandingPage() {
     <div
       style={{
         fontFamily: 'Inter, sans-serif',
-        color: '#0D0F18',
-        background: 'white',
+        color: TEXT,
+        background: BG,
       }}
     >
       {/* ── Navbar ─────────────────────────────────────────────────────────── */}
       <header
         className="fixed top-0 left-0 right-0 z-50"
         style={{
-          background: scrolled ? 'rgba(255,255,255,0.88)' : 'transparent',
+          background: scrolled ? 'rgba(22,22,22,0.92)' : 'transparent',
           backdropFilter: scrolled ? 'blur(16px)' : 'none',
           WebkitBackdropFilter: scrolled ? 'blur(16px)' : 'none',
-          borderBottom: scrolled
-            ? '1px solid rgba(0,0,0,0.06)'
-            : '1px solid transparent',
+          borderBottom: scrolled ? `1px solid ${BORDER}` : '1px solid transparent',
           transition: 'background 0.35s ease, border-color 0.35s ease',
         }}
       >
@@ -480,7 +432,7 @@ export default function LandingPage() {
             <PinnoteLogo size={30} />
             <span
               className="font-semibold text-[18px]"
-              style={{ color: NAVY, letterSpacing: '-0.02em' }}
+              style={{ color: TEXT, letterSpacing: '-0.02em' }}
             >
               Pinnote
             </span>
@@ -492,9 +444,9 @@ export default function LandingPage() {
                 key={label}
                 href={`#${label.toLowerCase()}`}
                 className="text-[14px] focus-visible:outline-none"
-                style={{ color: '#6B6B80', transition: 'color 0.15s ease' }}
-                onMouseEnter={(e) => (e.currentTarget.style.color = '#0D0F18')}
-                onMouseLeave={(e) => (e.currentTarget.style.color = '#6B6B80')}
+                style={{ color: TEXT_MUTED, transition: 'color 0.15s ease' }}
+                onMouseEnter={(e) => (e.currentTarget.style.color = TEXT)}
+                onMouseLeave={(e) => (e.currentTarget.style.color = TEXT_MUTED)}
               >
                 {label}
               </a>
@@ -505,9 +457,9 @@ export default function LandingPage() {
             <Link
               href="/sign-in"
               className="hidden md:block text-[14px] px-3 py-2 focus-visible:outline-none"
-              style={{ color: '#6B6B80', transition: 'color 0.15s ease' }}
-              onMouseEnter={(e) => (e.currentTarget.style.color = '#0D0F18')}
-              onMouseLeave={(e) => (e.currentTarget.style.color = '#6B6B80')}
+              style={{ color: TEXT_MUTED, transition: 'color 0.15s ease' }}
+              onMouseEnter={(e) => (e.currentTarget.style.color = TEXT)}
+              onMouseLeave={(e) => (e.currentTarget.style.color = TEXT_MUTED)}
             >
               Sign in
             </Link>
@@ -518,18 +470,15 @@ export default function LandingPage() {
                 background: BLUE,
                 padding: '8px 18px',
                 boxShadow: '0 2px 10px rgba(51,89,244,0.3)',
-                transition:
-                  'background 0.15s ease, transform 0.1s ease, box-shadow 0.15s ease',
+                transition: 'background 0.15s ease, box-shadow 0.15s ease',
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.background = '#2244DC'
-                e.currentTarget.style.boxShadow =
-                  '0 4px 16px rgba(51,89,244,0.4)'
+                e.currentTarget.style.boxShadow = '0 4px 16px rgba(51,89,244,0.4)'
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.background = BLUE
-                e.currentTarget.style.boxShadow =
-                  '0 2px 10px rgba(51,89,244,0.3)'
+                e.currentTarget.style.boxShadow = '0 2px 10px rgba(51,89,244,0.3)'
               }}
             >
               Get started
@@ -540,19 +489,6 @@ export default function LandingPage() {
 
       {/* ── Hero ───────────────────────────────────────────────────────────── */}
       <section className="relative pt-36 pb-16 overflow-hidden">
-        {/* Background gradients */}
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            background: `
-              radial-gradient(ellipse 90% 60% at 50% -10%, rgba(45,62,158,0.13) 0%, transparent 65%),
-              radial-gradient(ellipse 55% 45% at 90% 15%, rgba(128,144,216,0.1) 0%, transparent 55%),
-              radial-gradient(ellipse 40% 30% at 10% 30%, rgba(196,203,248,0.08) 0%, transparent 50%)
-            `,
-          }}
-        />
-        <BackgroundRippleEffect />
-
         <div
           className="relative mx-auto text-center"
           style={{ maxWidth: '800px', padding: '0 24px' }}
@@ -561,15 +497,15 @@ export default function LandingPage() {
           <div
             className="inline-flex items-center gap-2 rounded-full text-[13px] font-medium mb-8"
             style={{
-              background: 'rgba(51,89,244,0.06)',
-              color: BLUE,
-              border: `1px solid rgba(51,89,244,0.14)`,
+              background: 'rgba(128,144,216,0.1)',
+              color: PERIWINKLE,
+              border: `1px solid ${BORDER}`,
               padding: '6px 14px',
             }}
           >
             <span
               className="w-1.5 h-1.5 rounded-full"
-              style={{ background: BLUE }}
+              style={{ background: PERIWINKLE }}
             />
             PDF annotation, reimagined
           </div>
@@ -581,7 +517,7 @@ export default function LandingPage() {
               fontSize: 'clamp(46px, 7.5vw, 76px)',
               letterSpacing: '-0.04em',
               lineHeight: '1.05',
-              color: NAVY,
+              color: TEXT,
             }}
           >
             Your PDFs,
@@ -591,11 +527,12 @@ export default function LandingPage() {
 
           {/* Subtitle */}
           <p
-            className="text-gray-500 mb-10 mx-auto"
+            className="mb-10 mx-auto"
             style={{
               fontSize: '18px',
               lineHeight: '1.75',
               maxWidth: '520px',
+              color: TEXT_MUTED,
             }}
           >
             Drop pins anywhere on a PDF, write notes at that exact location, and
@@ -612,33 +549,30 @@ export default function LandingPage() {
                 fontSize: '15px',
                 padding: '14px 28px',
                 boxShadow: '0 4px 20px rgba(51,89,244,0.35)',
-                transition:
-                  'background 0.15s ease, transform 0.1s ease, box-shadow 0.15s ease',
+                transition: 'background 0.15s ease, box-shadow 0.15s ease',
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.background = '#2244DC'
-                e.currentTarget.style.boxShadow =
-                  '0 6px 28px rgba(51,89,244,0.45)'
+                e.currentTarget.style.boxShadow = '0 6px 28px rgba(51,89,244,0.45)'
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.background = BLUE
-                e.currentTarget.style.boxShadow =
-                  '0 4px 20px rgba(51,89,244,0.35)'
+                e.currentTarget.style.boxShadow = '0 4px 20px rgba(51,89,244,0.35)'
               }}
             >
               Start for free
               <Arrow />
             </Link>
-            <span className="text-[13px]" style={{ color: '#9898A6' }}>
+            <span className="text-[13px]" style={{ color: TEXT_MUTED }}>
               No credit card required
             </span>
           </div>
         </div>
 
         {/* Mockup */}
-        <div className="mx-auto mt-16 px-6" style={{ maxWidth: '1040px' }}>
+        <MacbookScroll showGradient={false}>
           <AppMockup />
-        </div>
+        </MacbookScroll>
       </section>
 
       {/* ── Features intro ─────────────────────────────────────────────────── */}
@@ -647,7 +581,7 @@ export default function LandingPage() {
           <Reveal>
             <p
               className="text-center text-[11px] font-bold uppercase tracking-widest mb-3"
-              style={{ color: BLUE }}
+              style={{ color: PERIWINKLE }}
             >
               How it works
             </p>
@@ -656,17 +590,18 @@ export default function LandingPage() {
               style={{
                 fontSize: 'clamp(32px, 4.5vw, 48px)',
                 letterSpacing: '-0.03em',
-                color: NAVY,
+                color: TEXT,
               }}
             >
               Built for deep reading
             </h2>
             <p
-              className="text-center text-gray-500 mx-auto mb-16"
+              className="text-center mx-auto mb-16"
               style={{
                 fontSize: '17px',
                 lineHeight: '1.75',
                 maxWidth: '480px',
+                color: TEXT_MUTED,
               }}
             >
               Pinnote gives you the tools to engage with documents the way your
@@ -679,21 +614,8 @@ export default function LandingPage() {
               {
                 icon: (
                   <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-                    <circle
-                      cx="14"
-                      cy="14"
-                      r="13"
-                      stroke={BLUE}
-                      strokeWidth="1.5"
-                    />
-                    <text
-                      x="14"
-                      y="19"
-                      textAnchor="middle"
-                      fill={BLUE}
-                      fontSize="13"
-                      fontWeight="700"
-                    >
+                    <circle cx="14" cy="14" r="13" stroke={PERIWINKLE} strokeWidth="1.5" />
+                    <text x="14" y="19" textAnchor="middle" fill={PERIWINKLE} fontSize="13" fontWeight="700">
                       1
                     </text>
                   </svg>
@@ -705,42 +627,10 @@ export default function LandingPage() {
               {
                 icon: (
                   <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-                    <rect
-                      x="4"
-                      y="5"
-                      width="20"
-                      height="18"
-                      rx="2.5"
-                      stroke={BLUE}
-                      strokeWidth="1.5"
-                    />
-                    <line
-                      x1="8"
-                      y1="10"
-                      x2="20"
-                      y2="10"
-                      stroke={BLUE}
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                    />
-                    <line
-                      x1="8"
-                      y1="14"
-                      x2="17"
-                      y2="14"
-                      stroke={BLUE}
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                    />
-                    <line
-                      x1="8"
-                      y1="18"
-                      x2="14"
-                      y2="18"
-                      stroke={BLUE}
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                    />
+                    <rect x="4" y="5" width="20" height="18" rx="2.5" stroke={PERIWINKLE} strokeWidth="1.5" />
+                    <line x1="8" y1="10" x2="20" y2="10" stroke={PERIWINKLE} strokeWidth="1.5" strokeLinecap="round" />
+                    <line x1="8" y1="14" x2="17" y2="14" stroke={PERIWINKLE} strokeWidth="1.5" strokeLinecap="round" />
+                    <line x1="8" y1="18" x2="14" y2="18" stroke={PERIWINKLE} strokeWidth="1.5" strokeLinecap="round" />
                   </svg>
                 ),
                 title: 'Write your note',
@@ -750,18 +640,8 @@ export default function LandingPage() {
               {
                 icon: (
                   <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-                    <path
-                      d="M5 8h18v14H5V8z"
-                      stroke={BLUE}
-                      strokeWidth="1.5"
-                      strokeLinejoin="round"
-                    />
-                    <path
-                      d="M5 8l4-4h6l3 4"
-                      stroke={BLUE}
-                      strokeWidth="1.5"
-                      strokeLinejoin="round"
-                    />
+                    <path d="M5 8h18v14H5V8z" stroke={PERIWINKLE} strokeWidth="1.5" strokeLinejoin="round" />
+                    <path d="M5 8l4-4h6l3 4" stroke={PERIWINKLE} strokeWidth="1.5" strokeLinejoin="round" />
                   </svg>
                 ),
                 title: 'Stay organized',
@@ -773,20 +653,20 @@ export default function LandingPage() {
                 <div
                   className="rounded-2xl p-7 h-full"
                   style={{
-                    background: PALE,
-                    border: `1px solid rgba(51,89,244,0.09)`,
+                    background: ELEVATED,
+                    border: `1px solid ${BORDER}`,
                   }}
                 >
                   <div className="mb-5">{icon}</div>
                   <h3
                     className="font-semibold mb-2"
-                    style={{ fontSize: '16px', color: NAVY }}
+                    style={{ fontSize: '16px', color: TEXT }}
                   >
                     {title}
                   </h3>
                   <p
-                    className="text-gray-500 text-[14px] leading-relaxed"
-                    style={{ lineHeight: '1.7' }}
+                    className="text-[14px]"
+                    style={{ color: TEXT_MUTED, lineHeight: '1.7' }}
                   >
                     {desc}
                   </p>
@@ -797,7 +677,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── Dark callout band ──────────────────────────────────────────────── */}
+      {/* ── Callout band ───────────────────────────────────────────────────── */}
       <section>
         <div
           className="mx-auto py-24 px-6 text-center"
@@ -810,16 +690,16 @@ export default function LandingPage() {
                 fontSize: 'clamp(34px, 5vw, 58px)',
                 letterSpacing: '-0.035em',
                 lineHeight: '1.1',
-                color: NAVY,
+                color: TEXT,
               }}
             >
               Read smarter.
               <br />
-              <span style={{ color: BLUE }}>Remember more.</span>
+              <span style={{ color: TEXT }}>Remember more.</span>
             </h2>
             <p
               style={{
-                color: '#6B6B80',
+                color: TEXT_MUTED,
                 fontSize: '17px',
                 lineHeight: '1.75',
                 maxWidth: '440px',
@@ -841,7 +721,7 @@ export default function LandingPage() {
             <Reveal>
               <p
                 className="text-[11px] font-bold uppercase tracking-widest mb-4"
-                style={{ color: BLUE }}
+                style={{ color: PERIWINKLE }}
               >
                 Annotation
               </p>
@@ -850,15 +730,15 @@ export default function LandingPage() {
                 style={{
                   fontSize: 'clamp(28px, 3.5vw, 40px)',
                   letterSpacing: '-0.03em',
-                  color: NAVY,
+                  color: TEXT,
                   lineHeight: '1.15',
                 }}
               >
                 Pin your thoughts to the page
               </h2>
               <p
-                className="text-gray-500 mb-7"
-                style={{ fontSize: '16px', lineHeight: '1.8' }}
+                className="mb-7"
+                style={{ fontSize: '16px', lineHeight: '1.8', color: TEXT_MUTED }}
               >
                 Stop writing notes on a separate sheet that you&apos;ll never
                 connect back to the text. Drop a numbered pin exactly where your
@@ -867,7 +747,7 @@ export default function LandingPage() {
               <Link
                 href="/sign-up"
                 className="inline-flex items-center gap-1.5 font-semibold text-[14px] focus-visible:outline-none"
-                style={{ color: BLUE, transition: 'gap 0.2s ease' }}
+                style={{ color: PERIWINKLE, transition: 'gap 0.2s ease' }}
                 onMouseEnter={(e) => (e.currentTarget.style.gap = '10px')}
                 onMouseLeave={(e) => (e.currentTarget.style.gap = '6px')}
               >
@@ -879,9 +759,9 @@ export default function LandingPage() {
               <div
                 className="rounded-2xl p-6"
                 style={{
-                  background: PALE,
-                  border: `1px solid rgba(51,89,244,0.1)`,
-                  boxShadow: '0 16px 48px rgba(51,89,244,0.08)',
+                  background: ELEVATED,
+                  border: `1px solid ${BORDER}`,
+                  boxShadow: `0 16px 48px rgba(0,0,0,0.25)`,
                 }}
               >
                 {/* Mini PDF page */}
@@ -904,7 +784,7 @@ export default function LandingPage() {
                       background: BLUE,
                       top: '30%',
                       right: '15%',
-                      boxShadow: `0 0 0 4px rgba(51,89,244,0.18), 0 3px 10px rgba(51,89,244,0.4)`,
+                      boxShadow: `0 2px 6px rgba(0,0,0,0.4)`,
                     }}
                   >
                     1
@@ -914,8 +794,8 @@ export default function LandingPage() {
                 <div
                   className="rounded-xl p-4"
                   style={{
-                    background: '#EEF0FF',
-                    border: '1px solid rgba(51,89,244,0.14)',
+                    background: SURFACE,
+                    border: `1px solid ${BORDER}`,
                   }}
                 >
                   <div className="flex items-center gap-2 mb-2">
@@ -927,12 +807,12 @@ export default function LandingPage() {
                     </div>
                     <span
                       className="text-[13px] font-semibold"
-                      style={{ color: NAVY }}
+                      style={{ color: TEXT }}
                     >
                       Your note here
                     </span>
                   </div>
-                  <p className="text-[13px] text-gray-500 leading-relaxed">
+                  <p className="text-[13px]" style={{ color: TEXT_MUTED, lineHeight: '1.6' }}>
                     Pinned to the exact paragraph. Always in context.
                   </p>
                 </div>
@@ -945,7 +825,7 @@ export default function LandingPage() {
             <Reveal delay={140} className="md:order-2">
               <p
                 className="text-[11px] font-bold uppercase tracking-widest mb-4"
-                style={{ color: BLUE }}
+                style={{ color: PERIWINKLE }}
               >
                 Organization
               </p>
@@ -954,15 +834,15 @@ export default function LandingPage() {
                 style={{
                   fontSize: 'clamp(28px, 3.5vw, 40px)',
                   letterSpacing: '-0.03em',
-                  color: NAVY,
+                  color: TEXT,
                   lineHeight: '1.15',
                 }}
               >
                 Every document in its place
               </h2>
               <p
-                className="text-gray-500 mb-7"
-                style={{ fontSize: '16px', lineHeight: '1.8' }}
+                className="mb-7"
+                style={{ fontSize: '16px', lineHeight: '1.8', color: TEXT_MUTED }}
               >
                 Create nested folders — Research &rarr; Papers &rarr; 2024. Your
                 workspace grows with you without ever becoming a mess.
@@ -970,7 +850,7 @@ export default function LandingPage() {
               <Link
                 href="/sign-up"
                 className="inline-flex items-center gap-1.5 font-semibold text-[14px] focus-visible:outline-none"
-                style={{ color: BLUE, transition: 'gap 0.2s ease' }}
+                style={{ color: PERIWINKLE, transition: 'gap 0.2s ease' }}
                 onMouseEnter={(e) => (e.currentTarget.style.gap = '10px')}
                 onMouseLeave={(e) => (e.currentTarget.style.gap = '6px')}
               >
@@ -983,34 +863,19 @@ export default function LandingPage() {
               <div
                 className="rounded-2xl p-6"
                 style={{
-                  background: '#EEEBE3',
-                  border: '1px solid rgba(0,0,0,0.07)',
-                  boxShadow: '0 16px 48px rgba(0,0,0,0.06)',
+                  background: ELEVATED,
+                  border: `1px solid ${BORDER}`,
+                  boxShadow: `0 16px 48px rgba(0,0,0,0.25)`,
                 }}
               >
                 {[
                   { depth: 0, icon: '📁', label: 'Research', highlight: true },
                   { depth: 1, icon: '📁', label: 'Papers', highlight: false },
-                  {
-                    depth: 2,
-                    icon: '📄',
-                    label: 'climate-2024.pdf',
-                    highlight: false,
-                  },
-                  {
-                    depth: 2,
-                    icon: '📄',
-                    label: 'ml-survey.pdf',
-                    highlight: false,
-                  },
+                  { depth: 2, icon: '📄', label: 'climate-2024.pdf', highlight: false },
+                  { depth: 2, icon: '📄', label: 'ml-survey.pdf', highlight: false },
                   { depth: 1, icon: '📁', label: 'Notes', highlight: false },
                   { depth: 0, icon: '📁', label: 'Essays', highlight: false },
-                  {
-                    depth: 1,
-                    icon: '📄',
-                    label: 'draft-final.pdf',
-                    highlight: false,
-                  },
+                  { depth: 1, icon: '📄', label: 'draft-final.pdf', highlight: false },
                 ].map((item, i) => (
                   <div
                     key={i}
@@ -1019,9 +884,9 @@ export default function LandingPage() {
                       paddingLeft: `${8 + item.depth * 18}px`,
                       paddingRight: '8px',
                       background: item.highlight
-                        ? 'rgba(0,0,0,0.07)'
+                        ? 'rgba(128,144,216,0.12)'
                         : 'transparent',
-                      color: item.highlight ? '#1C1917' : '#78716C',
+                      color: item.highlight ? TEXT : TEXT_MUTED,
                       fontWeight: item.highlight ? 600 : 400,
                       fontSize: '13px',
                     }}
@@ -1037,10 +902,7 @@ export default function LandingPage() {
       </section>
 
       {/* ── FAQ ────────────────────────────────────────────────────────────── */}
-      <section
-        id="faq"
-        className="py-24 px-6"
-      >
+      <section id="faq" className="py-24 px-6">
         <div className="mx-auto" style={{ maxWidth: '680px' }}>
           <Reveal>
             <h2
@@ -1048,7 +910,7 @@ export default function LandingPage() {
               style={{
                 fontSize: 'clamp(28px, 4vw, 42px)',
                 letterSpacing: '-0.03em',
-                color: NAVY,
+                color: TEXT,
               }}
             >
               Questions, answered
@@ -1075,14 +937,14 @@ export default function LandingPage() {
                 fontSize: 'clamp(34px, 5vw, 54px)',
                 letterSpacing: '-0.04em',
                 lineHeight: '1.1',
-                color: NAVY,
+                color: TEXT,
               }}
             >
               Start annotating today.
             </h2>
             <p
-              className="text-gray-500 mb-10"
-              style={{ fontSize: '17px', lineHeight: '1.75' }}
+              className="mb-10"
+              style={{ fontSize: '17px', lineHeight: '1.75', color: TEXT_MUTED }}
             >
               Join readers who finally understand what they read.
             </p>
@@ -1094,7 +956,7 @@ export default function LandingPage() {
                 fontSize: '15px',
                 padding: '15px 32px',
                 boxShadow: '0 4px 24px rgba(51,89,244,0.35)',
-                transition: 'background 0.15s ease, transform 0.1s ease',
+                transition: 'background 0.15s ease',
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.background = '#2244DC'
@@ -1113,7 +975,7 @@ export default function LandingPage() {
       {/* ── Footer ─────────────────────────────────────────────────────────── */}
       <footer
         className="py-10 px-6"
-        style={{ borderTop: '1px solid rgba(0,0,0,0.06)' }}
+        style={{ borderTop: `1px solid ${BORDER}` }}
       >
         <div
           className="mx-auto flex flex-col md:flex-row items-center justify-between gap-5"
@@ -1123,7 +985,7 @@ export default function LandingPage() {
             <PinnoteLogo size={18} />
             <span
               className="font-semibold text-[14px]"
-              style={{ color: NAVY, letterSpacing: '-0.01em' }}
+              style={{ color: TEXT, letterSpacing: '-0.01em' }}
             >
               Pinnote
             </span>
@@ -1139,17 +1001,17 @@ export default function LandingPage() {
                 key={label}
                 href={href}
                 className="text-[13px] focus-visible:outline-none"
-                style={{ color: '#9898A6', transition: 'color 0.15s ease' }}
-                onMouseEnter={(e) => (e.currentTarget.style.color = '#0D0F18')}
-                onMouseLeave={(e) => (e.currentTarget.style.color = '#9898A6')}
+                style={{ color: TEXT_MUTED, transition: 'color 0.15s ease' }}
+                onMouseEnter={(e) => (e.currentTarget.style.color = TEXT)}
+                onMouseLeave={(e) => (e.currentTarget.style.color = TEXT_MUTED)}
               >
                 {label}
               </a>
             ))}
           </div>
 
-          <p className="text-[12px]" style={{ color: '#C8C8D5' }}>
-            © 2026 Pinnote. All rights reserved.
+          <p className="text-[12px]" style={{ color: 'rgba(255,255,255,0.25)' }}>
+            &copy; 2026 Pinnote. All rights reserved.
           </p>
         </div>
       </footer>
