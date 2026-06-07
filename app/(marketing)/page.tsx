@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { useEffect, useRef, useState, ReactNode } from 'react'
-import { Particles } from '@/components/ui/particles'
+import { BackgroundRippleEffect } from '@/components/ui/background-ripple-effect'
 import { SVGProps } from 'react'
 
 // ── Brand ─────────────────────────────────────────────────────────────────────
@@ -551,14 +551,7 @@ export default function LandingPage() {
             `,
           }}
         />
-        <Particles
-          className="absolute inset-0 pointer-events-none"
-          style={{ maskImage: 'linear-gradient(to bottom, black 40%, transparent 70%)' }}
-          quantity={120}
-          ease={80}
-          color={BLUE}
-          refresh={false}
-        />
+        <BackgroundRippleEffect />
 
         <div
           className="relative mx-auto text-center"

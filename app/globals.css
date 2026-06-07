@@ -1,8 +1,28 @@
 @import 'tailwindcss';
-@import "tw-animate-css";
-@import "shadcn/tailwind.css";
+@import 'tw-animate-css';
+@import 'shadcn/tailwind.css';
 
 @custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --animate-cell-ripple: cell-ripple var(--duration, 200ms) ease-out none 1
+    var(--delay, 0ms);
+
+  @keyframes cell-ripple {
+    0% {
+      opacity: 0.4;
+      background-color: rgba(128, 144, 216, 0.08);
+    }
+    40% {
+      opacity: 1;
+      background-color: rgba(45, 62, 158, 0.35);
+    }
+    100% {
+      opacity: 0.4;
+      background-color: rgba(128, 144, 216, 0.08);
+    }
+  }
+}
 
 @keyframes circleExpand {
   from {
@@ -166,6 +186,8 @@ body {
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+  --animate-cell-ripple: cell-ripple var(--duration, 400ms) var(--delay, 0ms)
+    ease-out;
 }
 
 .dark {
