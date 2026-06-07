@@ -8,14 +8,13 @@ import { MacbookScroll } from '@/components/ui/macbook-scroll'
 // ── Brand ─────────────────────────────────────────────────────────────────────
 const BLUE = '#2D3E9E'
 const NAVY = '#101640'
-const PERIWINKLE = '#8090D8'
 
 // ── Dark theme tokens ─────────────────────────────────────────────────────────
 const BG = '#161616'
 const SURFACE = '#1F1F1F'
 const ELEVATED = '#272727'
-const TEXT = '#E4E8FF'
-const TEXT_MUTED = '#7A82A8'
+const TEXT = '#F0F0F0'
+const TEXT_MUTED = 'rgba(255,255,255,0.4)'
 const BORDER = 'rgba(255,255,255,0.08)'
 
 // ── Logo SVG ──────────────────────────────────────────────────────────────────
@@ -40,7 +39,7 @@ export function PinnoteLogo({ title, size = 48, ...props }: MarkProps) {
       <g transform="rotate(34 26 15)">
         <path
           d="M26 5.5C20.5 5.5 16 10 16 15.5 16 23.1 26 32.5 26 32.5S36 23.1 36 15.5C36 10 31.5 5.5 26 5.5Z M30 15.5A4 4 0 1 0 22 15.5A4 4 0 1 0 30 15.5Z"
-          fill={PERIWINKLE}
+          fill="#8090D8"
           fillRule="evenodd"
         />
       </g>
@@ -497,15 +496,15 @@ export default function LandingPage() {
           <div
             className="inline-flex items-center gap-2 rounded-full text-[13px] font-medium mb-8"
             style={{
-              background: 'rgba(128,144,216,0.1)',
-              color: PERIWINKLE,
+              background: 'rgba(255,255,255,0.06)',
+              color: 'rgba(255,255,255,0.5)',
               border: `1px solid ${BORDER}`,
               padding: '6px 14px',
             }}
           >
             <span
               className="w-1.5 h-1.5 rounded-full"
-              style={{ background: PERIWINKLE }}
+              style={{ background: 'rgba(255,255,255,0.3)' }}
             />
             PDF annotation, reimagined
           </div>
@@ -581,7 +580,7 @@ export default function LandingPage() {
           <Reveal>
             <p
               className="text-center text-[11px] font-bold uppercase tracking-widest mb-3"
-              style={{ color: PERIWINKLE }}
+              style={{ color: 'rgba(255,255,255,0.35)' }}
             >
               How it works
             </p>
@@ -614,8 +613,8 @@ export default function LandingPage() {
               {
                 icon: (
                   <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-                    <circle cx="14" cy="14" r="13" stroke={PERIWINKLE} strokeWidth="1.5" />
-                    <text x="14" y="19" textAnchor="middle" fill={PERIWINKLE} fontSize="13" fontWeight="700">
+                    <circle cx="14" cy="14" r="13" stroke="rgba(255,255,255,0.45)" strokeWidth="1.5" />
+                    <text x="14" y="19" textAnchor="middle" fill="rgba(255,255,255,0.45)" fontSize="13" fontWeight="700">
                       1
                     </text>
                   </svg>
@@ -627,10 +626,10 @@ export default function LandingPage() {
               {
                 icon: (
                   <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-                    <rect x="4" y="5" width="20" height="18" rx="2.5" stroke={PERIWINKLE} strokeWidth="1.5" />
-                    <line x1="8" y1="10" x2="20" y2="10" stroke={PERIWINKLE} strokeWidth="1.5" strokeLinecap="round" />
-                    <line x1="8" y1="14" x2="17" y2="14" stroke={PERIWINKLE} strokeWidth="1.5" strokeLinecap="round" />
-                    <line x1="8" y1="18" x2="14" y2="18" stroke={PERIWINKLE} strokeWidth="1.5" strokeLinecap="round" />
+                    <rect x="4" y="5" width="20" height="18" rx="2.5" stroke="rgba(255,255,255,0.45)" strokeWidth="1.5" />
+                    <line x1="8" y1="10" x2="20" y2="10" stroke="rgba(255,255,255,0.45)" strokeWidth="1.5" strokeLinecap="round" />
+                    <line x1="8" y1="14" x2="17" y2="14" stroke="rgba(255,255,255,0.45)" strokeWidth="1.5" strokeLinecap="round" />
+                    <line x1="8" y1="18" x2="14" y2="18" stroke="rgba(255,255,255,0.45)" strokeWidth="1.5" strokeLinecap="round" />
                   </svg>
                 ),
                 title: 'Write your note',
@@ -640,8 +639,8 @@ export default function LandingPage() {
               {
                 icon: (
                   <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-                    <path d="M5 8h18v14H5V8z" stroke={PERIWINKLE} strokeWidth="1.5" strokeLinejoin="round" />
-                    <path d="M5 8l4-4h6l3 4" stroke={PERIWINKLE} strokeWidth="1.5" strokeLinejoin="round" />
+                    <path d="M5 8h18v14H5V8z" stroke="rgba(255,255,255,0.45)" strokeWidth="1.5" strokeLinejoin="round" />
+                    <path d="M5 8l4-4h6l3 4" stroke="rgba(255,255,255,0.45)" strokeWidth="1.5" strokeLinejoin="round" />
                   </svg>
                 ),
                 title: 'Stay organized',
@@ -721,7 +720,7 @@ export default function LandingPage() {
             <Reveal>
               <p
                 className="text-[11px] font-bold uppercase tracking-widest mb-4"
-                style={{ color: PERIWINKLE }}
+                style={{ color: 'rgba(255,255,255,0.35)' }}
               >
                 Annotation
               </p>
@@ -747,7 +746,7 @@ export default function LandingPage() {
               <Link
                 href="/sign-up"
                 className="inline-flex items-center gap-1.5 font-semibold text-[14px] focus-visible:outline-none"
-                style={{ color: PERIWINKLE, transition: 'gap 0.2s ease' }}
+                style={{ color: TEXT, transition: 'gap 0.2s ease' }}
                 onMouseEnter={(e) => (e.currentTarget.style.gap = '10px')}
                 onMouseLeave={(e) => (e.currentTarget.style.gap = '6px')}
               >
@@ -825,7 +824,7 @@ export default function LandingPage() {
             <Reveal delay={140} className="md:order-2">
               <p
                 className="text-[11px] font-bold uppercase tracking-widest mb-4"
-                style={{ color: PERIWINKLE }}
+                style={{ color: 'rgba(255,255,255,0.35)' }}
               >
                 Organization
               </p>
@@ -850,7 +849,7 @@ export default function LandingPage() {
               <Link
                 href="/sign-up"
                 className="inline-flex items-center gap-1.5 font-semibold text-[14px] focus-visible:outline-none"
-                style={{ color: PERIWINKLE, transition: 'gap 0.2s ease' }}
+                style={{ color: TEXT, transition: 'gap 0.2s ease' }}
                 onMouseEnter={(e) => (e.currentTarget.style.gap = '10px')}
                 onMouseLeave={(e) => (e.currentTarget.style.gap = '6px')}
               >
