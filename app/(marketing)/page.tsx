@@ -158,7 +158,7 @@ function AppMockup() {
         <div
           className="flex-shrink-0 flex flex-col pt-3 pb-3 gap-0.5"
           style={{
-            width: '172px',
+            width: '136px',
             background: '#EEEBE3',
             borderRight: '1px solid rgba(0,0,0,0.06)',
           }}
@@ -177,7 +177,7 @@ function AppMockup() {
           ].map(({ label, active, nested }) => (
             <div
               key={label}
-              className="flex items-center gap-1.5 mx-2 px-2 py-1.5 rounded-md text-[12px]"
+              className="flex items-center gap-1.5 mx-2 px-2 py-1 rounded-md text-[11px]"
               style={{
                 paddingLeft: nested ? '20px' : '8px',
                 background: active ? 'rgba(0,0,0,0.08)' : 'transparent',
@@ -206,8 +206,8 @@ function AppMockup() {
           {['climate-study.pdf', 'ml-survey.pdf'].map((n) => (
             <div
               key={n}
-              className="flex items-center gap-1.5 mx-2 px-2 py-1.5 rounded-md text-[11px]"
-              style={{ color: '#78716C', paddingLeft: '20px' }}
+              className="flex items-center gap-1.5 mx-2 px-2 py-1 rounded-md text-[11px]"
+              style={{ color: '#78716C', paddingLeft: '16px' }}
             >
               <svg width="10" height="10" viewBox="0 0 12 12" fill="none">
                 <rect x="2" y="1" width="8" height="10" rx="1" stroke="currentColor" strokeWidth="1" />
@@ -245,11 +245,11 @@ function AppMockup() {
           </div>
 
           {/* PDF page */}
-          <div className="flex-1 flex items-center justify-center p-6">
+          <div className="flex-1 flex items-start justify-center p-3 pt-4">
             <div
-              className="bg-white rounded w-full h-full relative p-5"
+              className="bg-white rounded w-full relative p-4"
               style={{
-                maxWidth: '340px',
+                maxWidth: '240px',
                 border: '1px solid rgba(0,0,0,0.06)',
                 boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
               }}
@@ -299,9 +299,9 @@ function AppMockup() {
 
         {/* Annotations panel */}
         <div
-          className="flex-shrink-0 pt-3 pb-3 px-3 flex flex-col gap-2"
+          className="flex-shrink-0 pt-3 pb-3 px-2.5 flex flex-col gap-1.5"
           style={{
-            width: '196px',
+            width: '158px',
             background: '#FFFDF8',
             borderLeft: '1px solid rgba(0,0,0,0.06)',
           }}
@@ -326,7 +326,7 @@ function AppMockup() {
           ].map(({ n, label, body }) => (
             <div
               key={n}
-              className="rounded-xl p-3"
+              className="rounded-lg p-2.5"
               style={{
                 background: '#EEF0FF',
                 border: '1px solid rgba(51,89,244,0.12)',
