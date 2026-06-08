@@ -5,6 +5,7 @@ import { useEffect, useRef, useState, ReactNode } from 'react'
 import { SVGProps } from 'react'
 import { MacbookScroll } from '@/components/ui/macbook-scroll'
 import { Highlighter } from '@/components/ui/highlighter'
+import { Spotlight } from '@/components/ui/spotlight-new'
 
 // ── Brand ─────────────────────────────────────────────────────────────────────
 const BLUE = '#2D3E9E'
@@ -538,6 +539,7 @@ export default function LandingPage() {
 
       {/* ── Hero ───────────────────────────────────────────────────────────── */}
       <section className="relative pt-36 pb-16 overflow-hidden">
+        <Spotlight />
         <div
           className="relative mx-auto text-center"
           style={{ maxWidth: '800px', padding: '0 24px' }}
@@ -786,41 +788,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── Callout band ───────────────────────────────────────────────────── */}
-      <section>
-        <div
-          className="mx-auto py-24 px-6 text-center"
-          style={{ maxWidth: '760px' }}
-        >
-          <Reveal>
-            <h2
-              className="font-bold mb-5"
-              style={{
-                fontSize: 'clamp(34px, 5vw, 58px)',
-                letterSpacing: '-0.035em',
-                lineHeight: '1.1',
-                color: TEXT,
-              }}
-            >
-              Read smarter.
-              <br />
-              <span style={{ color: TEXT }}>Remember more.</span>
-            </h2>
-            <p
-              style={{
-                color: TEXT_MUTED,
-                fontSize: '17px',
-                lineHeight: '1.75',
-                maxWidth: '440px',
-                margin: '0 auto',
-              }}
-            >
-              Passive highlighting doesn&apos;t work. Active annotation — with a
-              note tied to every mark — builds real understanding.
-            </p>
-          </Reveal>
-        </div>
-      </section>
 
       {/* ── Feature detail rows ────────────────────────────────────────────── */}
       <section className="py-28 px-6">
