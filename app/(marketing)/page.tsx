@@ -7,6 +7,7 @@ import { MacbookScroll } from '@/components/ui/macbook-scroll'
 import { Highlighter } from '@/components/ui/highlighter'
 import { Spotlight } from '@/components/ui/spotlight-new'
 import { MotionEffect } from '@/components/ui/MotionEffect'
+import { Tree, type TreeViewElement } from '@/components/ui/file-tree'
 
 // ── Brand ─────────────────────────────────────────────────────────────────────
 const BLUE = '#2D3E9E'
@@ -401,6 +402,41 @@ function AppMockup() {
   )
 }
 
+// ── File tree data ────────────────────────────────────────────────────────────
+const folderTreeElements: TreeViewElement[] = [
+  {
+    id: 'research',
+    type: 'folder',
+    name: 'Research',
+    children: [
+      {
+        id: 'notes',
+        type: 'folder',
+        name: 'Notes',
+        children: [{ id: 'lecture-notes', name: 'lecture-notes.pdf' }],
+      },
+    ],
+  },
+  {
+    id: 'essays',
+    type: 'folder',
+    name: 'Essays',
+    children: [
+      { id: 'draft-final', name: 'draft-final.pdf' },
+      { id: 'outline', name: 'outline.pdf' },
+    ],
+  },
+  {
+    id: 'reading-list',
+    type: 'folder',
+    name: 'Reading List',
+    children: [
+      { id: 'the-innovators', name: 'the-innovators.pdf' },
+      { id: 'sapiens', name: 'sapiens.pdf' },
+    ],
+  },
+]
+
 // ── Arrow icon ────────────────────────────────────────────────────────────────
 function Arrow() {
   return (
@@ -578,7 +614,12 @@ export default function LandingPage() {
               Your PDFs,
               <br />
               finally{' '}
-              <Highlighter action="highlight" color="#2D3E9E" isView={true} delay={1.2}>
+              <Highlighter
+                action="highlight"
+                color="#2D3E9E"
+                isView={true}
+                delay={1.2}
+              >
                 understood
               </Highlighter>
             </h1>
@@ -595,42 +636,42 @@ export default function LandingPage() {
                 color: TEXT_MUTED,
               }}
             >
-              Drop pins anywhere on a PDF, write notes at that exact location, and
-              keep every document organized — all in one clean workspace.
+              Drop pins anywhere on a PDF, write notes at that exact location,
+              and keep every document organized — all in one clean workspace.
             </p>
           </MotionEffect>
 
           {/* CTAs */}
           <MotionEffect delay={0.81}>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link
-              href="/sign-up"
-              className="inline-flex items-center gap-2 font-semibold text-white rounded-full focus-visible:outline-none"
-              style={{
-                background: BLUE,
-                fontSize: '15px',
-                padding: '14px 28px',
-                boxShadow: '0 4px 20px rgba(51,89,244,0.35)',
-                transition: 'background 0.15s ease, box-shadow 0.15s ease',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = '#2244DC'
-                e.currentTarget.style.boxShadow =
-                  '0 6px 28px rgba(51,89,244,0.45)'
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = BLUE
-                e.currentTarget.style.boxShadow =
-                  '0 4px 20px rgba(51,89,244,0.35)'
-              }}
-            >
-              Start for free
-              <Arrow />
-            </Link>
-            <span className="text-[13px]" style={{ color: TEXT_MUTED }}>
-              No credit card required
-            </span>
-          </div>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+              <Link
+                href="/sign-up"
+                className="inline-flex items-center gap-2 font-semibold text-white rounded-full focus-visible:outline-none"
+                style={{
+                  background: BLUE,
+                  fontSize: '15px',
+                  padding: '14px 28px',
+                  boxShadow: '0 4px 20px rgba(51,89,244,0.35)',
+                  transition: 'background 0.15s ease, box-shadow 0.15s ease',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = '#2244DC'
+                  e.currentTarget.style.boxShadow =
+                    '0 6px 28px rgba(51,89,244,0.45)'
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = BLUE
+                  e.currentTarget.style.boxShadow =
+                    '0 4px 20px rgba(51,89,244,0.35)'
+                }}
+              >
+                Start for free
+                <Arrow />
+              </Link>
+              <span className="text-[13px]" style={{ color: TEXT_MUTED }}>
+                No credit card required
+              </span>
+            </div>
           </MotionEffect>
         </div>
 
@@ -799,7 +840,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-
       {/* ── Feature detail rows ────────────────────────────────────────────── */}
       <section className="py-28 px-6">
         <div className="mx-auto space-y-32" style={{ maxWidth: '1040px' }}>
@@ -959,55 +999,26 @@ export default function LandingPage() {
             <Reveal className="md:order-1">
               {/* Folder tree visual */}
               <div
-                className="rounded-2xl p-6"
+                className="dark rounded-2xl p-6"
                 style={{
                   background: ELEVATED,
                   border: `1px solid ${BORDER}`,
                   boxShadow: `0 16px 48px rgba(0,0,0,0.25)`,
                 }}
               >
-                {[
-                  { depth: 0, icon: '📁', label: 'Research', highlight: true },
-                  { depth: 1, icon: '📁', label: 'Papers', highlight: false },
-                  {
-                    depth: 2,
-                    icon: '📄',
-                    label: 'climate-2024.pdf',
-                    highlight: false,
-                  },
-                  {
-                    depth: 2,
-                    icon: '📄',
-                    label: 'ml-survey.pdf',
-                    highlight: false,
-                  },
-                  { depth: 1, icon: '📁', label: 'Notes', highlight: false },
-                  { depth: 0, icon: '📁', label: 'Essays', highlight: false },
-                  {
-                    depth: 1,
-                    icon: '📄',
-                    label: 'draft-final.pdf',
-                    highlight: false,
-                  },
-                ].map((item, i) => (
-                  <div
-                    key={i}
-                    className="flex items-center gap-2 py-1.5 rounded-lg"
-                    style={{
-                      paddingLeft: `${8 + item.depth * 18}px`,
-                      paddingRight: '8px',
-                      background: item.highlight
-                        ? 'rgba(128,144,216,0.12)'
-                        : 'transparent',
-                      color: item.highlight ? TEXT : TEXT_MUTED,
-                      fontWeight: item.highlight ? 600 : 400,
-                      fontSize: '13px',
-                    }}
-                  >
-                    <span>{item.icon}</span>
-                    <span>{item.label}</span>
-                  </div>
-                ))}
+                <div style={{ height: '220px' }}>
+                  <Tree
+                    elements={folderTreeElements}
+                    initialSelectedId="research"
+                    initialExpandedItems={[
+                      'research',
+                      'papers',
+                      'notes',
+                      'essays',
+                      'reading-list',
+                    ]}
+                  />
+                </div>
               </div>
             </Reveal>
           </div>
