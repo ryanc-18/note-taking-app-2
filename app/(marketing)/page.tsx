@@ -546,7 +546,7 @@ export default function LandingPage() {
           style={{ maxWidth: '800px', padding: '0 24px' }}
         >
           {/* Badge */}
-          <MotionEffect delay={0.05}>
+          <MotionEffect delay={0.45}>
             <div
               className="inline-flex items-center gap-2 rounded-full text-[13px] font-medium mb-8"
               style={{
@@ -565,7 +565,7 @@ export default function LandingPage() {
           </MotionEffect>
 
           {/* Headline */}
-          <MotionEffect delay={0.2}>
+          <MotionEffect delay={0.57}>
             <h1
               className="font-bold mb-6"
               style={{
@@ -578,14 +578,14 @@ export default function LandingPage() {
               Your PDFs,
               <br />
               finally{' '}
-              <Highlighter action="highlight" color="#2D3E9E" isView={true} delay={0.85}>
+              <Highlighter action="highlight" color="#2D3E9E" isView={true} delay={1.2}>
                 understood
               </Highlighter>
             </h1>
           </MotionEffect>
 
           {/* Subtitle */}
-          <MotionEffect delay={0.35}>
+          <MotionEffect delay={0.69}>
             <p
               className="mb-10 mx-auto"
               style={{
@@ -601,7 +601,7 @@ export default function LandingPage() {
           </MotionEffect>
 
           {/* CTAs */}
-          <MotionEffect delay={0.5}>
+          <MotionEffect delay={0.81}>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
               href="/sign-up"
@@ -635,7 +635,7 @@ export default function LandingPage() {
         </div>
 
         {/* Mockup */}
-        <MotionEffect delay={0.65}>
+        <MotionEffect delay={0} initialY={-500} duration={0.9}>
           <MacbookScroll showGradient={false}>
             <AppMockup />
           </MacbookScroll>
