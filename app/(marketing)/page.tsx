@@ -6,6 +6,7 @@ import { SVGProps } from 'react'
 import { MacbookScroll } from '@/components/ui/macbook-scroll'
 import { Highlighter } from '@/components/ui/highlighter'
 import { Spotlight } from '@/components/ui/spotlight-new'
+import { MotionEffect } from '@/components/ui/MotionEffect'
 
 // ── Brand ─────────────────────────────────────────────────────────────────────
 const BLUE = '#2D3E9E'
@@ -545,55 +546,62 @@ export default function LandingPage() {
           style={{ maxWidth: '800px', padding: '0 24px' }}
         >
           {/* Badge */}
-          <div
-            className="inline-flex items-center gap-2 rounded-full text-[13px] font-medium mb-8"
-            style={{
-              background: 'rgba(255,255,255,0.06)',
-              color: 'rgba(255,255,255,0.5)',
-              border: `1px solid ${BORDER}`,
-              padding: '6px 14px',
-            }}
-          >
-            <span
-              className="w-1.5 h-1.5 rounded-full"
-              style={{ background: 'rgba(255,255,255,0.3)' }}
-            />
-            PDF annotation, reimagined
-          </div>
+          <MotionEffect delay={0}>
+            <div
+              className="inline-flex items-center gap-2 rounded-full text-[13px] font-medium mb-8"
+              style={{
+                background: 'rgba(255,255,255,0.06)',
+                color: 'rgba(255,255,255,0.5)',
+                border: `1px solid ${BORDER}`,
+                padding: '6px 14px',
+              }}
+            >
+              <span
+                className="w-1.5 h-1.5 rounded-full"
+                style={{ background: 'rgba(255,255,255,0.3)' }}
+              />
+              PDF annotation, reimagined
+            </div>
+          </MotionEffect>
 
           {/* Headline */}
-          <h1
-            className="font-bold mb-6"
-            style={{
-              fontSize: 'clamp(46px, 7.5vw, 76px)',
-              letterSpacing: '-0.04em',
-              lineHeight: '1.05',
-              color: TEXT,
-            }}
-          >
-            Your PDFs,
-            <br />
-            finally{' '}
-            <Highlighter action="highlight" color="#2D3E9E" isView={true}>
-              understood
-            </Highlighter>
-          </h1>
+          <MotionEffect delay={0.1}>
+            <h1
+              className="font-bold mb-6"
+              style={{
+                fontSize: 'clamp(46px, 7.5vw, 76px)',
+                letterSpacing: '-0.04em',
+                lineHeight: '1.05',
+                color: TEXT,
+              }}
+            >
+              Your PDFs,
+              <br />
+              finally{' '}
+              <Highlighter action="highlight" color="#2D3E9E" isView={true} delay={0.7}>
+                understood
+              </Highlighter>
+            </h1>
+          </MotionEffect>
 
           {/* Subtitle */}
-          <p
-            className="mb-10 mx-auto"
-            style={{
-              fontSize: '18px',
-              lineHeight: '1.75',
-              maxWidth: '520px',
-              color: TEXT_MUTED,
-            }}
-          >
-            Drop pins anywhere on a PDF, write notes at that exact location, and
-            keep every document organized — all in one clean workspace.
-          </p>
+          <MotionEffect delay={0.2}>
+            <p
+              className="mb-10 mx-auto"
+              style={{
+                fontSize: '18px',
+                lineHeight: '1.75',
+                maxWidth: '520px',
+                color: TEXT_MUTED,
+              }}
+            >
+              Drop pins anywhere on a PDF, write notes at that exact location, and
+              keep every document organized — all in one clean workspace.
+            </p>
+          </MotionEffect>
 
           {/* CTAs */}
+          <MotionEffect delay={0.3}>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
               href="/sign-up"
@@ -623,12 +631,15 @@ export default function LandingPage() {
               No credit card required
             </span>
           </div>
+          </MotionEffect>
         </div>
 
         {/* Mockup */}
-        <MacbookScroll showGradient={false}>
-          <AppMockup />
-        </MacbookScroll>
+        <MotionEffect delay={0.4}>
+          <MacbookScroll showGradient={false}>
+            <AppMockup />
+          </MacbookScroll>
+        </MotionEffect>
       </section>
 
       {/* ── Features intro ─────────────────────────────────────────────────── */}
