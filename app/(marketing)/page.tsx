@@ -8,6 +8,7 @@ import { Highlighter } from '@/components/ui/highlighter'
 import { Spotlight } from '@/components/ui/spotlight-new'
 import { MotionEffect } from '@/components/ui/MotionEffect'
 import { Tree, type TreeViewElement } from '@/components/ui/file-tree'
+import { HoverEffect } from '@/components/ui/card-hover-effect'
 
 // ── Brand ─────────────────────────────────────────────────────────────────────
 const BLUE = '#2D3E9E'
@@ -717,126 +718,47 @@ export default function LandingPage() {
             </p>
           </Reveal>
 
-          <div className="grid md:grid-cols-3 gap-5">
-            {[
-              {
-                icon: (
-                  <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-                    <circle
-                      cx="14"
-                      cy="14"
-                      r="13"
-                      stroke="rgba(255,255,255,0.45)"
-                      strokeWidth="1.5"
-                    />
-                    <text
-                      x="14"
-                      y="19"
-                      textAnchor="middle"
-                      fill="rgba(255,255,255,0.45)"
-                      fontSize="13"
-                      fontWeight="700"
-                    >
-                      1
-                    </text>
-                  </svg>
-                ),
-                title: 'Drop a pin',
-                desc: 'Click any point on a PDF page to place a numbered annotation pin, anchored to that exact location forever.',
-                delay: 0,
-              },
-              {
-                icon: (
-                  <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-                    <rect
-                      x="4"
-                      y="5"
-                      width="20"
-                      height="18"
-                      rx="2.5"
-                      stroke="rgba(255,255,255,0.45)"
-                      strokeWidth="1.5"
-                    />
-                    <line
-                      x1="8"
-                      y1="10"
-                      x2="20"
-                      y2="10"
-                      stroke="rgba(255,255,255,0.45)"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                    />
-                    <line
-                      x1="8"
-                      y1="14"
-                      x2="17"
-                      y2="14"
-                      stroke="rgba(255,255,255,0.45)"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                    />
-                    <line
-                      x1="8"
-                      y1="18"
-                      x2="14"
-                      y2="18"
-                      stroke="rgba(255,255,255,0.45)"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                    />
-                  </svg>
-                ),
-                title: 'Write your note',
-                desc: 'A side panel opens for each pin. Write as much or as little as you want — the note stays linked to its location.',
-                delay: 100,
-              },
-              {
-                icon: (
-                  <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-                    <path
-                      d="M5 8h18v14H5V8z"
-                      stroke="rgba(255,255,255,0.45)"
-                      strokeWidth="1.5"
-                      strokeLinejoin="round"
-                    />
-                    <path
-                      d="M5 8l4-4h6l3 4"
-                      stroke="rgba(255,255,255,0.45)"
-                      strokeWidth="1.5"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                ),
-                title: 'Stay organized',
-                desc: 'Group documents into nested folders. Everything you annotate lives in one searchable, structured workspace.',
-                delay: 200,
-              },
-            ].map(({ icon, title, desc, delay }) => (
-              <Reveal key={title} delay={delay}>
-                <div
-                  className="rounded-2xl p-7 h-full"
-                  style={{
-                    background: ELEVATED,
-                    border: `1px solid ${BORDER}`,
-                  }}
-                >
-                  <div className="mb-5">{icon}</div>
-                  <h3
-                    className="font-semibold mb-2"
-                    style={{ fontSize: '16px', color: TEXT }}
-                  >
-                    {title}
-                  </h3>
-                  <p
-                    className="text-[14px]"
-                    style={{ color: TEXT_MUTED, lineHeight: '1.7' }}
-                  >
-                    {desc}
-                  </p>
-                </div>
-              </Reveal>
-            ))}
-          </div>
+          <Reveal>
+            <HoverEffect
+              items={[
+                {
+                  icon: (
+                    <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+                      <circle cx="14" cy="14" r="13" stroke="rgba(255,255,255,0.45)" strokeWidth="1.5" />
+                      <text x="14" y="19" textAnchor="middle" fill="rgba(255,255,255,0.45)" fontSize="13" fontWeight="700">1</text>
+                    </svg>
+                  ),
+                  title: 'Drop a pin',
+                  description: 'Click any point on a PDF page to place a numbered annotation pin, anchored to that exact location forever.',
+                  link: '#',
+                },
+                {
+                  icon: (
+                    <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+                      <rect x="4" y="5" width="20" height="18" rx="2.5" stroke="rgba(255,255,255,0.45)" strokeWidth="1.5" />
+                      <line x1="8" y1="10" x2="20" y2="10" stroke="rgba(255,255,255,0.45)" strokeWidth="1.5" strokeLinecap="round" />
+                      <line x1="8" y1="14" x2="17" y2="14" stroke="rgba(255,255,255,0.45)" strokeWidth="1.5" strokeLinecap="round" />
+                      <line x1="8" y1="18" x2="14" y2="18" stroke="rgba(255,255,255,0.45)" strokeWidth="1.5" strokeLinecap="round" />
+                    </svg>
+                  ),
+                  title: 'Write your note',
+                  description: 'A side panel opens for each pin. Write as much or as little as you want — the note stays linked to its location.',
+                  link: '#',
+                },
+                {
+                  icon: (
+                    <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+                      <path d="M5 8h18v14H5V8z" stroke="rgba(255,255,255,0.45)" strokeWidth="1.5" strokeLinejoin="round" />
+                      <path d="M5 8l4-4h6l3 4" stroke="rgba(255,255,255,0.45)" strokeWidth="1.5" strokeLinejoin="round" />
+                    </svg>
+                  ),
+                  title: 'Stay organized',
+                  description: 'Group documents into nested folders. Everything you annotate lives in one searchable, structured workspace.',
+                  link: '#',
+                },
+              ]}
+            />
+          </Reveal>
         </div>
       </section>
 
