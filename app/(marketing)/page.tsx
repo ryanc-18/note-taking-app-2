@@ -439,6 +439,140 @@ const folderTreeElements: TreeViewElement[] = [
   },
 ]
 
+// ── Teleport demo ─────────────────────────────────────────────────────────────
+function TeleportDemo() {
+  const [active, setActive] = useState<number | null>(null)
+
+  const annotations = [
+    {
+      n: 1,
+      label: 'Key finding',
+      body: 'Temperature anomaly correlates with CO₂ levels in the data.',
+    },
+    {
+      n: 2,
+      label: 'Question',
+      body: 'Compare against the 2023 methodology — different sample sizes.',
+    },
+    {
+      n: 3,
+      label: 'Follow up',
+      body: 'Check footnote 12 — the control group exclusion seems odd.',
+    },
+  ]
+
+  const pins = [
+    { n: 1, top: '20%', left: '66%' },
+    { n: 2, top: '50%', left: '42%' },
+    { n: 3, top: '74%', left: '60%' },
+  ]
+
+  const lineHighlights: Record<number, number[]> = {
+    1: [1, 2],
+    2: [5, 6],
+    3: [9, 10],
+  }
+
+  return (
+    <div
+      className="rounded-2xl p-5 flex gap-4"
+      style={{
+        background: ELEVATED,
+        border: `1px solid ${BORDER}`,
+        boxShadow: '0 16px 48px rgba(0,0,0,0.25)',
+      }}
+    >
+      {/* Mini PDF */}
+      <div
+        className="flex-1 bg-white rounded-xl p-4 relative"
+        style={{ border: '1px solid rgba(0,0,0,0.06)', minHeight: '240px' }}
+      >
+        <div className="space-y-2">
+          {[88, 72, 80, 65, 78, 60, 84, 70, 76, 68, 82, 58].map((w, i) => (
+            <div
+              key={i}
+              className="h-1.5 rounded-full transition-colors duration-300"
+              style={{
+                width: `${w}%`,
+                background:
+                  active !== null && lineHighlights[active]?.includes(i)
+                    ? 'rgba(45,62,158,0.3)'
+                    : '#E5E7EB',
+              }}
+            />
+          ))}
+        </div>
+        {pins.map(({ n, top, left }) => (
+          <button
+            key={n}
+            onClick={() => setActive(active === n ? null : n)}
+            className="absolute flex items-center justify-center text-white text-[11px] font-bold rounded-full w-6 h-6 cursor-pointer"
+            style={{
+              background: BLUE,
+              top,
+              left,
+              boxShadow:
+                active === n
+                  ? `0 0 0 5px rgba(45,62,158,0.25), 0 2px 8px rgba(0,0,0,0.4)`
+                  : '0 2px 6px rgba(0,0,0,0.4)',
+              transform: active === n ? 'scale(1.25)' : 'scale(1)',
+              transition: 'all 0.2s cubic-bezier(0.16,1,0.3,1)',
+            }}
+          >
+            {n}
+          </button>
+        ))}
+      </div>
+
+      {/* Annotations panel */}
+      <div className="flex flex-col gap-2" style={{ width: '165px' }}>
+        {annotations.map(({ n, label, body }) => (
+          <button
+            key={n}
+            onClick={() => setActive(active === n ? null : n)}
+            className="rounded-xl p-3 text-left"
+            style={{
+              background: active === n ? 'rgba(45,62,158,0.18)' : SURFACE,
+              border:
+                active === n
+                  ? '1px solid rgba(45,62,158,0.4)'
+                  : `1px solid ${BORDER}`,
+              transition: 'all 0.2s cubic-bezier(0.16,1,0.3,1)',
+            }}
+          >
+            <div className="flex items-center gap-1.5 mb-1">
+              <div
+                className="w-4 h-4 rounded-full flex items-center justify-center text-white font-bold flex-shrink-0"
+                style={{ background: BLUE, fontSize: '8px' }}
+              >
+                {n}
+              </div>
+              <span
+                className="text-[11px] font-semibold"
+                style={{ color: TEXT }}
+              >
+                {label}
+              </span>
+            </div>
+            <p
+              className="text-[10px] leading-relaxed"
+              style={{ color: TEXT_MUTED }}
+            >
+              {body}
+            </p>
+          </button>
+        ))}
+        <p
+          className="text-[10px] text-center mt-1"
+          style={{ color: 'rgba(255,255,255,0.2)' }}
+        >
+          Click a pin or note
+        </p>
+      </div>
+    </div>
+  )
+}
+
 // ── Arrow icon ────────────────────────────────────────────────────────────────
 function Arrow() {
   return (
@@ -638,8 +772,9 @@ export default function LandingPage() {
                 color: TEXT_MUTED,
               }}
             >
-              Drop pins anywhere on a PDF, write notes at that exact location,
-              and keep every document organized — all in one clean workspace.
+              Some sentences stop you mid-read. Pin that thought right where it
+              happened, revisit it in context, and never lose the moment that
+              mattered.
             </p>
           </MotionEffect>
 
@@ -746,7 +881,7 @@ export default function LandingPage() {
                   ),
                   title: 'Drop a pin',
                   description:
-                    'Click any point on a PDF page to place a numbered annotation pin, anchored to that exact location forever.',
+                    'Click anywhere on a page to plant a numbered pin. Your thought anchors to that exact spot — permanent, precise, always in context.',
                   link: '#',
                 },
                 {
@@ -792,7 +927,7 @@ export default function LandingPage() {
                   ),
                   title: 'Write your note',
                   description:
-                    'A side panel opens for each pin. Write as much or as little as you want — the note stays linked to its location.',
+                    'A panel opens the moment you pin. Capture as much or as little as you need — your note stays tied to the sentence that sparked it.',
                   link: '#',
                 },
                 {
@@ -814,7 +949,7 @@ export default function LandingPage() {
                   ),
                   title: 'Stay organized',
                   description:
-                    'Group documents into nested folders. Everything you annotate lives in one searchable, structured workspace.',
+                    'Nest documents into folders that match how you think. Every annotated file lives in one clean, searchable workspace.',
                   link: '#',
                 },
               ]}
@@ -856,7 +991,7 @@ export default function LandingPage() {
               >
                 Stop writing notes on a separate sheet that you&apos;ll never
                 connect back to the text. Drop a numbered pin exactly where your
-                thought belongs.
+                thought belongs — your thoughts live where they were born.
               </p>
               <Link
                 href="/sign-up"
@@ -1005,6 +1140,54 @@ export default function LandingPage() {
               </div>
             </Reveal>
           </div>
+          {/* Row 3: Teleport to marker */}
+          <div className="grid md:grid-cols-2 gap-16 items-center">
+            <Reveal delay={140} className="md:order-1">
+              <p
+                className="text-[11px] font-bold uppercase tracking-widest mb-4"
+                style={{ color: 'rgba(255,255,255,0.35)' }}
+              >
+                Navigation
+              </p>
+              <h2
+                className="font-bold mb-4"
+                style={{
+                  fontSize: 'clamp(28px, 3.5vw, 40px)',
+                  letterSpacing: '-0.03em',
+                  color: TEXT,
+                  lineHeight: '1.15',
+                }}
+              >
+                Every thought, one click away
+              </h2>
+              <p
+                className="mb-7"
+                style={{
+                  fontSize: '16px',
+                  lineHeight: '1.8',
+                  color: TEXT_MUTED,
+                }}
+              >
+                Click any numbered pin in the document and jump straight to the
+                note it belongs to. Or scan your annotations panel and teleport
+                to the exact line that sparked each one. Your whole reading
+                experience, instantly navigable.
+              </p>
+              <Link
+                href="/sign-up"
+                className="inline-flex items-center gap-1.5 font-semibold text-[14px] focus-visible:outline-none"
+                style={{ color: TEXT, transition: 'gap 0.2s ease' }}
+                onMouseEnter={(e) => (e.currentTarget.style.gap = '10px')}
+                onMouseLeave={(e) => (e.currentTarget.style.gap = '6px')}
+              >
+                Try it yourself <Arrow />
+              </Link>
+            </Reveal>
+
+            <Reveal className="md:order-2">
+              <TeleportDemo />
+            </Reveal>
+          </div>
         </div>
       </section>
 
@@ -1042,25 +1225,37 @@ export default function LandingPage() {
           {/* Left beam from bottom-left corner */}
           <motion.div
             animate={{ x: [0, 100, 0] }}
-            transition={{ duration: 10, repeat: Infinity, repeatType: 'reverse', ease: 'easeInOut' }}
+            transition={{
+              duration: 10,
+              repeat: Infinity,
+              repeatType: 'reverse',
+              ease: 'easeInOut',
+            }}
             className="absolute bottom-0"
             style={{
               left: '-150px',
               width: '800px',
               height: '420px',
-              background: 'radial-gradient(ellipse 75% 100% at 19% 100%, hsla(210,100%,85%,0.14) 0%, hsla(210,100%,55%,0.05) 40%, transparent 70%)',
+              background:
+                'radial-gradient(ellipse 75% 100% at 19% 100%, hsla(210,100%,85%,0.14) 0%, hsla(210,100%,55%,0.05) 40%, transparent 70%)',
             }}
           />
           {/* Right beam from bottom-right corner */}
           <motion.div
             animate={{ x: [0, -100, 0] }}
-            transition={{ duration: 10, repeat: Infinity, repeatType: 'reverse', ease: 'easeInOut' }}
+            transition={{
+              duration: 10,
+              repeat: Infinity,
+              repeatType: 'reverse',
+              ease: 'easeInOut',
+            }}
             className="absolute bottom-0"
             style={{
               right: '-150px',
               width: '800px',
               height: '420px',
-              background: 'radial-gradient(ellipse 75% 100% at 81% 100%, hsla(210,100%,85%,0.14) 0%, hsla(210,100%,55%,0.05) 40%, transparent 70%)',
+              background:
+                'radial-gradient(ellipse 75% 100% at 81% 100%, hsla(210,100%,85%,0.14) 0%, hsla(210,100%,55%,0.05) 40%, transparent 70%)',
             }}
           />
         </motion.div>
