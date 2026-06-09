@@ -1065,77 +1065,9 @@ export default function LandingPage() {
             </Reveal>
           </div>
 
-          {/* Row 2: Organization */}
+          {/* Row 2: Teleport to marker */}
           <div className="grid md:grid-cols-2 gap-16 items-center">
             <Reveal delay={140} className="md:order-2">
-              <p
-                className="text-[11px] font-bold uppercase tracking-widest mb-4"
-                style={{ color: 'rgba(255,255,255,0.35)' }}
-              >
-                Organization
-              </p>
-              <h2
-                className="font-bold mb-4"
-                style={{
-                  fontSize: 'clamp(28px, 3.5vw, 40px)',
-                  letterSpacing: '-0.03em',
-                  color: TEXT,
-                  lineHeight: '1.15',
-                }}
-              >
-                Every document in its place
-              </h2>
-              <p
-                className="mb-7"
-                style={{
-                  fontSize: '16px',
-                  lineHeight: '1.8',
-                  color: TEXT_MUTED,
-                }}
-              >
-                Create nested folders like Research &rarr; Papers &rarr; 2024.
-                Your workspace grows with you without ever becoming a mess.
-              </p>
-              <Link
-                href="/sign-up"
-                className="inline-flex items-center gap-1.5 font-semibold text-[14px] focus-visible:outline-none"
-                style={{ color: TEXT, transition: 'gap 0.2s ease' }}
-                onMouseEnter={(e) => (e.currentTarget.style.gap = '10px')}
-                onMouseLeave={(e) => (e.currentTarget.style.gap = '6px')}
-              >
-                Start organizing <Arrow />
-              </Link>
-            </Reveal>
-
-            <Reveal className="md:order-1">
-              {/* Folder tree visual */}
-              <div
-                className="dark rounded-2xl p-6"
-                style={{
-                  background: ELEVATED,
-                  border: `1px solid ${BORDER}`,
-                  boxShadow: `0 16px 48px rgba(0,0,0,0.25)`,
-                }}
-              >
-                <div style={{ height: '220px' }}>
-                  <Tree
-                    elements={folderTreeElements}
-                    initialSelectedId="research"
-                    initialExpandedItems={[
-                      'research',
-                      'papers',
-                      'notes',
-                      'essays',
-                      'reading-list',
-                    ]}
-                  />
-                </div>
-              </div>
-            </Reveal>
-          </div>
-          {/* Row 3: Teleport to marker */}
-          <div className="grid md:grid-cols-2 gap-16 items-center">
-            <Reveal delay={140} className="md:order-1">
               <p
                 className="text-[11px] font-bold uppercase tracking-widest mb-4"
                 style={{ color: 'rgba(255,255,255,0.35)' }}
@@ -1177,8 +1109,76 @@ export default function LandingPage() {
               </Link>
             </Reveal>
 
-            <Reveal className="md:order-2">
+            <Reveal className="md:order-1">
               <TeleportDemo />
+            </Reveal>
+          </div>
+          {/* Row 3: Organization */}
+          <div className="grid md:grid-cols-2 gap-16 items-center">
+            <Reveal delay={140} className="md:order-1">
+              <p
+                className="text-[11px] font-bold uppercase tracking-widest mb-4"
+                style={{ color: 'rgba(255,255,255,0.35)' }}
+              >
+                Organization
+              </p>
+              <h2
+                className="font-bold mb-4"
+                style={{
+                  fontSize: 'clamp(28px, 3.5vw, 40px)',
+                  letterSpacing: '-0.03em',
+                  color: TEXT,
+                  lineHeight: '1.15',
+                }}
+              >
+                Every document in its place
+              </h2>
+              <p
+                className="mb-7"
+                style={{
+                  fontSize: '16px',
+                  lineHeight: '1.8',
+                  color: TEXT_MUTED,
+                }}
+              >
+                Create nested folders like Research &rarr; Notes. Your workspace
+                grows with you without ever becoming a mess.
+              </p>
+              <Link
+                href="/sign-up"
+                className="inline-flex items-center gap-1.5 font-semibold text-[14px] focus-visible:outline-none"
+                style={{ color: TEXT, transition: 'gap 0.2s ease' }}
+                onMouseEnter={(e) => (e.currentTarget.style.gap = '10px')}
+                onMouseLeave={(e) => (e.currentTarget.style.gap = '6px')}
+              >
+                Start organizing <Arrow />
+              </Link>
+            </Reveal>
+
+            <Reveal className="md:order-2">
+              {/* Folder tree visual */}
+              <div
+                className="dark rounded-2xl p-6"
+                style={{
+                  background: ELEVATED,
+                  border: `1px solid ${BORDER}`,
+                  boxShadow: `0 16px 48px rgba(0,0,0,0.25)`,
+                }}
+              >
+                <div style={{ height: '220px' }}>
+                  <Tree
+                    elements={folderTreeElements}
+                    initialSelectedId="research"
+                    initialExpandedItems={[
+                      'research',
+                      'papers',
+                      'notes',
+                      'essays',
+                      'reading-list',
+                    ]}
+                  />
+                </div>
+              </div>
             </Reveal>
           </div>
         </div>
