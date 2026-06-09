@@ -505,7 +505,8 @@ function TeleportDemo() {
         {pins.map(({ n, top, left }) => (
           <button
             key={n}
-            onClick={() => setActive(active === n ? null : n)}
+            onMouseEnter={() => setActive(n)}
+            onMouseLeave={() => setActive(null)}
             className="absolute flex items-center justify-center text-white text-[11px] font-bold rounded-full w-6 h-6 cursor-pointer"
             style={{
               background: BLUE,
@@ -529,7 +530,8 @@ function TeleportDemo() {
         {annotations.map(({ n, label, body }) => (
           <button
             key={n}
-            onClick={() => setActive(active === n ? null : n)}
+            onMouseEnter={() => setActive(n)}
+            onMouseLeave={() => setActive(null)}
             className="rounded-xl p-3 text-left"
             style={{
               background: active === n ? 'rgba(45,62,158,0.18)' : SURFACE,
@@ -566,7 +568,7 @@ function TeleportDemo() {
           className="text-[10px] text-center mt-1"
           style={{ color: 'rgba(255,255,255,0.2)' }}
         >
-          Click a pin or note
+          Hover a pin or note
         </p>
       </div>
     </div>
