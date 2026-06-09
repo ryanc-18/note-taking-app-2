@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { useEffect, useRef, useState, ReactNode } from 'react'
 import { SVGProps } from 'react'
+import { motion } from 'motion/react'
 import { MacbookScroll } from '@/components/ui/macbook-scroll'
 import { Highlighter } from '@/components/ui/highlighter'
 import { Spotlight } from '@/components/ui/spotlight-new'
@@ -724,36 +725,96 @@ export default function LandingPage() {
                 {
                   icon: (
                     <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-                      <circle cx="14" cy="14" r="13" stroke="rgba(255,255,255,0.45)" strokeWidth="1.5" />
-                      <text x="14" y="19" textAnchor="middle" fill="rgba(255,255,255,0.45)" fontSize="13" fontWeight="700">1</text>
+                      <circle
+                        cx="14"
+                        cy="14"
+                        r="13"
+                        stroke="rgba(255,255,255,0.45)"
+                        strokeWidth="1.5"
+                      />
+                      <text
+                        x="14"
+                        y="19"
+                        textAnchor="middle"
+                        fill="rgba(255,255,255,0.45)"
+                        fontSize="13"
+                        fontWeight="700"
+                      >
+                        1
+                      </text>
                     </svg>
                   ),
                   title: 'Drop a pin',
-                  description: 'Click any point on a PDF page to place a numbered annotation pin, anchored to that exact location forever.',
+                  description:
+                    'Click any point on a PDF page to place a numbered annotation pin, anchored to that exact location forever.',
                   link: '#',
                 },
                 {
                   icon: (
                     <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-                      <rect x="4" y="5" width="20" height="18" rx="2.5" stroke="rgba(255,255,255,0.45)" strokeWidth="1.5" />
-                      <line x1="8" y1="10" x2="20" y2="10" stroke="rgba(255,255,255,0.45)" strokeWidth="1.5" strokeLinecap="round" />
-                      <line x1="8" y1="14" x2="17" y2="14" stroke="rgba(255,255,255,0.45)" strokeWidth="1.5" strokeLinecap="round" />
-                      <line x1="8" y1="18" x2="14" y2="18" stroke="rgba(255,255,255,0.45)" strokeWidth="1.5" strokeLinecap="round" />
+                      <rect
+                        x="4"
+                        y="5"
+                        width="20"
+                        height="18"
+                        rx="2.5"
+                        stroke="rgba(255,255,255,0.45)"
+                        strokeWidth="1.5"
+                      />
+                      <line
+                        x1="8"
+                        y1="10"
+                        x2="20"
+                        y2="10"
+                        stroke="rgba(255,255,255,0.45)"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                      />
+                      <line
+                        x1="8"
+                        y1="14"
+                        x2="17"
+                        y2="14"
+                        stroke="rgba(255,255,255,0.45)"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                      />
+                      <line
+                        x1="8"
+                        y1="18"
+                        x2="14"
+                        y2="18"
+                        stroke="rgba(255,255,255,0.45)"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                      />
                     </svg>
                   ),
                   title: 'Write your note',
-                  description: 'A side panel opens for each pin. Write as much or as little as you want — the note stays linked to its location.',
+                  description:
+                    'A side panel opens for each pin. Write as much or as little as you want — the note stays linked to its location.',
                   link: '#',
                 },
                 {
                   icon: (
                     <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-                      <path d="M5 8h18v14H5V8z" stroke="rgba(255,255,255,0.45)" strokeWidth="1.5" strokeLinejoin="round" />
-                      <path d="M5 8l4-4h6l3 4" stroke="rgba(255,255,255,0.45)" strokeWidth="1.5" strokeLinejoin="round" />
+                      <path
+                        d="M5 8h18v14H5V8z"
+                        stroke="rgba(255,255,255,0.45)"
+                        strokeWidth="1.5"
+                        strokeLinejoin="round"
+                      />
+                      <path
+                        d="M5 8l4-4h6l3 4"
+                        stroke="rgba(255,255,255,0.45)"
+                        strokeWidth="1.5"
+                        strokeLinejoin="round"
+                      />
                     </svg>
                   ),
                   title: 'Stay organized',
-                  description: 'Group documents into nested folders. Everything you annotate lives in one searchable, structured workspace.',
+                  description:
+                    'Group documents into nested folders. Everything you annotate lives in one searchable, structured workspace.',
                   link: '#',
                 },
               ]}
@@ -971,8 +1032,39 @@ export default function LandingPage() {
       </section>
 
       {/* ── Bottom CTA ─────────────────────────────────────────────────────── */}
-      <section className="py-32 px-6 text-center">
-        <div className="mx-auto" style={{ maxWidth: '560px' }}>
+      <section className="relative overflow-hidden py-32 px-6 text-center">
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1.5 }}
+          className="absolute inset-0 pointer-events-none"
+        >
+          {/* Left beam from bottom-left corner */}
+          <motion.div
+            animate={{ x: [0, 100, 0] }}
+            transition={{ duration: 10, repeat: Infinity, repeatType: 'reverse', ease: 'easeInOut' }}
+            className="absolute bottom-0"
+            style={{
+              left: '-150px',
+              width: '800px',
+              height: '420px',
+              background: 'radial-gradient(ellipse 75% 100% at 19% 100%, hsla(210,100%,85%,0.14) 0%, hsla(210,100%,55%,0.05) 40%, transparent 70%)',
+            }}
+          />
+          {/* Right beam from bottom-right corner */}
+          <motion.div
+            animate={{ x: [0, -100, 0] }}
+            transition={{ duration: 10, repeat: Infinity, repeatType: 'reverse', ease: 'easeInOut' }}
+            className="absolute bottom-0"
+            style={{
+              right: '-150px',
+              width: '800px',
+              height: '420px',
+              background: 'radial-gradient(ellipse 75% 100% at 81% 100%, hsla(210,100%,85%,0.14) 0%, hsla(210,100%,55%,0.05) 40%, transparent 70%)',
+            }}
+          />
+        </motion.div>
+        <div className="relative mx-auto" style={{ maxWidth: '560px' }}>
           <Reveal>
             <div className="flex justify-center mb-8">
               <PinnoteLogo size={52} />
