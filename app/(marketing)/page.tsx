@@ -360,12 +360,12 @@ function AppMockup() {
             {
               n: 1,
               label: 'Key finding',
-              body: 'Temperature anomaly correlates with CO₂ — follow up with 2023 data.',
+              body: 'Temperature anomaly correlates with CO₂. Follow up with 2023 data.',
             },
             {
               n: 2,
               label: 'Methodology',
-              body: 'Compare against Chen et al. — different sample size.',
+              body: 'Compare against Chen et al. Note the different sample size.',
             },
           ].map(({ n, label, body }) => (
             <div
@@ -452,12 +452,12 @@ function TeleportDemo() {
     {
       n: 2,
       label: 'Question',
-      body: 'Compare against the 2023 methodology — different sample sizes.',
+      body: 'Compare against the 2023 methodology. Different sample sizes.',
     },
     {
       n: 3,
       label: 'Follow up',
-      body: 'Check footnote 12 — the control group exclusion seems odd.',
+      body: 'Check footnote 12, the control group exclusion seems odd.',
     },
   ]
 
@@ -603,11 +603,11 @@ export default function LandingPage() {
   const faqs = [
     {
       q: 'Is Pinnote free to use?',
-      a: 'Yes — Pinnote is free to get started. Create an account and begin annotating PDFs immediately with no credit card required.',
+      a: 'Yes, Pinnote is free to get started. Create an account and begin annotating PDFs immediately with no credit card required.',
     },
     {
       q: 'What types of files can I upload?',
-      a: 'Pinnote supports PDF files. Upload any PDF — research papers, textbooks, contracts, or any document — and annotate with pins.',
+      a: 'Pinnote supports PDF files. Upload any PDF: research papers, textbooks, contracts, or any other document, and annotate with pins.',
     },
     {
       q: 'How do annotations work exactly?',
@@ -619,7 +619,7 @@ export default function LandingPage() {
     },
     {
       q: 'Can I access my notes from anywhere?',
-      a: 'Yes. Pinnote is a web app — your annotated documents and notes are accessible from any modern browser on any device.',
+      a: 'Yes. Pinnote is a web app, so your annotated documents and notes are accessible from any modern browser on any device.',
     },
   ]
 
@@ -883,7 +883,7 @@ export default function LandingPage() {
                   ),
                   title: 'Drop a pin',
                   description:
-                    'Click anywhere on a page to plant a numbered pin. Your thought anchors to that exact spot — permanent, precise, always in context.',
+                    'Click anywhere on a page to plant a numbered pin. Permanent, precise, and always in context.',
                   link: '#',
                 },
                 {
@@ -929,7 +929,7 @@ export default function LandingPage() {
                   ),
                   title: 'Write your note',
                   description:
-                    'A panel opens the moment you pin. Capture as much or as little as you need — your note stays tied to the sentence that sparked it.',
+                    'A panel opens the moment you pin. Your note stays tied to the sentence that sparked it.',
                   link: '#',
                 },
                 {
@@ -993,7 +993,7 @@ export default function LandingPage() {
               >
                 Stop writing notes on a separate sheet that you&apos;ll never
                 connect back to the text. Drop a numbered pin exactly where your
-                thought belongs — your thoughts live where they were born.
+                thought belongs. Your thoughts live where they were born.
               </p>
               <Link
                 href="/sign-up"
@@ -1102,7 +1102,7 @@ export default function LandingPage() {
                   color: TEXT_MUTED,
                 }}
               >
-                Create nested folders — Research &rarr; Papers &rarr; 2024. Your
+                Create nested folders like Research &rarr; Papers &rarr; 2024. Your
                 workspace grows with you without ever becoming a mess.
               </p>
               <Link
@@ -1304,7 +1304,7 @@ export default function LandingPage() {
                 e.currentTarget.style.background = BLUE
               }}
             >
-              Get started — it&apos;s free
+              Get started for free
               <Arrow />
             </Link>
           </Reveal>
