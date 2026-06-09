@@ -462,16 +462,10 @@ function TeleportDemo() {
   ]
 
   const pins = [
-    { n: 1, top: '20%', left: '66%' },
-    { n: 2, top: '50%', left: '42%' },
-    { n: 3, top: '74%', left: '60%' },
+    { n: 1, top: '10%', left: '20%' },
+    { n: 2, top: '27%', left: '60%' },
+    { n: 3, top: '45%', left: '30%' },
   ]
-
-  const lineHighlights: Record<number, number[]> = {
-    1: [1, 2],
-    2: [5, 6],
-    3: [9, 10],
-  }
 
   return (
     <div
@@ -491,13 +485,10 @@ function TeleportDemo() {
           {[88, 72, 80, 65, 78, 60, 84, 70, 76, 68, 82, 58].map((w, i) => (
             <div
               key={i}
-              className="h-1.5 rounded-full transition-colors duration-300"
+              className="h-1.5 rounded-full"
               style={{
                 width: `${w}%`,
-                background:
-                  active !== null && lineHighlights[active]?.includes(i)
-                    ? 'rgba(45,62,158,0.3)'
-                    : '#E5E7EB',
+                background: '#E5E7EB',
               }}
             />
           ))}
@@ -1102,8 +1093,8 @@ export default function LandingPage() {
                   color: TEXT_MUTED,
                 }}
               >
-                Create nested folders like Research &rarr; Papers &rarr; 2024. Your
-                workspace grows with you without ever becoming a mess.
+                Create nested folders like Research &rarr; Papers &rarr; 2024.
+                Your workspace grows with you without ever becoming a mess.
               </p>
               <Link
                 href="/sign-up"
