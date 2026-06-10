@@ -1,8 +1,20 @@
 import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server'
+import { NextResponse } from 'next/server'
 
 const isProtectedRoute = createRouteMatcher(['/dashboard(.*)'])
 
 export default clerkMiddleware(async (auth, req) => {
+  const ua = req.headers.get('user-agent') ?? ''
+  const isMobile = /Android|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(ua)
+
+  const isAuthRoute =
+    req.nextUrl.pathname.startsWith('/sign-up') ||
+    req.nextUrl.pathname.startsWith('/sign-in')
+
+  if (isMobile && isAuthRoute) {
+    return NextResponse.redirect(new URL('/desktop-only', req.url))
+  }
+
   if (isProtectedRoute(req)) await auth.protect()
 })
 
