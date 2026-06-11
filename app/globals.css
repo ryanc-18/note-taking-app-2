@@ -6,6 +6,18 @@
 
 
 :root {
+  /* Brand */
+  --brand-blue: #2D3E9E;
+  --brand-navy: #101640;
+
+  /* Dark theme */
+  --dark-bg: #161616;
+  --dark-surface: #1F1F1F;
+  --dark-elevated: #272727;
+  --dark-text: #F0F0F0;
+  --dark-text-muted: rgba(255, 255, 255, 0.4);
+  --dark-border: rgba(255, 255, 255, 0.08);
+
   /* Paper palette */
   --paper-bg: #f5f0e8;
   --paper-surface: #faf7f2;
