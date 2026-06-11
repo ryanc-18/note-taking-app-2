@@ -315,35 +315,57 @@ const AnnotationPanel = forwardRef<AnnotationPanelHandle, Props>(function Annota
                 </div>
               ) : (
                 pageNumbers.map(pageNum => (
-                  <div key={pageNum}>
-                    <div style={{ padding: '8px 16px 4px', fontSize: '10.5px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.07em', color: 'var(--text-muted)', fontFamily: 'var(--font-ui)' }}>
+                  <div key={pageNum} style={{ padding: '4px 10px 2px' }}>
+                    <div style={{ padding: '6px 4px 4px', fontSize: '10px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--text-muted)', fontFamily: 'var(--font-ui)' }}>
                       Page {pageNum + 1}
                     </div>
-                    {annotationsByPage[pageNum].sort((a, b) => a.number - b.number).map(a => (
-                      <button
-                        key={a.id}
-                        ref={el => { cardRefs.current[a.id] = el }}
-                        onClick={() => onSelectAnnotation(a)}
-                        style={{ display: 'flex', flexDirection: 'column', gap: '6px', width: '100%', padding: '10px 16px', background: hoveredAnnotationId === a.id ? 'var(--sidebar-hover)' : 'transparent', border: 'none', borderBottom: '1px solid var(--border)', cursor: 'pointer', textAlign: 'left', transition: 'background 0.15s ease' }}
-                        onMouseEnter={() => onHoverAnnotation(a.id)}
-                        onMouseLeave={() => onHoverAnnotation(null)}
-                      >
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                          <div style={{ width: '18px', height: '18px', borderRadius: '50%', background: 'var(--accent)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                            <span style={{ fontSize: '8px', fontWeight: 700, color: 'white', fontFamily: 'var(--font-ui)' }}>{a.number}</span>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                    {annotationsByPage[pageNum].sort((a, b) => a.number - b.number).map(a => {
+                      const plainText = a.text.replace(/<\/p>|<br\s*\/?>/gi, '\n').replace(/<[^>]*>/g, '').trim()
+                      const titleText = plainText.split('\n')[0]?.trim() || ''
+                      return (
+                        <button
+                          key={a.id}
+                          ref={el => { cardRefs.current[a.id] = el }}
+                          onClick={() => onSelectAnnotation(a)}
+                          onMouseEnter={() => onHoverAnnotation(a.id)}
+                          onMouseLeave={() => onHoverAnnotation(null)}
+                          style={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: '8px',
+                            width: '100%',
+                            padding: '12px 14px',
+                            background: hoveredAnnotationId === a.id ? 'rgba(255,255,255,0.07)' : 'rgba(255,255,255,0.04)',
+                            border: '1px solid var(--border)',
+                            borderRadius: '12px',
+                            cursor: 'pointer',
+                            textAlign: 'left',
+                            transition: 'background 0.15s ease, border-color 0.15s ease',
+                          }}
+                        >
+                          {/* Badge + title row */}
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                            <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: 'var(--accent)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                              <span style={{ fontSize: '10px', fontWeight: 700, color: 'white', fontFamily: 'var(--font-ui)' }}>{a.number}</span>
+                            </div>
+                            <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-primary)', fontFamily: 'var(--font-ui)', lineHeight: 1.3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', minWidth: 0, flex: 1 }}>
+                              {titleText || `Annotation ${a.number}`}
+                            </span>
                           </div>
-                          <span style={{ fontSize: '12px', fontWeight: 500, color: 'var(--text-secondary)', fontFamily: 'var(--font-ui)' }}>Annotation {a.number}</span>
-                        </div>
-                        {a.text ? (
-                          <div
-                            style={{ fontSize: '12.5px', color: 'var(--text-primary)', fontFamily: 'var(--font-ui)', lineHeight: 1.6, paddingLeft: '26px' }}
-                            dangerouslySetInnerHTML={{ __html: a.text }}
-                          />
-                        ) : (
-                          <span style={{ fontSize: '12px', color: 'var(--text-muted)', fontFamily: 'var(--font-ui)', paddingLeft: '26px', fontStyle: 'italic' }}>No note written</span>
-                        )}
-                      </button>
-                    ))}
+                          {/* Body text */}
+                          {a.text ? (
+                            <div
+                              style={{ fontSize: '12.5px', color: 'var(--text-secondary)', fontFamily: 'var(--font-ui)', lineHeight: 1.65, paddingLeft: '34px' }}
+                              dangerouslySetInnerHTML={{ __html: a.text }}
+                            />
+                          ) : (
+                            <span style={{ fontSize: '12px', color: 'var(--text-muted)', fontFamily: 'var(--font-ui)', paddingLeft: '34px', fontStyle: 'italic' }}>No note written</span>
+                          )}
+                        </button>
+                      )
+                    })}
+                    </div>
                   </div>
                 ))
               )}
