@@ -23,7 +23,6 @@ type Props = {
   onDeselectFolder: () => void
   rootNoteIds: string[]
   onContextMenu: (e: React.MouseEvent, id: string, type: 'folder' | 'note') => void
-  onStartRename: (id: string, currentName: string) => void
   onHomeClick: () => void
   onSettingsClick: () => void
   onMoveNote: (noteId: string, targetFolderId: string) => void
@@ -41,7 +40,7 @@ export default function Sidebar({
   onOpenNote, onToggleFolder, onAddNote, onAddFolder,
   selectedFolderId, onSelectFolder, onDeselectFolder,
   rootNoteIds,
-  onContextMenu, onStartRename, onHomeClick, onSettingsClick, onMoveNote, onMoveFolder,
+  onContextMenu, onHomeClick, onSettingsClick, onMoveNote, onMoveFolder,
   fileInputRef, onFileSelected, userName, onSignOut,
 }: Props) {
   const addMenuRef = useRef<HTMLDivElement>(null)
@@ -50,6 +49,7 @@ export default function Sidebar({
   const [addMenuOpen, setAddMenuOpen] = useState(false)
   const [accountMenuOpen, setAccountMenuOpen] = useState(false)
   const [dragOverFolderId, setDragOverFolderId] = useState<string | null>(null)
+
 
   useEffect(() => {
     if (renamingId) setTimeout(() => renameInputRef.current?.select(), 0)
@@ -179,7 +179,6 @@ export default function Sidebar({
                 : 'bg-transparent text-[var(--sidebar-text-muted)] hover:bg-[var(--sidebar-hover)] hover:text-[var(--sidebar-text)]'
             }`}
             onClick={() => onOpenNote(note.id)}
-            onDoubleClick={(e) => { e.stopPropagation(); onStartRename(note.id, note.title) }}
             onContextMenu={(e) => onContextMenu(e, note.id, 'note')}
           >
             <span className="shrink-0 flex"><FileText size={12} /></span>
@@ -220,7 +219,6 @@ export default function Sidebar({
                   style={{ paddingLeft: `${8 + indent}px` }}
                   draggable
                   onClick={() => { onToggleFolder(folder.id); onSelectFolder(folder.id) }}
-                  onDoubleClick={(e) => { e.stopPropagation(); onStartRename(folder.id, folder.name) }}
                   onContextMenu={(e) => onContextMenu(e, folder.id, 'folder')}
                   onDragStart={(e) => {
                     e.dataTransfer.setData('folderId', folder.id)
@@ -275,7 +273,6 @@ export default function Sidebar({
                         }`}
                         style={{ paddingLeft: `${28 + indent}px` }}
                         onClick={() => onOpenNote(note.id)}
-                        onDoubleClick={(e) => { e.stopPropagation(); onStartRename(note.id, note.title) }}
                         onContextMenu={(e) => onContextMenu(e, note.id, 'note')}
                         draggable
                         onDragStart={(e) => {

@@ -237,7 +237,6 @@ export default function NoteApp() {
           onDeselectFolder={() => setSelectedFolderId(null)}
           rootNoteIds={rootNoteIds}
           onContextMenu={openContextMenu}
-          onStartRename={startRename}
           onHomeClick={() => setView('home')}
           onSettingsClick={() => setView('settings')}
           onMoveNote={moveNoteToFolder}
