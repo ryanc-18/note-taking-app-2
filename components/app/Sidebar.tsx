@@ -84,7 +84,7 @@ export default function Sidebar({
       <div className="flex items-center gap-2 px-3.5 pt-3.5 pb-2.5 border-b border-[var(--sidebar-border)]">
         <div
           className="w-[26px] h-[26px] rounded-[6px] flex items-center justify-center text-xs font-semibold text-white shrink-0"
-          style={{ background: 'linear-gradient(135deg, var(--accent), #a06030)', fontFamily: 'var(--font-display)' }}
+          style={{ background: 'linear-gradient(135deg, #4a6cf7, var(--accent))', fontFamily: 'var(--font-display)' }}
         >
           {userName.charAt(0).toUpperCase() || '?'}
         </div>
@@ -110,7 +110,7 @@ export default function Sidebar({
             <Search size={14} />
           </span>
           <input
-            className="w-full bg-white/5 border border-white/[0.08] rounded-md py-[5px] pl-7 pr-2 text-[12.5px] text-[var(--sidebar-text-active)] outline-none transition-colors duration-150 placeholder:text-[var(--sidebar-text-muted)] focus:border-[rgba(194,130,74,0.4)] focus:bg-white/[0.07]"
+            className="w-full bg-white/5 border border-white/[0.08] rounded-md py-[5px] pl-7 pr-2 text-[12.5px] text-[var(--sidebar-text-active)] outline-none transition-colors duration-150 placeholder:text-[var(--sidebar-text-muted)] focus:border-[rgba(45,62,158,0.6)] focus:bg-white/[0.07]"
             style={{ fontFamily: 'var(--font-ui)' }}
             placeholder="Search notes..."
             value={searchQuery}

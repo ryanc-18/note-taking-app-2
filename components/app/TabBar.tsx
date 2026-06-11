@@ -24,7 +24,7 @@ export default function TabBar({ openTabs, notes, activeTab, onSelect, onClose }
             className={`tab flex items-center gap-[5px] pl-3 pr-2.5 h-[34px] cursor-pointer whitespace-nowrap text-[12.5px] border-r border-[var(--border)] rounded-t-[6px] mt-0.5 transition-colors duration-100 select-none relative ${
               isActive
                 ? 'active bg-[var(--tab-active-bg)] text-[var(--text-primary)] font-medium -mb-px z-[1] border-b border-[var(--tab-active-bg)]'
-                : 'bg-[var(--tab-bg)] text-[var(--text-muted)] hover:bg-[#e8e2d8] hover:text-[var(--text-secondary)]'
+                : 'bg-[var(--tab-bg)] text-[var(--text-muted)] hover:bg-[rgba(255,255,255,0.07)] hover:text-[var(--text-secondary)]'
             }`}
             onClick={() => onSelect(tabId)}
           >

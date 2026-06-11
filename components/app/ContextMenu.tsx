@@ -32,7 +32,7 @@ function MenuItem({ label, onClick, disabled, danger }: {
       disabled={disabled}
       className={`flex items-center w-full px-3 py-[7px] text-[12.5px] text-left bg-transparent border-none cursor-pointer transition-colors duration-100 disabled:opacity-35 disabled:cursor-default disabled:hover:bg-transparent ${
         danger
-          ? 'text-red-500 hover:bg-red-50'
+          ? 'text-red-500 hover:bg-red-500/10'
           : 'text-[var(--text-primary)] hover:bg-[var(--sidebar-hover)]'
       }`}
       onClick={onClick}

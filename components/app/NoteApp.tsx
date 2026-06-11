@@ -35,14 +35,14 @@ const appStyles = `
 
   .editor-area::-webkit-scrollbar { width: 6px; }
   .editor-area::-webkit-scrollbar-track { background: transparent; }
-  .editor-area::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.12); border-radius: 4px; }
+  .editor-area::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 4px; }
 
   .editor-paper::before {
     content: '';
     position: absolute;
     left: 56px; top: 0; bottom: 0;
     width: 1px;
-    background: rgba(194,130,74,0.15);
+    background: rgba(45,62,158,0.25);
   }
 
   .editor-paper::after {
@@ -52,8 +52,8 @@ const appStyles = `
     background-image: repeating-linear-gradient(
       transparent,
       transparent 27px,
-      rgba(0,0,0,0.025) 27px,
-      rgba(0,0,0,0.025) 28px
+      rgba(255,255,255,0.03) 27px,
+      rgba(255,255,255,0.03) 28px
     );
     border-radius: inherit;
     pointer-events: none;
@@ -93,10 +93,10 @@ const appStyles = `
   .md-content code {
     font-family: var(--font-mono);
     font-size: 12.5px;
-    background: rgba(0,0,0,0.05);
+    background: rgba(255,255,255,0.08);
     padding: 1px 5px;
     border-radius: 3px;
-    border: 1px solid rgba(0,0,0,0.07);
+    border: 1px solid rgba(255,255,255,0.06);
   }
   .md-content blockquote {
     border-left: 3px solid var(--accent);
@@ -125,7 +125,7 @@ const appStyles = `
   .md-content .checkbox.checked { background: var(--accent); border-color: var(--accent); }
   .md-content table { width: 100%; border-collapse: collapse; margin-bottom: 14px; font-size: 13.5px; font-family: var(--font-ui); }
   .md-content td { padding: 7px 12px; border: 1px solid var(--border-strong); }
-  .md-content tr:first-child td { background: rgba(0,0,0,0.02); font-weight: 500; }
+  .md-content tr:first-child td { background: rgba(255,255,255,0.05); font-weight: 500; }
 `
 
 // ─── Main Component ───────────────────────────────────────────────────────────
