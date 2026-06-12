@@ -31,21 +31,21 @@ export function PillMarker({
           'flex items-center gap-1 px-2 py-1 rounded-full transition-all duration-300',
           isActive
             ? 'bg-[#2D3E9E] shadow-md shadow-[#2D3E9E]/30'
-            : 'bg-[#2D3E9E]/30 hover:bg-[#2D3E9E]/50'
+            : 'bg-transparent border border-[#2D3E9E] hover:bg-[#2D3E9E]/10'
         )}
       >
         {/* Dot indicator */}
         <span
           className={cn(
             'w-1.5 h-1.5 rounded-full transition-all duration-300',
-            isActive ? 'bg-blue-200' : 'bg-blue-400/50'
+            isActive ? 'bg-blue-200' : 'bg-[#2D3E9E]'
           )}
         />
         {/* Number */}
         <span
           className={cn(
             'text-[10px] font-semibold transition-colors duration-300',
-            isActive ? 'text-white' : 'text-white/60'
+            isActive ? 'text-white' : 'text-[#2D3E9E]'
           )}
         >
           {number}
