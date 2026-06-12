@@ -55,5 +55,5 @@ model Annotation {
   text      String   @default("")
   createdAt DateTime @default(now())
   noteId    String
-  note      Note     @relation(fields: [noteId], references: [id])
+  note      Note     @relation(fields: [noteId], references: [id], onDelete: Cascade)
 }
