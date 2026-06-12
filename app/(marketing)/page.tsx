@@ -12,16 +12,16 @@ import { Tree, type TreeViewElement } from '@/components/ui/file-tree'
 import { HoverEffect } from '@/components/ui/card-hover-effect'
 
 // ── Brand ─────────────────────────────────────────────────────────────────────
-const BLUE = '#2D3E9E'
-const NAVY = '#101640'
+const BLUE = 'var(--brand-blue)'
+const NAVY = 'var(--brand-navy)'
 
 // ── Dark theme tokens ─────────────────────────────────────────────────────────
-const BG = '#161616'
-const SURFACE = '#1F1F1F'
-const ELEVATED = '#272727'
-const TEXT = '#F0F0F0'
-const TEXT_MUTED = 'rgba(255,255,255,0.4)'
-const BORDER = 'rgba(255,255,255,0.08)'
+const BG = 'var(--dark-bg)'
+const SURFACE = 'var(--dark-surface)'
+const ELEVATED = 'var(--dark-elevated)'
+const TEXT = 'var(--dark-text)'
+const TEXT_MUTED = 'var(--dark-text-muted)'
+const BORDER = 'var(--dark-border)'
 
 // ── Logo SVG ──────────────────────────────────────────────────────────────────
 type MarkProps = SVGProps<SVGSVGElement> & { title?: string; size?: number }

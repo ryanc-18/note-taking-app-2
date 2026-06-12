@@ -23,7 +23,6 @@ type Props = {
   onDeselectFolder: () => void
   rootNoteIds: string[]
   onContextMenu: (e: React.MouseEvent, id: string, type: 'folder' | 'note') => void
-  onStartRename: (id: string, currentName: string) => void
   onHomeClick: () => void
   onSettingsClick: () => void
   onMoveNote: (noteId: string, targetFolderId: string) => void
@@ -41,7 +40,7 @@ export default function Sidebar({
   onOpenNote, onToggleFolder, onAddNote, onAddFolder,
   selectedFolderId, onSelectFolder, onDeselectFolder,
   rootNoteIds,
-  onContextMenu, onStartRename, onHomeClick, onSettingsClick, onMoveNote, onMoveFolder,
+  onContextMenu, onHomeClick, onSettingsClick, onMoveNote, onMoveFolder,
   fileInputRef, onFileSelected, userName, onSignOut,
 }: Props) {
   const addMenuRef = useRef<HTMLDivElement>(null)
@@ -50,6 +49,7 @@ export default function Sidebar({
   const [addMenuOpen, setAddMenuOpen] = useState(false)
   const [accountMenuOpen, setAccountMenuOpen] = useState(false)
   const [dragOverFolderId, setDragOverFolderId] = useState<string | null>(null)
+
 
   useEffect(() => {
     if (renamingId) setTimeout(() => renameInputRef.current?.select(), 0)
@@ -84,7 +84,7 @@ export default function Sidebar({
       <div className="flex items-center gap-2 px-3.5 pt-3.5 pb-2.5 border-b border-[var(--sidebar-border)]">
         <div
           className="w-[26px] h-[26px] rounded-[6px] flex items-center justify-center text-xs font-semibold text-white shrink-0"
-          style={{ background: 'linear-gradient(135deg, var(--accent), #a06030)', fontFamily: 'var(--font-display)' }}
+          style={{ background: 'linear-gradient(135deg, #4a6cf7, var(--accent))', fontFamily: 'var(--font-display)' }}
         >
           {userName.charAt(0).toUpperCase() || '?'}
         </div>
@@ -110,7 +110,7 @@ export default function Sidebar({
             <Search size={14} />
           </span>
           <input
-            className="w-full bg-white/5 border border-white/[0.08] rounded-md py-[5px] pl-7 pr-2 text-[12.5px] text-[var(--sidebar-text-active)] outline-none transition-colors duration-150 placeholder:text-[var(--sidebar-text-muted)] focus:border-[rgba(194,130,74,0.4)] focus:bg-white/[0.07]"
+            className="w-full bg-white/5 border border-white/[0.08] rounded-md py-[5px] pl-7 pr-2 text-[12.5px] text-[var(--sidebar-text-active)] outline-none transition-colors duration-150 placeholder:text-[var(--sidebar-text-muted)] focus:border-[rgba(45,62,158,0.6)] focus:bg-white/[0.07]"
             style={{ fontFamily: 'var(--font-ui)' }}
             placeholder="Search notes..."
             value={searchQuery}
@@ -179,7 +179,6 @@ export default function Sidebar({
                 : 'bg-transparent text-[var(--sidebar-text-muted)] hover:bg-[var(--sidebar-hover)] hover:text-[var(--sidebar-text)]'
             }`}
             onClick={() => onOpenNote(note.id)}
-            onDoubleClick={(e) => { e.stopPropagation(); onStartRename(note.id, note.title) }}
             onContextMenu={(e) => onContextMenu(e, note.id, 'note')}
           >
             <span className="shrink-0 flex"><FileText size={12} /></span>
@@ -220,7 +219,6 @@ export default function Sidebar({
                   style={{ paddingLeft: `${8 + indent}px` }}
                   draggable
                   onClick={() => { onToggleFolder(folder.id); onSelectFolder(folder.id) }}
-                  onDoubleClick={(e) => { e.stopPropagation(); onStartRename(folder.id, folder.name) }}
                   onContextMenu={(e) => onContextMenu(e, folder.id, 'folder')}
                   onDragStart={(e) => {
                     e.dataTransfer.setData('folderId', folder.id)
@@ -275,7 +273,6 @@ export default function Sidebar({
                         }`}
                         style={{ paddingLeft: `${28 + indent}px` }}
                         onClick={() => onOpenNote(note.id)}
-                        onDoubleClick={(e) => { e.stopPropagation(); onStartRename(note.id, note.title) }}
                         onContextMenu={(e) => onContextMenu(e, note.id, 'note')}
                         draggable
                         onDragStart={(e) => {
