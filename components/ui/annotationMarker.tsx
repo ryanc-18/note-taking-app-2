@@ -34,13 +34,16 @@ export function PillMarker({
             : 'bg-transparent border border-[#2D3E9E] hover:bg-[#2D3E9E]/10'
         )}
       >
-        {/* Dot indicator */}
-        <span
-          className={cn(
-            'w-1.5 h-1.5 rounded-full transition-all duration-300',
-            isActive ? 'bg-blue-200' : 'bg-[#2D3E9E]'
-          )}
-        />
+        {/* Chevron indicator */}
+        <svg
+          width="8"
+          height="6"
+          viewBox="0 0 8 6"
+          fill="none"
+          className={cn('transition-colors duration-300', isActive ? 'text-blue-200' : 'text-[#2D3E9E]')}
+        >
+          <path d="M1 5L4 2L7 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
         {/* Number */}
         <span
           className={cn(
