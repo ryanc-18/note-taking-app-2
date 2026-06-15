@@ -272,6 +272,8 @@ export default function CanvasView({
   // ── Double click: place a new annotation ──────────────────────────────────
   const handlePageDoubleClick = useCallback(
     (e: React.MouseEvent<HTMLDivElement>, pageIndex: number) => {
+      // store marker spawn position as percentage relative to the page
+      // ...to accomodate zoom
       const rect = e.currentTarget.getBoundingClientRect()
       const x = ((e.clientX - rect.left) / rect.width) * 100
       const y = ((e.clientY - rect.top) / rect.height) * 100
@@ -415,8 +417,8 @@ export default function CanvasView({
                   key={i}
                   onDoubleClick={(e) => handlePageDoubleClick(e, i)}
                   style={{
-                    width: `${page.width * effectiveZoom}px`,
-                    height: `${page.height * effectiveZoom}px`,
+                    width: `${Math.round(page.width * effectiveZoom)}px`,
+                    height: `${Math.round(page.height * effectiveZoom)}px`,
                     flexShrink: 0,
                     boxShadow:
                       '0 1px 2px rgba(0,0,0,0.05), 0 4px 16px rgba(0,0,0,0.06), 0 12px 40px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.8)',
@@ -464,8 +466,12 @@ export default function CanvasView({
                             'opacity 0.15s ease, transform 0.15s ease',
                         }}
                         onClick={(e) => e.stopPropagation()}
-                        onMouseEnter={() => { if (panelMode === 'all') setHoveredAnnotationId(a.id) }}
-                        onMouseLeave={() => { if (panelMode === 'all') setHoveredAnnotationId(null) }}
+                        onMouseEnter={() => {
+                          if (panelMode === 'all') setHoveredAnnotationId(a.id)
+                        }}
+                        onMouseLeave={() => {
+                          if (panelMode === 'all') setHoveredAnnotationId(null)
+                        }}
                       >
                         <PillMarker
                           number={a.number}

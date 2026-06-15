@@ -9,7 +9,6 @@ interface MarkerProps {
   onClick?: () => void
 }
 
-// Design 6: Pill Marker - Horizontal pill shape
 export function PillMarker({
   isActive,
   isSpawning,
@@ -20,32 +19,46 @@ export function PillMarker({
     <button
       onClick={onClick}
       className={cn(
-        'relative flex items-center justify-center transition-all duration-300',
+        'relative flex items-center justify-center',
         'focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2D3E9E]/50 focus-visible:ring-offset-2 rounded-full',
         isSpawning && 'animate-[scaleSpring_0.4s_ease-out_forwards]'
       )}
     >
-      {/* Pill shape */}
       <span
         className={cn(
-          'flex items-center gap-1 px-2 py-1 rounded-full transition-all duration-300',
+          'flex items-center rounded-full',
+          'transition-[padding,background-color,box-shadow,border-color] duration-300',
           isActive
-            ? 'bg-[#2D3E9E] shadow-md shadow-[#2D3E9E]/30'
-            : 'bg-transparent border border-[#2D3E9E] hover:bg-[#2D3E9E]/10'
+            ? 'px-2 py-1 bg-[#2D3E9E] shadow-md shadow-[#2D3E9E]/30 border border-transparent'
+            : 'p-[6px] bg-transparent border border-[#2D3E9E] hover:bg-[#2D3E9E]/10'
         )}
       >
-        {/* Dot indicator */}
-        <span
+        {/* Chevron — always visible, centered when inactive */}
+        <svg
+          width="8"
+          height="6"
+          viewBox="0 0 8 6"
+          fill="none"
           className={cn(
-            'w-1.5 h-1.5 rounded-full transition-all duration-300',
-            isActive ? 'bg-blue-200' : 'bg-[#2D3E9E]'
+            'flex-shrink-0 transition-colors duration-300',
+            isActive ? 'text-blue-200' : 'text-[#2D3E9E]'
           )}
-        />
-        {/* Number */}
+        >
+          <path
+            d="M1 5L4 2L7 5"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+
+        {/* Number — fades in and expands when active */}
         <span
           className={cn(
-            'text-[10px] font-semibold transition-colors duration-300',
-            isActive ? 'text-white' : 'text-[#2D3E9E]'
+            'text-[10px] font-semibold text-white overflow-hidden whitespace-nowrap',
+            'transition-[opacity,max-width,margin-left] duration-300',
+            isActive ? 'opacity-100 max-w-[20px] ml-1' : 'opacity-0 max-w-0 ml-0'
           )}
         >
           {number}
