@@ -391,6 +391,43 @@ export default function CanvasView({
           </div>
         )}
 
+        {/* Tips bubble — visible until the first annotation is placed */}
+        {pageDims.length > 0 && !loading && (
+          <div
+            className="fixed bottom-5 left-1/2 -translate-x-1/2 z-[9999] flex items-center gap-2 px-3 py-2 rounded-lg"
+            style={{
+              background: 'rgba(20,20,30,0.82)',
+              border: '1px solid rgba(255,255,255,0.1)',
+              fontFamily: 'var(--font-ui)',
+              opacity: annotations.length === 0 ? 1 : 0,
+              pointerEvents: 'none',
+              transition: 'opacity 0.4s ease',
+            }}
+          >
+            <svg
+              width="12"
+              height="14"
+              viewBox="0 0 12 14"
+              fill="none"
+              style={{ flexShrink: 0, color: 'rgba(255,255,255,0.6)' }}
+            >
+              <path
+                d="M1 1L1 10L3.5 7.5L5 11.5L6.5 10.5L5 6.5H8.5L1 1Z"
+                stroke="currentColor"
+                strokeWidth="1.2"
+                strokeLinejoin="round"
+                strokeLinecap="round"
+              />
+            </svg>
+            <span
+              className="text-[11px]"
+              style={{ color: 'rgba(255,255,255,0.7)' }}
+            >
+              Double-click anywhere on the document to place a marker
+            </span>
+          </div>
+        )}
+
         {/* Page layout — rendered immediately once dims are known so canvases mount */}
         {pageDims.length > 0 && (
           <div
@@ -501,6 +538,7 @@ export default function CanvasView({
           </div>
         )}
       </div>
+
       <AnnotationPanel
         ref={panelRef}
         isOpen={activeAnnotation !== null || panelMode === 'all'}
