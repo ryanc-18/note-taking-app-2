@@ -1,6 +1,6 @@
 'use client'
 
-import { useImperativeHandle, forwardRef, useState, useRef, useEffect } from 'react'
+import { useImperativeHandle, forwardRef, useState, useRef, useEffect, useCallback } from 'react'
 import { useEditor, EditorContent } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import type { Annotation } from '@/types'
@@ -176,6 +176,18 @@ const AnnotationPanel = forwardRef<AnnotationPanelHandle, Props>(function Annota
     if (panelMode !== 'all') setSearchQuery('')
   }, [panelMode])
 
+  const ALL_NOTES_TIP_KEY = 'pinnote_seen_allnotes_tip'
+  const [showAllNotesTip, setShowAllNotesTip] = useState(false)
+
+  useEffect(() => {
+    setShowAllNotesTip(localStorage.getItem(ALL_NOTES_TIP_KEY) !== 'true')
+  }, [])
+
+  const dismissAllNotesTip = useCallback(() => {
+    localStorage.setItem(ALL_NOTES_TIP_KEY, 'true')
+    setShowAllNotesTip(false)
+  }, [])
+
   const visibleAnnotations = searchQuery
     ? annotations.filter(a => a.text.replace(/<[^>]*>/g, '').toLowerCase().includes(searchQuery.toLowerCase()))
     : annotations
@@ -238,13 +250,51 @@ const AnnotationPanel = forwardRef<AnnotationPanelHandle, Props>(function Annota
               >
                 <SingleIcon active={panelMode === 'single'} />
               </button>
-              <button
-                onClick={() => onPanelModeChange('all')}
-                title="All notes view"
-                style={{ background: panelMode === 'all' ? 'var(--sidebar-active)' : 'transparent', border: 'none', borderRadius: '4px', cursor: 'pointer', padding: '4px 6px', display: 'flex', alignItems: 'center' }}
-              >
-                <ListIcon active={panelMode === 'all'} />
-              </button>
+              <div style={{ position: 'relative' }}>
+                <button
+                  onClick={() => { onPanelModeChange('all'); dismissAllNotesTip() }}
+                  title="All notes view"
+                  style={{ background: panelMode === 'all' ? 'var(--sidebar-active)' : 'transparent', border: 'none', borderRadius: '4px', cursor: 'pointer', padding: '4px 6px', display: 'flex', alignItems: 'center' }}
+                >
+                  <ListIcon active={panelMode === 'all'} />
+                </button>
+                {showAllNotesTip && (
+                  <div
+                    style={{
+                      position: 'absolute',
+                      top: 'calc(100% + 8px)',
+                      right: 0,
+                      zIndex: 50,
+                      whiteSpace: 'nowrap',
+                      padding: '6px 10px',
+                      borderRadius: '6px',
+                      background: 'rgba(20,20,30,0.92)',
+                      border: '1px solid rgba(255,255,255,0.1)',
+                      fontFamily: 'var(--font-ui)',
+                      pointerEvents: 'none',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '1px',
+                    }}
+                  >
+                    <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.85)' }}>All-notes view</span>
+                    <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.5)' }}>Click to dismiss</span>
+                    <div
+                      style={{
+                        position: 'absolute',
+                        top: '-4px',
+                        right: '10px',
+                        width: '8px',
+                        height: '8px',
+                        background: 'rgba(20,20,30,0.92)',
+                        borderLeft: '1px solid rgba(255,255,255,0.1)',
+                        borderTop: '1px solid rgba(255,255,255,0.1)',
+                        transform: 'rotate(45deg)',
+                      }}
+                    />
+                  </div>
+                )}
+              </div>
               <div style={{ width: '1px', height: '14px', background: 'var(--border-strong)', margin: '0 2px' }} />
               <button
                 onClick={onClose}
