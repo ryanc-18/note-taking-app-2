@@ -5,6 +5,8 @@ import { cn } from '@/lib/utils'
 interface MarkerProps {
   isActive?: boolean
   isSpawning?: boolean
+  isFilled?: boolean
+  filledOpacity?: number
   number?: number
   onClick?: () => void
 }
@@ -12,6 +14,8 @@ interface MarkerProps {
 export function PillMarker({
   isActive,
   isSpawning,
+  isFilled,
+  filledOpacity = 0.8,
   number = 1,
   onClick,
 }: MarkerProps) {
@@ -30,8 +34,14 @@ export function PillMarker({
           'transition-[padding,background-color,box-shadow,border-color] duration-300',
           isActive
             ? 'px-2 py-1 bg-[#2D3E9E] shadow-md shadow-[#2D3E9E]/30 border border-transparent'
-            : 'p-[6px] bg-transparent border border-[#2D3E9E] hover:bg-[#2D3E9E]/10'
+            : isFilled
+              ? 'p-[6px] border border-transparent'
+              : 'p-[6px] bg-transparent border border-[#2D3E9E] hover:bg-[#2D3E9E]/10'
         )}
+        style={isFilled && !isActive ? {
+          backgroundColor: `rgba(85, 120, 240, ${filledOpacity})`,
+          boxShadow: `0 1px 4px rgba(85, 120, 240, ${filledOpacity * 0.5})`,
+        } : undefined}
       >
         {/* Chevron — always visible, centered when inactive */}
         <svg
@@ -41,7 +51,7 @@ export function PillMarker({
           fill="none"
           className={cn(
             'flex-shrink-0 transition-colors duration-300',
-            isActive ? 'text-blue-200' : 'text-[#2D3E9E]'
+            isActive || isFilled ? 'text-white' : 'text-[#2D3E9E]'
           )}
         >
           <path

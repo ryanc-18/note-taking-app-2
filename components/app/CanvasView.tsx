@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, useCallback } from 'react'
 import type { PDFDocumentProxy } from 'pdfjs-dist'
+import { Eye, EyeOff } from 'lucide-react'
 import { PillMarker } from '@/components/ui/annotationMarker'
 import AnnotationPanel, { type AnnotationPanelHandle } from './AnnotationPanel'
 import ConfirmDialog from '@/components/ui/ConfirmDialog'
@@ -47,6 +48,8 @@ export default function CanvasView({
   const [hoveredAnnotationId, setHoveredAnnotationId] = useState<string | null>(
     null
   )
+  const [markersVisible, setMarkersVisible] = useState(false)
+  const [markerOpacity, setMarkerOpacity] = useState(0.8)
 
   // ── Step 1: load PDF and collect page dimensions ───────────────────────────
   // Does NOT render yet — just gets dims so React can mount the canvases
@@ -376,18 +379,65 @@ export default function CanvasView({
           </div>
         )}
 
-        {/* Zoom indicator — always visible once dims are known */}
+        {/* Zoom indicator + marker toggle — always visible once dims are known */}
         {pageDims.length > 0 && (
-          <div
-            className="fixed bottom-5 right-6 z-50 text-[11px] tabular-nums px-2.5 py-1 rounded-md"
-            style={{
-              background: 'rgba(0,0,0,0.06)',
-              color: 'var(--text-muted)',
-              fontFamily: 'var(--font-mono)',
-              border: '1px solid var(--border)',
-            }}
-          >
-            {Math.round(effectiveZoom * 100)}%
+          <div className="fixed bottom-5 right-6 z-50 flex items-center gap-2">
+            {/* Toggle button + vibrancy slider, grouped so popup is positioned relative to the button */}
+            <div style={{ position: 'relative' }}>
+              {/* Vibrancy slider — animates up above the toggle button when markers are on */}
+              <div
+                style={{
+                  position: 'absolute',
+                  bottom: 'calc(100% + 8px)',
+                  left: '50%',
+                  transform: `translateX(-50%) translateY(${markersVisible ? '0px' : '6px'})`,
+                  opacity: markersVisible ? 1 : 0,
+                  pointerEvents: markersVisible ? 'auto' : 'none',
+                  transition: 'opacity 0.2s ease, transform 0.2s ease',
+                  background: 'rgba(14,14,20,0.88)',
+                  border: '1px solid rgba(255,255,255,0.1)',
+                  borderRadius: '10px',
+                  padding: '8px 10px',
+                  backdropFilter: 'blur(8px)',
+                }}
+              >
+                <input
+                  type="range"
+                  min={20}
+                  max={100}
+                  value={Math.round(markerOpacity * 100)}
+                  onChange={(e) => setMarkerOpacity(Number(e.target.value) / 100)}
+                  style={{ width: '110px', accentColor: '#5578F0', cursor: 'pointer', display: 'block' }}
+                />
+              </div>
+
+              <button
+                onClick={() => setMarkersVisible((v) => !v)}
+                title={markersVisible ? 'Hide markers' : 'Show markers'}
+                className="flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] transition-colors duration-150"
+                style={{
+                  background: markersVisible ? 'rgba(45,62,158,0.15)' : 'rgba(0,0,0,0.06)',
+                  color: markersVisible ? '#6b82e8' : 'var(--text-muted)',
+                  border: markersVisible ? '1px solid rgba(45,62,158,0.35)' : '1px solid var(--border)',
+                  fontFamily: 'var(--font-ui)',
+                }}
+              >
+                {markersVisible ? <Eye size={11} /> : <EyeOff size={11} />}
+                <span>{markersVisible ? 'Markers on' : 'Markers off'}</span>
+              </button>
+            </div>
+
+            <div
+              className="text-[11px] tabular-nums px-2.5 py-1 rounded-md"
+              style={{
+                background: 'rgba(0,0,0,0.06)',
+                color: 'var(--text-muted)',
+                fontFamily: 'var(--font-mono)',
+                border: '1px solid var(--border)',
+              }}
+            >
+              {Math.round(effectiveZoom * 100)}%
+            </div>
           </div>
         )}
 
@@ -515,6 +565,12 @@ export default function CanvasView({
                           isActive={
                             panelMode === 'all' || activeAnnotationId === a.id
                           }
+                          isFilled={
+                            markersVisible &&
+                            activeAnnotationId !== a.id &&
+                            panelMode !== 'all'
+                          }
+                          filledOpacity={markerOpacity}
                           isSpawning={activeAnnotationId === a.id}
                           onClick={() => {
                             if (panelMode === 'all') {
