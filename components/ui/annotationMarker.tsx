@@ -6,6 +6,7 @@ interface MarkerProps {
   isActive?: boolean
   isSpawning?: boolean
   isFilled?: boolean
+  filledOpacity?: number
   number?: number
   onClick?: () => void
 }
@@ -14,6 +15,7 @@ export function PillMarker({
   isActive,
   isSpawning,
   isFilled,
+  filledOpacity = 0.8,
   number = 1,
   onClick,
 }: MarkerProps) {
@@ -33,9 +35,13 @@ export function PillMarker({
           isActive
             ? 'px-2 py-1 bg-[#2D3E9E] shadow-md shadow-[#2D3E9E]/30 border border-transparent'
             : isFilled
-              ? 'p-[6px] bg-[#2D3E9E]/70 border border-transparent'
+              ? 'p-[6px] border border-transparent'
               : 'p-[6px] bg-transparent border border-[#2D3E9E] hover:bg-[#2D3E9E]/10'
         )}
+        style={isFilled && !isActive ? {
+          backgroundColor: `rgba(85, 120, 240, ${filledOpacity})`,
+          boxShadow: `0 1px 4px rgba(85, 120, 240, ${filledOpacity * 0.5})`,
+        } : undefined}
       >
         {/* Chevron — always visible, centered when inactive */}
         <svg
