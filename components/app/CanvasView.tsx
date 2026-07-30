@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, useCallback } from 'react'
 import type { PDFDocumentProxy } from 'pdfjs-dist'
+import { Eye, EyeOff } from 'lucide-react'
 import { PillMarker } from '@/components/ui/annotationMarker'
 import AnnotationPanel, { type AnnotationPanelHandle } from './AnnotationPanel'
 import ConfirmDialog from '@/components/ui/ConfirmDialog'
@@ -47,6 +48,7 @@ export default function CanvasView({
   const [hoveredAnnotationId, setHoveredAnnotationId] = useState<string | null>(
     null
   )
+  const [markersVisible, setMarkersVisible] = useState(false)
 
   // ── Step 1: load PDF and collect page dimensions ───────────────────────────
   // Does NOT render yet — just gets dims so React can mount the canvases
@@ -376,18 +378,34 @@ export default function CanvasView({
           </div>
         )}
 
-        {/* Zoom indicator — always visible once dims are known */}
+        {/* Zoom indicator + marker toggle — always visible once dims are known */}
         {pageDims.length > 0 && (
-          <div
-            className="fixed bottom-5 right-6 z-50 text-[11px] tabular-nums px-2.5 py-1 rounded-md"
-            style={{
-              background: 'rgba(0,0,0,0.06)',
-              color: 'var(--text-muted)',
-              fontFamily: 'var(--font-mono)',
-              border: '1px solid var(--border)',
-            }}
-          >
-            {Math.round(effectiveZoom * 100)}%
+          <div className="fixed bottom-5 right-6 z-50 flex items-center gap-2">
+            <button
+              onClick={() => setMarkersVisible((v) => !v)}
+              title={markersVisible ? 'Hide markers' : 'Show markers'}
+              className="flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] transition-colors duration-150"
+              style={{
+                background: markersVisible ? 'rgba(45,62,158,0.15)' : 'rgba(0,0,0,0.06)',
+                color: markersVisible ? '#6b82e8' : 'var(--text-muted)',
+                border: markersVisible ? '1px solid rgba(45,62,158,0.35)' : '1px solid var(--border)',
+                fontFamily: 'var(--font-ui)',
+              }}
+            >
+              {markersVisible ? <Eye size={11} /> : <EyeOff size={11} />}
+              <span>{markersVisible ? 'Markers on' : 'Markers off'}</span>
+            </button>
+            <div
+              className="text-[11px] tabular-nums px-2.5 py-1 rounded-md"
+              style={{
+                background: 'rgba(0,0,0,0.06)',
+                color: 'var(--text-muted)',
+                fontFamily: 'var(--font-mono)',
+                border: '1px solid var(--border)',
+              }}
+            >
+              {Math.round(effectiveZoom * 100)}%
+            </div>
           </div>
         )}
 
@@ -515,6 +533,7 @@ export default function CanvasView({
                           isActive={
                             panelMode === 'all' || activeAnnotationId === a.id
                           }
+                          isFilled={markersVisible && activeAnnotationId !== a.id && panelMode !== 'all'}
                           isSpawning={activeAnnotationId === a.id}
                           onClick={() => {
                             if (panelMode === 'all') {

@@ -5,6 +5,7 @@ import { cn } from '@/lib/utils'
 interface MarkerProps {
   isActive?: boolean
   isSpawning?: boolean
+  isFilled?: boolean
   number?: number
   onClick?: () => void
 }
@@ -12,6 +13,7 @@ interface MarkerProps {
 export function PillMarker({
   isActive,
   isSpawning,
+  isFilled,
   number = 1,
   onClick,
 }: MarkerProps) {
@@ -30,7 +32,9 @@ export function PillMarker({
           'transition-[padding,background-color,box-shadow,border-color] duration-300',
           isActive
             ? 'px-2 py-1 bg-[#2D3E9E] shadow-md shadow-[#2D3E9E]/30 border border-transparent'
-            : 'p-[6px] bg-transparent border border-[#2D3E9E] hover:bg-[#2D3E9E]/10'
+            : isFilled
+              ? 'p-[6px] bg-[#2D3E9E]/70 border border-transparent'
+              : 'p-[6px] bg-transparent border border-[#2D3E9E] hover:bg-[#2D3E9E]/10'
         )}
       >
         {/* Chevron — always visible, centered when inactive */}
@@ -41,7 +45,7 @@ export function PillMarker({
           fill="none"
           className={cn(
             'flex-shrink-0 transition-colors duration-300',
-            isActive ? 'text-blue-200' : 'text-[#2D3E9E]'
+            isActive || isFilled ? 'text-white' : 'text-[#2D3E9E]'
           )}
         >
           <path
