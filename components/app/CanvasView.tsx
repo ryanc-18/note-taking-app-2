@@ -32,7 +32,6 @@ export default function CanvasView({
 
   const [pageDims, setPageDims] = useState<PageDimension[]>([])
   const [zoom, setZoom] = useState<number | null>(null)
-  const [minZoom, setMinZoom] = useState(0.5)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [annotations, setAnnotations] = useState<Annotation[]>([])
@@ -121,26 +120,23 @@ export default function CanvasView({
     }
   }, [pageDims])
 
-  // ── Compute min zoom from container height and total doc height ────────────
+  // ── Set initial zoom to fit first page width in viewport ─────────────────
   useEffect(() => {
     if (pageDims.length === 0) return
 
-    function computeMin() {
+    function computeInitial() {
       const container = containerRef.current
       if (!container) return
-      const viewportH = container.clientHeight
-      const totalDocH =
-        pageDims.reduce((sum, d) => sum + d.height / BASE_RENDER_SCALE, 0) +
-        PAGE_GAP * (pageDims.length - 1)
-      const min = viewportH / totalDocH
+      const firstPageW = pageDims[0].width / BASE_RENDER_SCALE
       const firstPageH = pageDims[0].height / BASE_RENDER_SCALE
-      const fitFirstPage = (viewportH - 64) / firstPageH
-      setMinZoom(min)
-      setZoom((prev) => (prev === null ? fitFirstPage : prev))
+      const fitWidth = (container.clientWidth - 80) / firstPageW
+      const fitHeight = (container.clientHeight - 64) / firstPageH
+      const fitPage = Math.min(fitWidth, fitHeight)
+      setZoom((prev) => (prev === null ? fitPage : prev))
     }
 
-    computeMin()
-    const ro = new ResizeObserver(computeMin)
+    computeInitial()
+    const ro = new ResizeObserver(computeInitial)
     if (containerRef.current) ro.observe(containerRef.current)
     return () => ro.disconnect()
   }, [pageDims])
@@ -259,10 +255,10 @@ export default function CanvasView({
       const SPEED = 0.005
       setZoom((prev) => {
         if (prev === null) return prev
-        return Math.min(3, Math.max(minZoom, prev - e.deltaY * SPEED))
+        return Math.min(3, Math.max(0.1, prev - e.deltaY * SPEED))
       })
     },
-    [minZoom]
+    []
   )
 
   useEffect(() => {
@@ -328,7 +324,7 @@ export default function CanvasView({
   }, [])
 
   // ── Derived values ─────────────────────────────────────────────────────────
-  const effectiveZoom = zoom ?? minZoom
+  const effectiveZoom = zoom ?? 1
   const naturalPages = pageDims.map((d) => ({
     width: d.width / BASE_RENDER_SCALE,
     height: d.height / BASE_RENDER_SCALE,
@@ -483,9 +479,8 @@ export default function CanvasView({
           <div
             style={{
               minHeight: '100%',
-              width: '100%',
+              minWidth: '100%',
               display: 'flex',
-              justifyContent: 'center',
               alignItems: fitsVertically ? 'center' : 'flex-start',
               padding: fitsVertically ? '0 40px' : '32px 40px',
               boxSizing: 'border-box',
@@ -497,6 +492,7 @@ export default function CanvasView({
                 flexDirection: 'column',
                 gap: `${PAGE_GAP * effectiveZoom}px`,
                 width: `${scaledPageWidth}px`,
+                margin: '0 auto',
               }}
             >
               {naturalPages.map((page, i) => (
